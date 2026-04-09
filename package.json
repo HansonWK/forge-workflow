@@ -1,0 +1,22 @@
+{
+  "name": "forge-workflow",
+  "version": "1.0.0",
+  "description": "An opinionated AI-assisted development workflow for Claude Code. Install into your repo so every developer shares the same workflow.",
+  "keywords": ["claude", "claude-code", "workflow", "ai", "development"],
+  "author": "Stuart Whyte",
+  "license": "MIT",
+  "bin": {
+    "forge-workflow": "./bin/install.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stuartwhyte/forge-workflow.git"
+  },
+  "files": [
+    "bin/",
+    "commands/",
+    "agents/",
+    "docs/",
+    "README.md"
+  ]
+}
