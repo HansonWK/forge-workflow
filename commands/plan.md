@@ -32,9 +32,9 @@ If no plan exists, run the `planner` agent to create the implementation plan:
 
 ## Optional Integrations
 
-### Jira (if configured)
+### Ticket Tracker (if configured)
 
-If a Jira ticket is referenced or can be derived from the branch name, fetch ticket details using /jira. If Jira credentials are not configured, skip this step.
+If a ticket is referenced or can be derived from the branch name, fetch ticket details using the ticket-tracker agent. If the ticket tracker is not configured, skip this step.
 
 ## Testing
 

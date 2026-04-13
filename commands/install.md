@@ -241,7 +241,7 @@ For each forge-workflow command and agent file in this package:
 
 | Find (example value) | Replace with |
 |---|---|
-| `PROJ-1234` | Actual ticket prefix pattern (e.g., `NG20-1234`, `#123` for GitHub Issues) |
+| `PROJ-1234` | Actual ticket prefix pattern (e.g., `MYAPP-1234`, `#123` for GitHub Issues) |
 | `npm run test` | Actual test command from detected scripts |
 | `npm run lint` | Actual lint command |
 | `npm run format` | Actual format command |

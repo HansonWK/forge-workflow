@@ -35,9 +35,9 @@ If the branch name contains a Jira ticket ID (e.g. `PROJ-1234-...`), the **first
 [PROJ-1234](https://mycompany.atlassian.net/browse/PROJ-1234)
 ```
 
-This line comes before the `## Summary` heading. If Jira context was gathered (via `/jira` or the credentials in `~/AI/config/jira.env`), also note whether the PR fully addresses the ticket description and acceptance criteria.
+This line comes before the `## Summary` heading. If ticket context was gathered (via the ticket-tracker agent), also note whether the PR fully addresses the ticket description and acceptance criteria.
 
-If no Jira ticket ID is present in the branch name, skip this line entirely.
+If no ticket ID is present in the branch name, skip this line entirely.
 
 ## PR Size Assessment
 
