@@ -1,5 +1,5 @@
 ---
-name: performance-reviewer
+name: performance
 description: >
   Analyze code changes for performance implications, anti-patterns, and optimization opportunities.
 tools: Read, Grep, Glob, Bash

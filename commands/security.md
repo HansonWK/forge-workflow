@@ -87,13 +87,13 @@ Use `security-auditor` agent on the full changeset:
 **Next steps:**
 
 - Always start with a report to the user
-- Fix critical/high issues, then re-run `/security-audit`
-- Or report to user the results of the sercurity audit are successful
+- Fix critical/high issues, then re-run `/security`
+- Or report to the user that the security audit passed
 ```
 
 ## Re-audit
 
-If issues were fixed, run `/security-audit` again to verify fixes.
+If issues were fixed, run `/security` again to verify fixes.
 
 ## Rules
 

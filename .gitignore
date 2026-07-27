@@ -1,2 +1,6 @@
 node_modules/
 .DS_Store
+
+# This repo's own Claude workspace — dev-only working notes, settings, temp files.
+# forge-workflow ships from root-level commands/agents/docs/examples, not from here.
+.claude/

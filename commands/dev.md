@@ -41,7 +41,7 @@ Write the implementation code following:
 
 - Patterns identified in research.md
 - Existing codebase conventions
-- claude.md standards
+- CLAUDE.md standards
 
 ### 4. Write Tests
 
@@ -60,18 +60,18 @@ Use `doc-writer` agent if needed:
 - Add JSDoc for complex functions
 - Update ADRs if architectural decisions made
 
-### 6. Logging Check
+### 6. Logging Check (only if the observability module is installed)
 
-Consider skipping this step if your changes only modify existing code without adding new handlers, consumers, business logic decisions, or error paths.
+Skip this step unless `docs/logging-strategy.md` exists (it is scaffolded by the observability module) **and** your changes add or modify handlers, consumers, business-logic decisions, or error paths.
 
-When this step applies, **run it as a background agent** so the developer is not blocked:
+When it applies, **run it as a background agent** so the developer is not blocked:
 
 ```
 Agent({
   description: "Logging compliance check",
   subagent_type: "Explore",
   run_in_background: true,
-  prompt: "Read docs/logging-strategy.md then audit the changed files for logging compliance. Check: new handlers have boundary logs at INFO, all logs include productId/entityType/brand/pipeline where applicable, business logic decisions log with a reason, logger names follow {service-name}:{module-name}. Report only issues found — say nothing if everything is compliant. Also note if the new logs could power useful dashboards (counts, summaries, structured reasons) and suggest the user runs /dashboard."
+  prompt: "Read docs/logging-strategy.md then audit the changed files against it. Check: the required custom dimensions are present where applicable, business-logic decisions log a reason, log levels are correct, and logger names follow the strategy's convention. Report only issues found — say nothing if compliant. Also note if the new logs could power a useful dashboard and suggest the user runs /dashboard."
 })
 ```
 
@@ -95,22 +95,6 @@ npm run format:check
 - Only update tests to match new logic after confirming the new behaviour is correct.
 
 Fix any failures before completing.
-
-### 7b. Live Service Verification (optional)
-
-If the current subtask changes data mapping, filtering, or transformation in a service and data flows through Service Bus, consider live verification:
-
-1. Ask the user if they want to run a live service test
-2. Dispatch the `live-tester` agent with the scenario details
-3. The agent will: launch the service, construct test data (all IDs suffixed `-local-test`), show it for approval, send it to the SB emulator, watch the logs, report results, and provide downstream verification links (Algolia/Builder.io)
-4. Include the results in the present phase
-
-Skip if:
-
-- Unit tests fully cover the scenario
-- The change has no runtime data flow through Service Bus
-- The fix is obvious and low-risk
-- Changes are frontend-only or purely to types/constants
 
 ### 8. Update Plan and Status
 

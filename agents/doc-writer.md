@@ -136,12 +136,12 @@ pnpm test:coverage # Coverage report
 
 ## Deployment
 
-Deployed via GitHub Actions to AWS ECS.
+Describe how the project deploys (CI/CD pipeline and target platform).
 
-- **Production**: Merges to `main` deploy automatically
-- **Staging**: Push to `staging` branch
+- **Production**: <e.g. merges to `main` deploy automatically>
+- **Staging**: <e.g. push to a staging branch>
 
-See [.github/workflows/deploy.yml](.github/workflows/deploy.yml)
+See your CI configuration (e.g. `.github/workflows/`).
 
 ## Architecture
 

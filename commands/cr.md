@@ -22,7 +22,7 @@ Before launching the review, gather context about _why_ the changes were made. T
 
 ### Steps:
 
-1. **Jira ticket** — If the branch name starts with a ticket ID pattern (e.g., `PROJ-1234-...`, `BOARD-123-...`), fetch the Jira ticket using the `ticket-tracker` agent:
+1. **Ticket** — If the branch name starts with a ticket ID pattern (e.g., `PROJ-1234-...`, `BOARD-123-...`), fetch the ticket using the `ticket-tracker` agent:
 
    - The `ticket-tracker` agent will fetch the ticket and extract: title, description, and acceptance criteria
    - If the agent is not configured or the fetch fails, skip silently
@@ -76,7 +76,7 @@ If not found, try matching partially (the user may have omitted a prefix). If st
    - Run `git diff main...HEAD --name-only` to identify changed files
    - **Use the provided `REVIEW_CONTEXT`** to understand the intent behind the changes and validate that the implementation matches
    - Perform a full code review covering: implementation quality, design, tests, bugs, security concerns
-   - If acceptance criteria were provided from a Jira ticket, explicitly check whether each criterion is met
+   - If acceptance criteria were provided from the ticket, explicitly check whether each criterion is met
    - Classify issues by severity (Critical / High / Medium / Low)
    - If any service-level code was changed, check for security concerns (input validation, auth, secrets, injection)
    - Produce a structured report
@@ -118,7 +118,7 @@ If not found, try matching partially (the user may have omitted a prefix). If st
 
 ## Acceptance Criteria Check
 
-[If a Jira ticket with acceptance criteria was available, list each criterion with PASS/FAIL/PARTIAL. Otherwise omit this section.]
+[If the ticket had acceptance criteria, list each criterion with PASS/FAIL/PARTIAL. Otherwise omit this section.]
 
 ## Summary
 

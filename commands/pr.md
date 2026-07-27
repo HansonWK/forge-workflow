@@ -62,7 +62,7 @@ Commit or stash before opening PR? (y/n)
 
 ## Step 4: Generate PR Description
 
-Build the PR description using this structure. The description must start with the ticket context (what problem we're solving) before listing the changes.
+Use the `pr-description` agent to generate the description, following this structure. The description must start with the ticket context (what problem we're solving) before listing the changes.
 
 **Template:**
 
@@ -70,7 +70,7 @@ Build the PR description using this structure. The description must start with t
 ## Ticket
 
 <TICKET-ID>: <ticket title or one-line problem statement>
-<Jira URL if available, otherwise omit>
+<ticket link/reference if available, otherwise omit>
 
 ## Problem
 
@@ -116,13 +116,14 @@ If user provides feedback:
 
 ## Step 6: Create PR
 
-After approval, open the PR in the browser so the user can make final edits before submitting:
+After approval, open the PR/MR in the browser so the user can make final edits before submitting, using the configured git hosting and default branch (see `docs/workflow-config.md`):
 
 ```bash
-gh pr create --base main --title "<title>" --body "<description>" --web
+# GitHub (default). For GitLab use `glab mr create`; for Bitbucket, open the compare URL.
+gh pr create --base <default-branch> --title "<title>" --body "<description>" --web
 ```
 
-**IMPORTANT:** Always use the `--web` flag. This opens the PR creation page in the browser rather than submitting it directly. The user will review and make final edits before clicking "Create pull request" in GitHub. Do NOT create the PR without `--web`.
+**IMPORTANT:** Always open the PR in the browser (GitHub's `--web`, or the platform equivalent) rather than submitting it directly. The user reviews and makes final edits before clicking "Create" on the hosting site. Do NOT create the PR without opening it for review.
 
 ## Step 7: Update Plan and Status
 

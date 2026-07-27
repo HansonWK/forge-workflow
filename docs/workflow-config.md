@@ -30,5 +30,20 @@
 - **AI temp files:** .claude/temp/
 - **AI docs:** .claude/docs/
 
+## Modules
+- **observability:** installed (provider: Azure App Insights)
+- **audit:** installed
+- **release:** skipped
+- **secrets:** n/a
+
+## Observability
+- **Provider:** Azure Application Insights (KQL)
+- **Logging strategy:** docs/logging-strategy.md
+- **Dashboards dir:** dashboards/
+
+## Audit
+- **Targets:** catalog-service, search-service, content-service, web-app
+- **Output:** .claude/audit/<date>/
+
 ## Forge Workflow
-- **Version:** 1.0.0
+- **Version:** 1.1.0

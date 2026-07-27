@@ -53,11 +53,15 @@ Use `pr-sanity-check` agent:
 - Minor improvements
   → Note for user, don't block
 
+### 1b. Performance pass (optional)
+
+For performance-sensitive changes (hot paths, database queries, large payloads, render-heavy UI), also dispatch the `performance` agent for a focused review, and fold its findings into the severities above.
+
 ### 2. Re-review Loop
 
 After fixing Critical/High issues:
 
-- Re-run code-reviewer
+- Re-run the `pr-sanity-check` agent
 - Repeat until no Critical/High issues remain
 
 ### 3. Update Plan and Status
@@ -93,13 +97,13 @@ Run /present to continue.
 Security audit (`security-auditor` agent) runs separately before PR via `/security`.
 This keeps per-commit reviews fast while ensuring comprehensive security review of all changes.
 
-## Logging Review
+## Logging Review (only if the observability module is installed)
 
-If the changes touch service handlers, consumers, or business logic, verify logging compliance with `docs/logging-strategy.md`:
+If `docs/logging-strategy.md` exists and the changes touch handlers, consumers, or business logic, verify logging compliance against it:
 
-- New/modified logs include `productId`, `entityType`, `brand`, `pipeline` dimensions
-- Business logic decisions that change product outcomes log with a `reason`
-- Logger names follow `{service-name}:{module-name}` format
+- New/modified logs include the required custom dimensions from the strategy
+- Business-logic decisions that change an entity's outcome log a `reason`
+- Logger names follow the strategy's naming convention
 - No temporary `[TEMP]` logs left in the changes
 
 Flag logging issues as Medium severity.

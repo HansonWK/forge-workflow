@@ -1,5 +1,5 @@
 ---
-Define Ticket and Prompt from Investigation
+description: Create a ticket and a /begin prompt from an investigation
 ---
 
 # Create Ticket and Prompt from Investigation
@@ -49,7 +49,7 @@ Create a file at `.claude/temp/<topic>/prompt.md` with:
 
 <How to verify the fix works>
 
-## Note: we will need to rename this folder when we have a ticket created with the ticket ID to follow our naming conventions. Please do this now
+> Once a ticket ID exists, rename this `.claude/temp/<topic>/` folder to `<TICKET-ID>-<slug>` so it matches the branch and plan naming convention.
 ```
 
 ### 3. Write the Ticket
@@ -80,26 +80,16 @@ Save a ticket description to ticket.md and present it to the user with:
 
 ### 4. Present to User
 
-```markdown
-## Ticket
+Show a summary of the ticket, the files created, and how to start work later:
 
-<summary of ticket content>
+- **Ticket:** `<summary of ticket content>`
+- **Files created:**
+  - `.claude/temp/<topic>/ticket.md` — ticket description
+  - `.claude/temp/<topic>/prompt.md` — prompt for `/begin`
 
-## Files Created
+To start work later, run:
 
-- `.claude/temp/<topic>/ticket.md` - Ticket description
-- `.claude/temp/<topic>/prompt.md` - Prompt for `/begin`
-
----
-
-**To start work later:**
-```
-
-/begin @.claude/temp/<topic>/prompt.md
-
-```
-
-```
+    /begin @.claude/temp/<topic>/prompt.md
 
 ## Rules
 

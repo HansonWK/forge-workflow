@@ -54,12 +54,30 @@ Present the following workflow guide to the user:
 | Command              | Description                                            |
 | -------------------- | ------------------------------------------------------ |
 | `/ticket`            | Create a ticket from an investigation                  |
+| `/explain <file>`    | Deep-dive explanation/review of a file or component    |
 | `/workflow`          | Show this command reference                            |
+
+### Optional modules
+
+These are installed and tailored to your project by `/install`. Only the modules you
+set up appear; run `/install` (or `/install <module>`) to add a skipped one later.
+
+| Command              | Module        | Description                                            |
+| -------------------- | ------------- | ------------------------------------------------------ |
+| `/logs`              | observability | Fetch, parse, and analyse logs from your log provider  |
+| `/fix-logs`          | observability | Audit and fix a service's logging against the strategy |
+| `/dashboard`         | observability | Design a monitoring dashboard from your log/metric data|
+| `/audit`             | audit         | Deep multi-dimension audit → actionable issue files    |
+| `/audit-fix`         | audit         | Implement fixes from one audit dimension file          |
+| `/changelog`         | release       | Generate a changelog from git history                  |
+| `/release`           | release       | Changelog + version bump across all packages           |
+| `/secret`            | secrets       | Add/manage a secret in your secrets manager            |
 
 ### Tips
 
 - You don't need to call `/dev`, `/present`, or `/signoff` directly — `/next` and `/begin` orchestrate these for you. `/signoff` runs automatically after planning and presents clickable file links for you to review.
 - All plan and research files live in `.claude/temp/` — clean up after your PR is merged
+- Optional modules are opt-in. Re-running `/install` re-offers any module you skipped, so you can grow the workflow as the project needs it.
 ```
 
 ## Rules

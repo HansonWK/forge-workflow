@@ -1,7 +1,7 @@
 ---
 name: researcher
 description: Deep codebase exploration for a given task. Reads docs, ADRs, plans, vision files, and relevant code. Outputs structured research.md.
-tools: Read,Grep,Glob,Bash,Task,Write
+tools: Read,Grep,Glob,Bash,Task,Write,AskUserQuestion
 model: opus
 ---
 
@@ -105,24 +105,7 @@ Identify:
 - Dependencies
 - Integration points
 
-### 8. Live Observation (optional)
-
-If after reading the code the bug is not obvious — particularly when it involves data transformation, unexpected data shapes, or behavior that doesn't match what the code appears to do:
-
-1. Tell the user: "I can't pinpoint the bug from the code alone. I'd like to send test data through [service] and monitor its logs to see the actual behavior. Shall I proceed?"
-2. If approved, dispatch the `live-tester` agent with the scenario details
-3. Document findings in research.md under a "Live Observation" section:
-   - What data was sent
-   - What was observed in the logs
-   - What this tells us about the bug
-
-Do NOT use this when:
-
-- The bug is clearly visible in the code
-- The user has already provided logs that explain the issue
-- The task is a feature request, not a bug investigation
-
-### 9. Ask Clarifying Questions
+### 8. Ask Clarifying Questions
 
 If genuinely uncertain about:
 
@@ -176,7 +159,6 @@ Write to `.claude/temp/<slug>/research.md`:
 // Example from codebase
 <code snippet>
 ```
-````
 
 ## Documentation Found
 
@@ -220,8 +202,8 @@ Write to `.claude/temp/<slug>/research.md`:
 - <question 2>
 
 Or: "None - research is sufficient to proceed."
+````
 
-```
 ## Guidelines
 
 ### Be Thorough But Focused
@@ -245,4 +227,3 @@ Or: "None - research is sufficient to proceed."
 - **Concise** - No filler, get to the point
 - **Actionable** - Recommendations should guide implementation
 - **Honest** - Flag concerns and gaps clearly
-```

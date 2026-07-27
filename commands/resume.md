@@ -104,7 +104,6 @@ Check if we are on a branch with an appropriate name. It will normally start wit
 - [x] Dev (if complete)
 - [ ] Review (if pending)
 - [ ] Present
-- [ ] Sign Off
 
 ### Key Context
 

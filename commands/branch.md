@@ -1,24 +1,24 @@
 ---
-description: Create a feature branch from a Jira ticket
+description: Create a feature branch from a ticket
 argument-hint: <ticket-id> (e.g., PROJ-1234)
 ---
 
-# Create Feature Branch from Jira Ticket
+# Create Feature Branch from a Ticket
 
-Create a feature branch named after a Jira ticket, ensuring a clean state on latest main.
+Create a feature branch named after a ticket, ensuring a clean state on latest main.
 
 ## Arguments
 
-$ARGUMENTS — Required: Jira ticket ID (e.g., `PROJ-1234`)
+$ARGUMENTS — Required: ticket ID (e.g., `PROJ-1234` for Jira, `#123` for GitHub Issues)
 
 If no ticket ID is provided, ask the user for one and stop.
 
 ## Step 1: Validate Ticket ID
 
-Check that `$ARGUMENTS` matches a Jira ticket pattern (e.g., `PROJ-1234`, `BOARD-123`). If not, ask the user:
+Check that `$ARGUMENTS` matches your ticket ID pattern (e.g., `PROJ-1234`, `BOARD-123`, or `#123`). If not, ask the user:
 
 ```
-Please provide a valid Jira ticket ID (e.g., PROJ-1234)
+Please provide a valid ticket ID (e.g., PROJ-1234)
 ```
 
 ## Step 2: Check for Uncommitted Changes
@@ -64,23 +64,11 @@ git pull origin main
 
 If pull fails, inform the user and stop.
 
-## Step 5: Fetch Jira Ticket
+## Step 5: Fetch the Ticket
 
-Fetch the ticket to get its title. Use the same credential setup as the `ticket-tracker` agent:
+Use the `ticket-tracker` agent to fetch the ticket and get its title/summary. The agent handles whichever system is configured (Jira, GitHub Issues, or other) and manages its own credentials.
 
-1. Read credentials from `~/AI/config/jira.env`
-2. If credentials don't exist, tell the user to configure Jira credentials first (see the `ticket-tracker` agent), then stop
-
-```bash
-source ~/AI/config/jira.env && curl -s \
-  -H "Authorization: Basic $(echo -n "$JIRA_EMAIL:$JIRA_API_TOKEN" | base64)" \
-  -H "Content-Type: application/json" \
-  "$JIRA_BASE_URL/rest/api/3/issue/<TICKET-ID>?fields=summary"
-```
-
-Extract the ticket summary from the response.
-
-If the API call fails (401, 404, etc.), fall back to asking the user for a branch name:
+If the ticket tracker isn't configured or the fetch fails, fall back to asking the user for a branch name:
 
 ```
 Couldn't fetch ticket details. What should the branch be called?

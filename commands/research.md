@@ -43,9 +43,9 @@ Output to `.claude/temp/<slug>/research.md`.
 
 ## Optional Integrations
 
-### Jira (if configured)
+### Ticket Tracker (if configured)
 
-If the task references a Jira ticket or the branch name contains a ticket ID, attempt to fetch ticket details. If Jira credentials are not configured, skip this step.
+If the task references a ticket or the branch name contains a ticket ID, use the `ticket-tracker` agent to fetch details. If the ticket tracker is not configured, skip this step.
 
 ### GitHub (if referenced)
 

@@ -111,7 +111,7 @@ Save changes back to the file.
 
 ### Plan Progress
 
-<if plan.md exists, show subtask progress like current /status does>
+<if plan.md exists, show subtask progress: for each subtask, its title and which of Dev/Review/Present are checked>
 ```
 
 ---

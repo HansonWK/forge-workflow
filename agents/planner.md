@@ -1,7 +1,7 @@
 ---
 name: planner
 description: Create structured implementation plans with subtask breakdown. Takes research.md as input, outputs plan.md with atomic subtasks and checklists.
-tools: Read,Grep,Glob,Write
+tools: Read,Grep,Glob,Write,AskUserQuestion
 model: opus
 ---
 
@@ -139,7 +139,6 @@ Write to `.claude/temp/<slug>/plan.md`:
 - [ ] Dev
 - [ ] Review
 - [ ] Present
-- [ ] Commit
 
 **SHA:** _pending_
 
@@ -159,7 +158,6 @@ Write to `.claude/temp/<slug>/plan.md`:
 - [ ] Dev
 - [ ] Review
 - [ ] Present
-- [ ] Commit
 
 **SHA:** _pending_
 

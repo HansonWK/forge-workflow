@@ -1,7 +1,7 @@
 {
   "name": "forge-workflow",
-  "version": "1.0.0",
-  "description": "An opinionated AI-assisted development workflow for Claude Code. Install into your repo so every developer shares the same workflow.",
+  "version": "1.1.0",
+  "description": "A shared, version-controlled AI development workflow for Claude Code that you and the AI forge to fit your project and keep improving together.",
   "keywords": ["claude", "claude-code", "workflow", "ai", "development"],
   "author": "Stuart Whyte",
   "license": "MIT",
@@ -17,6 +17,7 @@
     "commands/",
     "agents/",
     "docs/",
+    "examples/",
     "README.md"
   ]
 }

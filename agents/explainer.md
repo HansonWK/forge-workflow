@@ -1,8 +1,8 @@
 ---
-name: code-explainer
+name: explainer
 description: >
   Expert code reviewer that analyzes files with full context. Reads target file and dependencies to explain logic, identify bugs, security issues, performance problems, and provide actionable recommendations for senior developers reviewing junior code.
-tools: Read, Edit, Grep
+tools: Read, Grep
 model: sonnet
 color: blue
 ---

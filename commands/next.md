@@ -34,12 +34,19 @@ Goal: <subtask goal>
 Create native tasks for the subtask phases using `TaskCreate` with dependencies:
 
 1. **Dev** — "Implement subtask N: \<title\>" (activeForm: "Implementing \<title\>")
-2. **Present** — "Present subtask N for approval" (activeForm: "Presenting changes", blockedBy: Dev)
-3. **Commit** — "Commit subtask N" (activeForm: "Awaiting commit approval", blockedBy: Present)
+2. **Review** — "Review subtask N" (activeForm: "Reviewing changes", blockedBy: Dev)
+3. **Present** — "Present subtask N for approval" (activeForm: "Presenting changes", blockedBy: Review)
+4. **Commit** — "Commit subtask N" (activeForm: "Awaiting commit approval", blockedBy: Present)
 
 Mark the Dev task as `in_progress` and run `/dev`. Mark it `completed` when dev finishes.
 
-**Auto-proceed to Present phase.**
+**Auto-proceed to the Review phase.**
+
+## Step 3b: Review Phase
+
+Mark the Review task as `in_progress`. Run `/review` on the subtask's changes (the `pr-sanity-check` agent). Fix any Critical/High issues and re-review until clean, per `/review`. Update plan.md: check `- [x] Review`. Mark the Review task `completed`.
+
+**Auto-proceed to the Present phase.**
 
 ## Step 4: Present Phase
 
@@ -128,7 +135,7 @@ Next steps:
 - NEVER commit without user approval at Present phase
 - NEVER commit on behalf of the user - only suggest commit messages
 - Update plan.md checkboxes as you complete each phase
-- Review (/review) is a separate command the user can run when they choose — it is NOT automatic per subtask
+- Review runs automatically per subtask (Step 3b, via the pr-sanity-check agent); the comprehensive /security audit runs once before PR
 
 ## Tracking
 

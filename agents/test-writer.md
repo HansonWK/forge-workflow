@@ -291,8 +291,7 @@ describe('Filters Component', () => {
   const mockClearFilters = jest.fn();
 
   const options: FilterCategories = {
-    availability: ['Available', 'Sold Out'],
-    bedrooms: [1, 2, 3, 4],
+    availability: ['In Stock', 'Out of Stock'],
     category: ['Standard', 'Premium'],
     priceRange: { max: 700, min: 100 },
     maxPrice: null,
@@ -307,7 +306,7 @@ describe('Filters Component', () => {
 
     expect(screen.getByText('Clear all')).toBeInTheDocument();
     expect(screen.getByText('Availability')).toBeInTheDocument();
-    expect(screen.getByText('Bedrooms')).toBeInTheDocument();
+    expect(screen.getByText('Category')).toBeInTheDocument();
   });
 
   test('handles applying filters correctly', () => {

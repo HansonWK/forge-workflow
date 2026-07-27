@@ -27,17 +27,14 @@ Generate comprehensive pull request descriptions that help reviewers understand 
 6. **Identify breaking changes** - API changes, migrations needed
 7. **Generate appropriate template** - Based on size and type
 
-### Jira Ticket Linking (MANDATORY when available)
+### Ticket Linking (when available)
 
-If the branch name contains a Jira ticket ID (e.g. `PROJ-1234-...`), the **first line** of the PR description body must be a link to the Jira ticket:
+If the branch name contains a ticket ID, reference it at the top of the PR body using whatever the configured tracker expects:
 
-```
-[PROJ-1234](https://mycompany.atlassian.net/browse/PROJ-1234)
-```
+- **Jira (or similar):** a link on the **first line**, before `## Summary` — e.g. `[PROJ-1234](https://your-jira/browse/PROJ-1234)`
+- **GitHub Issues:** an auto-closing reference in the body — e.g. `Closes #123`
 
-This line comes before the `## Summary` heading. If ticket context was gathered (via the ticket-tracker agent), also note whether the PR fully addresses the ticket description and acceptance criteria.
-
-If no ticket ID is present in the branch name, skip this line entirely.
+If ticket context was gathered (via the `ticket-tracker` agent), also note whether the PR fully addresses the ticket description and acceptance criteria. If no ticket ID is present in the branch name, skip this.
 
 ## PR Size Assessment
 
@@ -62,7 +59,7 @@ If no ticket ID is present in the branch name, skip this line entirely.
 ### Small PR (1-3 files)
 
 ```markdown
-[TICKET-ID](https://mycompany.atlassian.net/browse/TICKET-ID)
+[ticket reference — e.g. a Jira link or "Closes #123", if applicable]
 
 ## Summary
 
