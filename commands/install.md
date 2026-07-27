@@ -21,7 +21,7 @@ place. Locate that template set and call it `$FORGE`:
 
    > I can't find the forge templates. They live in `.claude/.forge/` (which is gitignored, so it's
    > not in a fresh clone) or `node_modules/forge-workflow/`. Run `npx forge-workflow install`
-   > (or `npx github:stuartwhyte/forge-workflow install`) to stage them, then re-run `/install`.
+   > (or `npx github:HansonWK/forge-workflow install`) to stage them, then re-run `/install`.
 
 Read `$FORGE/VERSION` (the version being installed). Read shipped files from `$FORGE` (e.g.
 `$FORGE/commands/*.md`, `$FORGE/skills/**`, `$FORGE/agents/*.md`) and write your **tailored** output

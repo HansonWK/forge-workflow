@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/stuartwhyte/forge-workflow.git"
+    "url": "git+https://github.com/HansonWK/forge-workflow.git"
   },
   "files": [
     "bin/",

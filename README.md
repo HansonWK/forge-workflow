@@ -21,15 +21,13 @@ The package ships with sensible example values so the files are readable out of 
 
 **Requirements:** [Claude Code](https://claude.com/claude-code), and Node.js (for the `npx` installer).
 
-### Option 1: npm
+### Option 1: install with npx (from GitHub)
 
 The installer is a **scaffolder** — it stages forge's templates in `.claude/.forge/` and installs the
 `/install` command. It does **not** add a dependency to your project:
 
 ```bash
-npx forge-workflow@latest install
-# or, before it's published to npm:
-npx github:stuartwhyte/forge-workflow install
+npx github:HansonWK/forge-workflow install
 ```
 
 Then open Claude Code and run:
@@ -43,13 +41,15 @@ Then open Claude Code and run:
 commit and edit. It also picks which **optional modules** (observability, audit, release, secrets) to
 set up now, skip for later, or mark not applicable.
 
-**Want tracked updates?** Add forge as a dev dependency and re-run the installer after bumping it:
+**Want tracked updates?** Add it as a dev dependency (from GitHub) and re-run the installer:
 
 ```bash
-npm install --save-dev forge-workflow
+npm install --save-dev github:HansonWK/forge-workflow
 npx forge-workflow install     # re-stage templates into .claude/.forge/
-# later: npm update forge-workflow && npx forge-workflow install   (then /install to merge)
+# later: npm update && npx forge-workflow install   (then /install to merge)
 ```
+
+> npm publishing is coming later — the `npx github:…` command above works today.
 
 ### Option 2: Manual
 
