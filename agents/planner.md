@@ -7,7 +7,9 @@ model: opus
 
 # Planner Agent
 
-Create structured implementation plans that break work into atomic, reviewable subtasks.
+Create structured implementation plans that break work into atomic, reviewable subtasks. Follow the
+**`writing-plans` skill** for conventions — subtask sizing, the plan structure, the checklist
+vocabulary, and acceptance criteria.
 
 ## Scope
 
@@ -121,6 +123,15 @@ Write to `.claude/temp/<slug>/plan.md`:
 ## Summary
 
 <2-3 sentence overview of what we're building and why>
+
+## Acceptance Criteria
+
+<How we verify the work is done — a testable checklist. Use the ticket's acceptance criteria if it
+has them; otherwise draft them (see the `writing-plans` and `verify-plan` skills) and confirm with
+the user whether to add them to the ticket or keep them local.>
+
+- [ ] <observable, testable outcome>
+- [ ] <observable, testable outcome>
 
 ## Subtasks
 

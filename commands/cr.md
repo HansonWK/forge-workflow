@@ -75,7 +75,7 @@ If not found, try matching partially (the user may have omitted a prefix). If st
    - Check out the target branch in the worktree
    - Run `git diff main...HEAD --name-only` to identify changed files
    - **Use the provided `REVIEW_CONTEXT`** to understand the intent behind the changes and validate that the implementation matches
-   - Perform a full code review covering: implementation quality, design, tests, bugs, security concerns
+   - Apply the `code-review` skill: implementation quality, design, tests, bugs, and security concerns
    - If acceptance criteria were provided from the ticket, explicitly check whether each criterion is met
    - Classify issues by severity (Critical / High / Medium / Low)
    - If any service-level code was changed, check for security concerns (input validation, auth, secrets, injection)

@@ -37,7 +37,7 @@ Claude will scan your codebase, ask a few questions, and configure the workflow 
 
 ### Option 2: Manual
 
-1. Copy the `commands/`, `agents/`, `docs/`, and `examples/` directories into your `.claude/` directory
+1. Copy the `commands/`, `agents/`, `skills/`, `docs/`, and `examples/` directories into your `.claude/` directory
 2. Open Claude Code and run `/install`
 
 That's it. Claude handles the rest.
@@ -50,7 +50,7 @@ That's it. Claude handles the rest.
 /begin → /research → /plan → /signoff → /next (dev → review → present) → /security → /pr
 ```
 
-Start work with `/begin`. Claude researches the codebase, creates a plan broken into reviewable subtasks, and asks for your approval. Then `/next` cycles through each subtask: implement, review, present for approval. When done, `/security` runs an audit and `/pr` creates the pull request.
+Start work with `/begin`. Claude researches the codebase, creates a plan broken into reviewable subtasks (with acceptance criteria), and asks for your approval. Then `/next` cycles through each subtask: implement, **self-verify**, review, present for approval. When done, `/security` runs an audit and `/pr` creates the pull request.
 
 ### Commands
 
@@ -102,6 +102,22 @@ Specialized agents handle specific tasks behind the scenes:
 - **doc-writer** — Documentation generation
 - **explainer** — Deep code analysis
 - **ticket-tracker** — Ticket system integration (Jira, GitHub Issues, or custom)
+
+### Skills
+
+Skills are the single source of truth for the workflow's rubrics and verifiers — commands and agents
+**call** them, so "how we review code" or "how we verify a change" lives in one place and loads only
+when needed (progressive disclosure). Forge invokes skills explicitly, so they work across model
+generations.
+
+- **Rubrics/methods:** `code-review`, `security-review`, `testing`, `writing-plans`, `logging-compliance`
+- **Verification:** `verify` (build/lint/test, self-fix to green), `verify-acceptance` (does it
+  satisfy the goal + acceptance criteria), `verify-plan` (critique the plan before building)
+
+This gives the workflow a real **verification loop**: `/dev` self-verifies — deterministic checks
+*and* acceptance criteria — and fixes its own failures **before** the human approval gate, instead of
+leaving all verification to review. If a task starts with no acceptance criteria, forge drafts some
+and asks whether to add them to the ticket (so testers can verify later) or keep them local to the plan.
 
 ### Optional Modules
 
@@ -188,7 +204,7 @@ If you use a formatter, add a hook to auto-format on file writes:
 .claude/settings.local.json   # Personal settings
 ```
 
-The workflow files themselves (`commands/`, `agents/`, `docs/`, `examples/`) should be committed so your team shares them.
+The workflow files themselves (`commands/`, `agents/`, `skills/`, `docs/`, `examples/`) should be committed so your team shares them.
 
 ## License
 

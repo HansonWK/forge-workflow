@@ -19,11 +19,12 @@ Generate tests for the project following established patterns.
 
 ## Core Philosophy
 
-1. **Test behavior, not implementation** - Tests verify what code does, not how
-2. **Units of behavior** - A "unit" is a meaningful behavior, not a function/class
-3. **Mock at module level** - Use `jest.mock()` at top of file for external dependencies
-4. **Tests are documentation** - Tests communicate intent to future developers
-5. **AAA pattern** - Arrange, Act, Assert
+Follow the **`testing` skill** for the testing philosophy (black-box / behaviour-focused, tests as
+documentation, predict-then-verify, and what *not* to test). This agent adds the mechanics for this
+project's framework:
+
+- **Mock at module level** — mock external dependencies at the top of the file
+- **AAA pattern** — Arrange, Act, Assert
 
 ## Process
 

@@ -38,7 +38,8 @@ Create native tasks for the subtask phases using `TaskCreate` with dependencies:
 3. **Present** — "Present subtask N for approval" (activeForm: "Presenting changes", blockedBy: Review)
 4. **Commit** — "Commit subtask N" (activeForm: "Awaiting commit approval", blockedBy: Present)
 
-Mark the Dev task as `in_progress` and run `/dev`. Mark it `completed` when dev finishes.
+Mark the Dev task as `in_progress` and run `/dev` — which now self-verifies (the `verify` and
+`verify-acceptance` skills) before finishing. Mark it `completed` when dev finishes.
 
 **Auto-proceed to the Review phase.**
 

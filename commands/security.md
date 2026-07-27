@@ -4,100 +4,27 @@ description: Run security audit on all branch changes before PR
 
 # Security Audit
 
-## Purpose
-
-Comprehensive security audit of all changes on the current branch before opening a PR.
-This runs once after all tasks are complete, auditing the cumulative changeset.
+Comprehensive security audit of all changes on the current branch before opening a PR — one pass
+over the cumulative change set.
 
 ## Prerequisites
 
-- All subtasks complete (or uncommitted changes to audit)
-- On a feature branch (not main)
+- All subtasks complete (or uncommitted changes to audit); on a feature branch (not the default branch).
 
 ## Instructions
 
-### 1. Determine Scope
-
-Audit all changes compared to main:
-
-```bash
-git diff main...HEAD --name-only
-```
-
-If no commits but uncommitted changes exist, audit those:
-
-```bash
-git diff --name-only
-git diff --staged --name-only
-```
-
-### 2. Run Security Audit
-
-Use `security-auditor` agent on the full changeset:
-
-- OWASP Top 10 review
-- Dependency audit
-- Secret detection
-- IAM/infrastructure review (if applicable)
-
-### 3. Handle Issues
-
-**Critical issues:**
-
-- Must be fixed before PR
-- Show specific file and line
-- Provide fix recommendation
-
-**High issues:**
-
-- Should be fixed before PR
-- Present to user for decision
-
-**Medium/Low issues:**
-
-- Note for awareness
-- Can proceed with PR
-
-### 4. Report
-
-```markdown
-## Security Audit Results
-
-**Verdict**: [PASS | FAIL]
-**Changes audited**: <N> files
-
-### Critical Issues
-
-[List or "None"]
-
-### High Issues
-
-[List or "None"]
-
-### Medium/Low Issues
-
-[List or "None"]
-
-### Recommendations
-
-[General security improvements]
-
----
-
-**Next steps:**
-
-- Always start with a report to the user
-- Fix critical/high issues, then re-run `/security`
-- Or report to the user that the security audit passed
-```
-
-## Re-audit
-
-If issues were fixed, run `/security` again to verify fixes.
+1. **Scope** — audit all changes vs the default branch (`git diff <base>...HEAD --name-only`). If
+   there are no commits yet, audit uncommitted/staged changes.
+2. **Audit** — dispatch the `security-auditor` agent (it applies the `security-review` skill), or
+   apply the **`security-review` skill** directly on the change set.
+3. **Handle findings**
+   - **Critical** — must be fixed before PR. Show `file:line` and a fix.
+   - **High** — should be fixed; present for a decision.
+   - **Medium / Low** — note for awareness; can proceed.
+4. **Report** — verdict (PASS / FAIL), counts by severity, and recommendations. If issues were
+   fixed, re-run `/security` to verify.
 
 ## Rules
 
-- NEVER skip critical issues
-- Audit the full changeset, not individual commits
-- Only flag issues in changed code (not pre-existing)
-- Provide actionable fix recommendations
+- Never skip Critical issues; audit the full change set, not individual commits.
+- Only flag issues in changed code; give actionable fixes.

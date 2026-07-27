@@ -16,7 +16,7 @@ const targetDir = path.join(process.cwd(), '.claude');
 // - commands/agents/docs are the active, templated workflow files
 // - examples are reference implementations the /install command reads (and that
 //   generalized commands cite at runtime); they are NOT registered as commands
-const dirs = ['commands', 'agents', 'docs', 'examples'];
+const dirs = ['commands', 'agents', 'skills', 'docs', 'examples'];
 
 const SKIP = new Set(['.DS_Store', '.git']);
 

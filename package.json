@@ -1,6 +1,6 @@
 {
   "name": "forge-workflow",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "A shared, version-controlled AI development workflow for Claude Code that you and the AI forge to fit your project and keep improving together.",
   "keywords": ["claude", "claude-code", "workflow", "ai", "development"],
   "author": "Stuart Whyte",
@@ -16,6 +16,7 @@
     "bin/",
     "commands/",
     "agents/",
+    "skills/",
     "docs/",
     "examples/",
     "README.md"

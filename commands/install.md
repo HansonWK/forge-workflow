@@ -131,6 +131,21 @@ Branch naming convention?  Default: <TICKET-ID>-<kebab-case-summary>
 
 **STOP and wait.** Then ask about any core gaps you couldn't detect (e.g. no test runner found).
 
+### Commit-guard hook (optional, recommended)
+
+The never-commit guardrail is stated once in `CLAUDE.md`, but on long contexts / older models Claude
+can still commit without asking. Offer a deterministic enforcement hook:
+
+```
+I can add a commit-guard hook that blocks Claude from running `git commit` / `git push` (you commit
+yourself). It adds `.claude/hooks/commit-guard.sh` and a PreToolUse entry to `.claude/settings.json`.
+Add it? (recommended)
+```
+
+Only with **explicit consent**, install it from `.claude/examples/hooks/commit-guard.md` (the script
++ the `settings.json` entry; merge into any existing `hooks`). If they decline, leave settings
+untouched and record `commit-guard: declined` in the config Modules-adjacent notes.
+
 ---
 
 ## Phase 4 — Optional Modules
@@ -195,9 +210,9 @@ Each module's setup is: **read the reference example → ask the provider/config
 
 ### Fresh Install
 
-1. **Create directories:** `.claude/docs/`, `.claude/commands/`, `.claude/agents/`, `.claude/examples/`, `.claude/temp/` as needed.
+1. **Create directories:** `.claude/docs/`, `.claude/commands/`, `.claude/agents/`, `.claude/skills/`, `.claude/examples/`, `.claude/temp/` as needed.
 2. **Generate `docs/workflow-config.md`** (see the template below), including the `## Modules` section and a config section for each module set up now.
-3. **Install core command/agent files:** for each shipped file, replace example values with detected ones:
+3. **Install core command/agent/skill files:** for each shipped file, replace example values with detected ones:
 
    | Find (example value) | Replace with |
    |---|---|
@@ -209,10 +224,14 @@ Each module's setup is: **read the reference example → ask the provider/config
    | `main` (PR base / diff base) | The detected default branch |
    | `gh pr create` | The hosting flow (GitHub `gh`, GitLab `glab`, Bitbucket web) |
 
-   Agents that need **real adaptation** (not just string swaps) — keep their structure, severity classes, and workflow but rewrite the stack/framework examples to match the detected project: `test-writer`, `security-auditor`, `explainer`, `pr-sanity-check`, `doc-writer`, `pr-description`.
+   **Adapt the skills and agents to the stack** (not just string swaps) — keep the rubric/structure, rewrite stack-specific specifics to match the detected project:
+   - Skills: `code-review`, `security-review`, `testing` (test framework), `logging-compliance` (only if the observability module is installed).
+   - Agents: `test-writer` (framework mechanics), `doc-writer`, `pr-description`, `explainer`.
+
+   (`pr-sanity-check` and `security-auditor` are thin runners that apply the skills — adapt the skills, not those agents.)
 
    **Generalize ticket wording:** in the core commands (`begin`, `research`, `cr`, `pr`, `next`, `branch`) and `pr-description`, replace any remaining tracker-specific phrasing so it matches the chosen system. For "Other" ticket trackers, generate `ticket-tracker.md` from the shipped Jira/GitHub templates.
-4. **Module command files:** for each module **set up now**, write its tailored commands (Phase 4). For each **skipped** module, leave its generic commands as-is. For **n/a** modules, optionally remove their command files.
+4. **Module command files:** for each module **set up now**, write its tailored commands (Phase 4). For each **skipped** module, leave its generic commands as-is. For **n/a** modules, optionally remove their command files. Skills install alongside commands; module skills (e.g. `logging-compliance`) are only active when their module is set up.
 5. **Handle `CLAUDE.md`** (see below).
 
 ### Re-run / Update
@@ -226,8 +245,22 @@ When `docs/workflow-config.md` already exists:
 
 ### `CLAUDE.md`
 
-- **If none exists:** create `CLAUDE.md` at the project root with core coding principles adapted to the stack, testing philosophy, planning conventions (`.claude/temp/`), permissions, a **secrets & credentials safety rule** (never fetch/read production secret values — dev/test only; adding secrets to any environment is fine), and the Forge Workflow section.
-- **If one exists:** ensure it has a `# Forge Workflow` section listing the entry-point commands, the working directories, and the workflow principles; add or update it. List the module commands that were set up.
+Keep it **lightweight** (Claude 5-gen guidance): repo purpose + real gotchas — not things Claude can
+discover from the file system, and not depth that now lives in skills.
+
+- **If none exists:** create `CLAUDE.md` at the project root with:
+  - A one-paragraph **repo purpose** and any **gotchas** (non-obvious constraints, footguns).
+  - A **Working agreements** block — the guardrails, stated **once and authoritatively** (this is the
+    single source of truth; commands reference it rather than restating it):
+    - Never commit or push without explicit user approval — suggest a commit message; the user commits.
+    - Never fetch/read **production** secret values (dev/test only); adding secrets to any environment is fine.
+    - Plans/research and other ephemeral files live in `.claude/temp/`.
+  - **Pointers, not depth:** note that the skills in `.claude/skills/` hold the
+    review/security/testing/planning/logging rubrics, and `@`-import config when useful (e.g.
+    `@.claude/docs/workflow-config.md`, `@.claude/docs/logging-strategy.md`) so it loads only when relevant.
+  - A short **Forge Workflow** section (entry-point commands + working directories).
+- **If one exists:** ensure it has the **Working agreements** block and a `# Forge Workflow` section;
+  add or update them. Do **not** inline testing/coding/security depth — point to the skills.
 
 ### `docs/workflow-config.md` template
 
@@ -288,7 +321,7 @@ When `docs/workflow-config.md` already exists:
 - Scopes/services: [list]
 
 ## Forge Workflow
-- Version: 1.1.0
+- Version: 1.2.0
 ```
 
 ---
@@ -322,7 +355,7 @@ Suggest next steps: `/workflow` to see all commands; commit the workflow files s
 
 ## Explicit Exclusions
 
-- Do **NOT** generate or modify `.claude/settings.json` or `.claude/settings.local.json` — the user manages those.
+- Do **NOT** modify `.claude/settings.json` / `.claude/settings.local.json` **except** the optional commit-guard hook above, and only with the user's explicit consent. Never change other settings.
 - Do **NOT** set up MCP servers — some agents reference optional MCP tools, but those are configured independently.
 - Do **NOT** delete existing files the user has in `.claude/` (other than removing a module's own generic command files when the user marks it n/a and confirms).
 - Do **NOT** write real secret values into the repo or the config.

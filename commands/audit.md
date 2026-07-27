@@ -46,14 +46,14 @@ Each dimension produces exactly one `.md` file, written by one agent. The agent 
 | `type-safety` | Escape hatches: untyped values, unsafe casts, suppressed type errors, missing return types (for typed languages) | `CLAUDE.md` |
 | `potential-bugs` | Logic errors, off-by-one, unhandled null/undefined, incorrect async, date/timezone bugs, floating promises, wrong comparisons | — |
 | `error-handling` | Swallowed errors, missing try/catch at boundaries, retry/backoff, idempotency and dead-letter handling for queue consumers, errors caught but not logged | `docs/logging-strategy.md` |
-| `security` | OWASP Top 10, hardcoded secrets, missing input validation at trust boundaries, injection, authz gaps | `security-auditor` agent |
+| `security` | OWASP Top 10, hardcoded secrets, missing input validation at trust boundaries, injection, authz gaps | the `security-review` skill |
 | `performance` | N+1 patterns, unbatched calls to rate-limited upstreams, redundant fetches, missing caching, large payloads, sync work in loops | — |
-| `logging` | Compliance with `docs/logging-strategy.md`: required dimensions, `reason` on decisions, logger naming, correct levels | `docs/logging-strategy.md` |
+| `logging` | Compliance with `docs/logging-strategy.md`: required dimensions, `reason` on decisions, logger naming, correct levels | the `logging-compliance` skill |
 | `test-quality` | Coverage gaps on business logic **and** test quality: black-box vs implementation-coupled, misleading names, factory usage | `CLAUDE.md` (testing) |
 | `schema-consistency` | Validation at trust boundaries, producer/consumer schema drift, enum/shape values not shared where they should be | `CLAUDE.md` |
 | `dry-duplication` | Constants/lists/mapping logic duplicated across modules that belong in a shared place | `CLAUDE.md` |
 | `documentation-drift` | Docs out of sync with the code | the target's own docs |
-| `accessibility` | **UI targets only** — WCAG/ARIA/keyboard/contrast/semantics | `ai-accessibility` skill |
+| `accessibility` | **UI targets only** — WCAG/ARIA/keyboard/contrast/semantics | `ai-accessibility` plugin if installed, else general WCAG review |
 | `dependency-health` | **Repo-level, once per run** — dependency audit, outdated majors, known CVEs | — |
 
 ## Step 5: Fan out the audit agents

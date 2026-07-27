@@ -41,9 +41,18 @@ If a ticket is referenced or can be derived from the branch name, fetch ticket d
 For large tasks, add unit-test subtasks where appropriate, as their own subtasks.
 For small tasks, add a final unit-test subtask to add unit tests at the end.
 
+## Verify the plan
+
+For non-trivial tasks, apply the **`verify-plan` skill** before signoff: critique the plan against
+research and the acceptance criteria and fix gaps. If there are **no** acceptance criteria (none on
+the ticket and none in the plan), draft a testable set and ask the user whether to add them to the
+ticket (best — testers can verify later) or keep them local to the plan; record them in plan.md
+either way.
+
 ## After Planning
 
-After the plan is created, automatically run /signoff to present the research and plan for user approval. Do not ask the user to run /signoff manually.
+After the plan is verified, automatically run /signoff to present the research and plan for user
+approval. Do not ask the user to run /signoff manually.
 
 ## Rules
 

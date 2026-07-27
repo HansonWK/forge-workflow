@@ -45,7 +45,7 @@ Output to `.claude/temp/<slug>/research.md`.
 
 ### Ticket Tracker (if configured)
 
-If the task references a ticket or the branch name contains a ticket ID, use the `ticket-tracker` agent to fetch details. If the ticket tracker is not configured, skip this step.
+If the task references a ticket or the branch name contains a ticket ID, use the `ticket-tracker` agent to fetch details. If the ticket tracker is not configured, skip this step. If the ticket has **no acceptance criteria**, note that — the planning stage will draft them (see the `verify-plan` skill).
 
 ### GitHub (if referenced)
 

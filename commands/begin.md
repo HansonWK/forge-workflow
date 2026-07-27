@@ -172,7 +172,10 @@ The planner will:
 
 - Break work into subtasks (small, committable steps)
 - Define goals and files for each subtask
+- Capture acceptance criteria (drafting them and confirming with you if the ticket has none)
 - Create trackable checklists
+
+Then the plan is verified (the `verify-plan` skill) before signoff.
 
 ## Step 5: Signoff
 
