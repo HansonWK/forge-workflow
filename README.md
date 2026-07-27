@@ -23,24 +23,41 @@ The package ships with sensible example values so the files are readable out of 
 
 ### Option 1: npm
 
+The installer is a **scaffolder** — it stages forge's templates in `.claude/.forge/` and installs the
+`/install` command. It does **not** add a dependency to your project:
+
 ```bash
-npx forge-workflow install
+npx forge-workflow@latest install
+# or, before it's published to npm:
+npx github:stuartwhyte/forge-workflow install
 ```
 
-This copies all workflow files into your `.claude/` directory. Then open Claude Code and run:
+Then open Claude Code and run:
 
 ```
 /install
 ```
 
-Claude will scan your codebase, ask a few questions, and configure the workflow for your project — including which **optional modules** (observability, audit, release, secrets) to set up now, skip for later, or mark not applicable.
+`/install` scans your codebase, asks a few questions, and **generates** your tailored workflow into
+`.claude/commands|agents|skills|docs` from the staged templates — that generated workflow is what you
+commit and edit. It also picks which **optional modules** (observability, audit, release, secrets) to
+set up now, skip for later, or mark not applicable.
+
+**Want tracked updates?** Add forge as a dev dependency and re-run the installer after bumping it:
+
+```bash
+npm install --save-dev forge-workflow
+npx forge-workflow install     # re-stage templates into .claude/.forge/
+# later: npm update forge-workflow && npx forge-workflow install   (then /install to merge)
+```
 
 ### Option 2: Manual
 
-1. Copy the `commands/`, `agents/`, `skills/`, `docs/`, and `examples/` directories into your `.claude/` directory
-2. Open Claude Code and run `/install`
+1. Copy this repo's `commands/`, `agents/`, `skills/`, `docs/`, `examples/` into `.claude/.forge/`
+2. Copy `commands/install.md` into `.claude/commands/install.md`
+3. Open Claude Code and run `/install`
 
-That's it. Claude handles the rest.
+That's it. Claude generates the rest from the staged templates.
 
 ## What You Get
 
@@ -200,11 +217,12 @@ If you use a formatter, add a hook to auto-format on file writes:
 ## What to .gitignore
 
 ```
+.claude/.forge/               # Regenerable template cache (re-staged by the installer)
 .claude/temp/                 # Ephemeral work files
 .claude/settings.local.json   # Personal settings
 ```
 
-The workflow files themselves (`commands/`, `agents/`, `skills/`, `docs/`, `examples/`) should be committed so your team shares them.
+The **generated** workflow files (`commands/`, `agents/`, `skills/`, `docs/`, `examples/`) should be committed so your team shares them. The `.claude/.forge/` template cache is regenerable, so it's gitignored.
 
 ## License
 

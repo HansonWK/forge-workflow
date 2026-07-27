@@ -4,9 +4,28 @@ description: Configure forge-workflow for your project (core + optional modules)
 
 # Forge Workflow — Install / Update
 
-Configure forge-workflow for this project. This command scans the codebase, uses what it finds to make recommendations, asks about what it can't determine, then installs or updates the workflow files with project-specific values.
+Configure forge-workflow for this project. This command scans the codebase, uses what it finds to make recommendations, asks about what it can't determine, then **generates** your tailored workflow from the staged templates.
 
 Forge has a **core** workflow (always installed) and a set of **optional modules** (observability, audit, release, secrets). Modules are opt-in: for each one you can **set it up now**, **skip it for later**, or mark it **not applicable**. Re-running `/install` at any time re-offers anything you skipped — so this command is the single entry point for both first-time setup and adding capabilities later.
+
+## Where the templates live (do this first)
+
+`/install` **generates** your workflow from a pristine template set — it does not edit itself in
+place. Locate that template set and call it `$FORGE`:
+
+1. **`.claude/.forge/`** — the normal location, staged by `npx forge-workflow install`. It is
+   **gitignored** (a regenerable cache), so it may be absent on a fresh clone.
+2. If `.claude/.forge/` is missing, fall back to **`node_modules/forge-workflow/`** (present when
+   forge is installed as a devDependency).
+3. If neither exists, **STOP** and tell the user:
+
+   > I can't find the forge templates. They live in `.claude/.forge/` (which is gitignored, so it's
+   > not in a fresh clone) or `node_modules/forge-workflow/`. Run `npx forge-workflow install`
+   > (or `npx github:stuartwhyte/forge-workflow install`) to stage them, then re-run `/install`.
+
+Read `$FORGE/VERSION` (the version being installed). Read shipped files from `$FORGE` (e.g.
+`$FORGE/commands/*.md`, `$FORGE/skills/**`, `$FORGE/agents/*.md`) and write your **tailored** output
+into `.claude/commands|agents|skills|docs|examples`. Never edit files under `$FORGE`.
 
 ## Before You Start
 
@@ -212,7 +231,7 @@ Each module's setup is: **read the reference example → ask the provider/config
 
 1. **Create directories:** `.claude/docs/`, `.claude/commands/`, `.claude/agents/`, `.claude/skills/`, `.claude/examples/`, `.claude/temp/` as needed.
 2. **Generate `docs/workflow-config.md`** (see the template below), including the `## Modules` section and a config section for each module set up now.
-3. **Install core command/agent/skill files:** for each shipped file, replace example values with detected ones:
+3. **Generate core command/agent/skill files:** for each file in `$FORGE`, write a tailored copy into `.claude/` (read `$FORGE/<file>`, replace example values, write `.claude/<file>`). `install.md` is already live (the bin placed it) — you may refresh it from `$FORGE`, but don't tailor it. Copy `examples/` through to `.claude/examples/` (commands reference them at runtime). Replace example values with detected ones:
 
    | Find (example value) | Replace with |
    |---|---|
@@ -238,8 +257,8 @@ Each module's setup is: **read the reference example → ask the provider/config
 
 When `docs/workflow-config.md` already exists:
 
-1. Read it — get the installed version and the `## Modules` state.
-2. For core files: compare each existing file against the shipped version, identify user customizations (content differing from what a prior install would have written), apply new improvements while **preserving customizations**. If you can't confidently tell a user edit from shipped content, show the diff and ask.
+1. Read it — get the installed version and the `## Modules` state. Read `$FORGE/VERSION` (the version now staged); a higher value means an **upgrade** (if `$FORGE` looks stale, re-stage first with `npx forge-workflow install`).
+2. For each file: compare your committed `.claude/<file>` against the newly-staged `$FORGE/<file>`. Re-apply shipped improvements while **preserving your customizations**. Because `$FORGE` holds the exact new template, this is a real diff — not a guess; where a difference is genuinely ambiguous, show it and ask.
 3. For modules: only act on ones the user chose to add/reconfigure this run (Phase 4). Don't touch `installed` modules unless asked.
 4. **Present a summary of all changes before writing**, then **STOP and wait for confirmation.** Then write and update the version + `## Modules` state.
 
@@ -345,6 +364,7 @@ Modules:
 Recommend `.gitignore` additions if missing:
 
 ```
+.claude/.forge/                # Regenerable template cache (re-staged by the installer)
 .claude/temp/                  # Ephemeral work files
 .claude/settings.local.json    # Personal settings
 ```
