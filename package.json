@@ -19,6 +19,7 @@
     "skills/",
     "docs/",
     "examples/",
-    "README.md"
+    "README.md",
+    "ATTRIBUTION.md"
   ]
 }

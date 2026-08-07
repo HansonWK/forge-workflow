@@ -274,6 +274,8 @@ discover from the file system, and not depth that now lives in skills.
     - Never commit or push without explicit user approval — suggest a commit message; the user commits.
     - Never fetch/read **production** secret values (dev/test only); adding secrets to any environment is fine.
     - Plans/research and other ephemeral files live in `.claude/temp/`.
+    - If the user keeps asking for the same step, or keeps adding the same acceptance criterion, suggest `/customize` to encode it as a new or updated skill.
+    - When the user shares a resource you build from (a blog, doc, or someone's file), apply the `attribution` skill — offer to list it as attribution, a resource, or neither, and offer to trace it to its origin.
   - **Pointers, not depth:** note that the skills in `.claude/skills/` hold the
     review/security/testing/planning/logging rubrics, and `@`-import config when useful (e.g.
     `@.claude/docs/workflow-config.md`, `@.claude/docs/logging-strategy.md`) so it loads only when relevant.

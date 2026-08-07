@@ -35,6 +35,8 @@ so the rubric for "how we review code" or "how we verify a change" lives in exac
 | `testing` | black-box testing philosophy + predict-then-verify | `/dev`, `test-writer` agent |
 | `writing-plans` | planning conventions (subtask sizing, checklist vocab, acceptance criteria) | `/plan`, `planner` agent |
 | `logging-compliance` | logging-strategy rubric (observability module) | `/fix-logs`, `/dev`, `/audit` |
+| `authoring` | how to add/update workflow pieces (skill vs command vs agent; lean, decision-encoding) | `/customize` |
+| `attribution` | classify resources (attribution vs resource) and record credits in `ATTRIBUTION.md` | `/attribution`; proactively when a resource is shared |
 
 **Verification skills (close the loop)**
 
@@ -43,3 +45,4 @@ so the rubric for "how we review code" or "how we verify a change" lives in exac
 | `verify` | build / typecheck / lint / test, self-fix until green | embedded at end of `/dev` |
 | `verify-acceptance` | check the change against the subtask goal + acceptance criteria; self-correct | chained after `verify` |
 | `verify-plan` | critique the plan vs research + AC (and draft ACs if missing) before signoff | in `/plan` |
+| `double-check` | independent second opinion from a *different* AI CLI (default Codex); reconcile every finding | `/double-check`; suggested by `/pr` for large PRs |

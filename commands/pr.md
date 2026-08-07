@@ -21,6 +21,9 @@ Continue with PR anyway? (y/n)
 
 If user declines, stop and let them run `/security`.
 
+For **large or high-stakes** change sets, also consider `/double-check` — an independent second
+opinion from a different AI CLI (the `double-check` skill) — before opening the PR.
+
 ## Step 2: Verify Plan Complete
 
 Find the current active plan and verify all subtasks are complete or marked as to do in another PR:

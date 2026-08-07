@@ -14,6 +14,8 @@ Present the following workflow guide to the user:
 | Command    | Description                                                                      |
 | ---------- | -------------------------------------------------------------------------------- |
 | `/install` | Configure forge-workflow for your project (scan codebase, set up ticket tracker, update files) |
+| `/customize` | Add or update a workflow piece (skill/command/agent) to fit your team |
+| `/attribution` | Record what shaped the workflow (attribution vs resources) in ATTRIBUTION.md |
 
 ### Starting work
 
@@ -45,9 +47,10 @@ Present the following workflow guide to the user:
 
 | Command     | Description                                              |
 | ----------- | -------------------------------------------------------- |
-| `/cr`       | Code review (local or worktree-isolated)                 |
-| `/security` | Run a security audit                                     |
-| `/pr`       | Prepare and create a pull request                        |
+| `/cr`           | Code review (local or worktree-isolated)             |
+| `/double-check` | Independent second opinion from a different AI CLI   |
+| `/security`     | Run a security audit                                 |
+| `/pr`           | Prepare and create a pull request                   |
 
 ### Standalone commands
 
@@ -79,6 +82,7 @@ set up appear; run `/install` (or `/install <module>`) to add a skipped one late
 - All plan and research files live in `.claude/temp/` — clean up after your PR is merged
 - Optional modules are opt-in. Re-running `/install` re-offers any module you skipped, so you can grow the workflow as the project needs it.
 - Skills (`.claude/skills/`) hold the review/security/testing/verification rubrics; commands call them for you — you don't invoke skills directly. `/dev` self-verifies (build/lint/test + acceptance criteria) before the approval gate.
+- The workflow evolves with you: run `/customize` to add/update a skill/command/agent — and Claude will suggest it when it notices you repeating the same request.
 ```
 
 ## Rules

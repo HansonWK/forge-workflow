@@ -30,6 +30,9 @@ The installer is a **scaffolder** — it stages forge's templates in `.claude/.f
 npx github:HansonWK/forge-workflow install
 ```
 
+> ⚠️ Use the `github:` form. A bare `npx forge-workflow` fetches an **unrelated** package that
+> already owns that name on npm — not this project.
+
 Then open Claude Code and run:
 
 ```
@@ -95,6 +98,7 @@ Start work with `/begin`. Claude researches the codebase, creates a plan broken 
 | Command | What it does |
 |---------|-------------|
 | `/cr` | Code review (local or worktree-isolated) |
+| `/double-check` | Independent second opinion from a different AI CLI |
 | `/security` | Run security audit |
 | `/pr` | Prepare and create pull request |
 | `/ticket` | Create ticket from investigation |
@@ -104,6 +108,8 @@ Start work with `/begin`. Claude researches the codebase, creates a plan broken 
 |---------|-------------|
 | `/workflow` | Show all available commands |
 | `/install` | Configure workflow for your project |
+| `/customize` | Add/update a workflow piece (skill/command/agent) |
+| `/attribution` | Record credits/resources in ATTRIBUTION.md |
 
 ### Agents
 
@@ -129,7 +135,8 @@ generations.
 
 - **Rubrics/methods:** `code-review`, `security-review`, `testing`, `writing-plans`, `logging-compliance`
 - **Verification:** `verify` (build/lint/test, self-fix to green), `verify-acceptance` (does it
-  satisfy the goal + acceptance criteria), `verify-plan` (critique the plan before building)
+  satisfy the goal + acceptance criteria), `verify-plan` (critique the plan before building),
+  `double-check` (independent second opinion from a *different* AI CLI, e.g. Codex)
 
 This gives the workflow a real **verification loop**: `/dev` self-verifies — deterministic checks
 *and* acceptance criteria — and fixes its own failures **before** the human approval gate, instead of
@@ -167,14 +174,20 @@ Forge Workflow integrates with your ticket tracking system. During `/install`, c
 
 ## Customization
 
-The workflow is designed to evolve. Every file is a markdown prompt that Claude reads and follows. To customize:
+The workflow is designed to **evolve with your team** — that's the whole point. Run **`/customize`**
+to add or update a piece of your workflow (a skill, command, or agent); it applies the `authoring`
+skill, which encodes *your* specific decisions and keeps each piece lean (no role-priming, no generic
+best-practice filler — just what actually changes Claude's output).
 
-1. Tell Claude what you want changed (e.g., "update the security audit to also check for SQL injection in our ORM queries")
-2. Claude updates the workflow file
-3. Commit and PR the change so your team reviews it
-4. Once merged, every developer gets the improvement
+Reach for it when a **recurring need** shows up:
 
-You can also edit the files directly — they're just markdown.
+- You keep asking for the same step (e.g. an extra logging check) → update the relevant skill.
+- You keep adding the same acceptance criterion (e.g. "send an event to our GA property on every
+  frontend change") → a new skill holding your specifics.
+
+Claude also **suggests `/customize`** when it notices you repeating the same request. However you
+change the workflow, commit and PR it so the whole team gets the improvement. (You can still edit the
+markdown files directly — they're just prompts.)
 
 ## Recommended Settings
 
@@ -223,6 +236,11 @@ If you use a formatter, add a hook to auto-format on file writes:
 ```
 
 The **generated** workflow files (`commands/`, `agents/`, `skills/`, `docs/`, `examples/`) should be committed so your team shares them. The `.claude/.forge/` template cache is regenerable, so it's gitignored.
+
+## Attribution
+
+forge-workflow builds on work from others — see [ATTRIBUTION.md](ATTRIBUTION.md). We credit the
+origin of an idea rather than a blog that reconceptualizes it.
 
 ## License
 

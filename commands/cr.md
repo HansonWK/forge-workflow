@@ -173,3 +173,4 @@ When no branch name is provided, run the review on the current branch directly (
 - Only flag issues in changed code, not pre-existing problems
 - If the branch has changes in security-sensitive directories, include security observations
 - Keep the report actionable — specific files, line numbers, and fix suggestions
+- For a second opinion from a *different* model, run `/double-check` (the `double-check` skill)
