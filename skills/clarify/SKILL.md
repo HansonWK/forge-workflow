@@ -18,6 +18,12 @@ decision inside `/customize`. If you'd otherwise silently assume something that 
 
 ## How to run it
 
+- **Earn the question first.** If the codebase, the ticket, `git`/PR history, or the project docs can
+  answer it, read those instead of asking. If a sensible default exists and being wrong is cheap to
+  undo, take it and state the assumption. Only ask when proceeding either way risks real waste.
+- **Show your working and the stakes.** Say what you've already established; for each question, say
+  **what turns on the answer** ("if per-tenant I extend the schema; if global it's a constant") and
+  give **options with their cost** — a recommendation to confirm, not a blank prompt.
 - **Work in rounds, not rapid-fire.** Each round asks every question whose prerequisites are already
   settled — the current "frontier." The answers open the next round. Prefer `AskUserQuestion` with
   concrete options **and a recommendation** over open-ended prompts; the user can always pick "other".
@@ -36,6 +42,9 @@ decision inside `/customize`. If you'd otherwise silently assume something that 
 - **To create a document** (a guideline file, acceptance criteria, a plan): write the answers into the
   target, starting from the base template where one exists (e.g. `examples/guidelines/<topic>.md`), and
   keep it decision-focused (see the `authoring` skill).
+- **Record answers durably** where they belong: acceptance criteria / design decisions → `plan.md`;
+  rules that outlive the task → the relevant `docs/` guideline; personal working preferences → memory
+  (or `/recalibrate`). A decision you don't record, you'll re-litigate.
 
 ## Attribution
 

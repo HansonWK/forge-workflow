@@ -18,6 +18,8 @@ Review the conversation to identify:
 - **Affected files**: Which files need changes?
 - **Scope**: What needs to be done?
 
+If key facts are missing (repro steps, environment, the affected component, expected vs actual), apply the `clarify` skill before writing the ticket rather than guessing.
+
 ### 2. Write the Begin Prompt
 
 Create a file at `.claude/temp/<topic>/prompt.md` with:

@@ -22,7 +22,9 @@ Continue with PR anyway? (y/n)
 If user declines, stop and let them run `/security`.
 
 For **large or high-stakes** change sets, also consider `/double-check` — an independent second
-opinion from a different AI CLI (the `double-check` skill) — before opening the PR.
+opinion from a different AI CLI (the `double-check` skill) — before opening the PR. If the change is
+large or mixes concerns, consider `/slice` first (the `slicing` skill) — it may want to be a stack of
+smaller PRs.
 
 ## Step 2: Verify Plan Complete
 

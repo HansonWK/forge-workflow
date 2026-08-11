@@ -27,7 +27,8 @@ guessing.
 ## Draft acceptance criteria if missing
 
 If neither the ticket nor the plan has acceptance criteria (or there's no clear way to verify the
-work), **draft a testable set** and ask:
+work), **draft a testable set**. If you can't even draft one from the research and ticket, apply the
+`clarify` skill to get what you need rather than fabricating criteria. Then ask:
 
 > The ticket has no acceptance criteria — here's a draft. Add them to the ticket (best, so testers
 > can verify later), or keep them local to the plan?

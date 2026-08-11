@@ -17,6 +17,7 @@ Present the following workflow guide to the user:
 | `/customize` | Add or update a workflow piece (skill/command/agent) to fit your team |
 | `/attribution` | Record what shaped the workflow (attribution vs resources) in ATTRIBUTION.md |
 | `/clarify` | Interview me to pin down missing info/decisions (or build a guideline doc) |
+| `/recalibrate` | Turn this session's corrections into proposed workflow-file updates |
 
 ### Starting work
 
@@ -36,6 +37,7 @@ Present the following workflow guide to the user:
 | `/dev`     | Implement the current subtask                                  |
 | `/review`  | Run code review for current changes                            |
 | `/present` | Present changes for user approval                              |
+| `/run`     | Run the app or a service locally (Claude-bg vs your terminal)  |
 
 ### Resuming work
 
@@ -52,13 +54,16 @@ Present the following workflow guide to the user:
 | `/double-check` | Independent second opinion from a different AI CLI   |
 | `/security`     | Run a security audit                                 |
 | `/pr`           | Prepare and create a pull request                   |
+| `/slice`        | Decide whether/where to split into mergeable PRs     |
+| `/performance`  | Deep performance audit of a service or app           |
 
 ### Standalone commands
 
 | Command              | Description                                            |
 | -------------------- | ------------------------------------------------------ |
 | `/ticket`            | Create a ticket from an investigation                  |
-| `/explain <file>`    | Deep-dive explanation/review of a file or component    |
+| `/explain <target>`  | Explain how existing code works (not a review)         |
+| `/deck`              | Build a self-contained HTML slide deck                 |
 | `/workflow`          | Show this command reference                            |
 
 ### Optional modules

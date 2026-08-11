@@ -22,6 +22,12 @@ Act on severity:
 - **Medium** — fix if straightforward, otherwise note for Present.
 - **Low** — note for the user; don't block.
 
+### 1b. Performance (optional)
+
+For performance-sensitive changes (hot paths, DB queries, large payloads, render-heavy UI), apply the
+**`performance-review` skill** (scan mode), or dispatch the `performance` agent, and fold its findings
+into the severities above.
+
 ### 2. Logging (only if the observability module is installed)
 
 If `docs/logging-strategy.md` exists and the changes touch handlers/consumers/business logic, apply
