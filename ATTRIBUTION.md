@@ -22,6 +22,7 @@ skill; `/attribution` records it here.
 | The verification loop — `skills/verify`, `skills/verify-acceptance`, `skills/verify-plan`, `/dev` self-verify | Anthropic — [*Building verification loops in Claude Code with Skills*](https://claude.com/blog/building-verification-loops-in-claude-code-with-skills) (generate → verify → self-fix, encoded as skills) | — |
 | `skills/double-check`, `commands/double-check.md` | [citypaul — `double-check` skill](https://github.com/citypaul/.dotfiles) — adapted directly (cross-provider second opinion, adversarial brief, reconcile loop) | — |
 | `skills/authoring`, `commands/customize.md` | [SWE-Skills-Bench: *Do Agent Skills Actually Help in Real-World Software Engineering?*](https://arxiv.org/abs/2603.15401) (arXiv 2603.15401) — encode decisions not principles, cut defaults, keep lean, measure; credited over the blogs restating it | — |
+| `skills/clarify`, `commands/clarify.md` | [Matt Pocock — `grill-me` skill](https://www.aihero.dev/skills-grill-me) — adapted: interview in rounds across the "frontier" until nothing is assumed; renamed `clarify` so both can coexist | — |
 
 ## Provenance
 

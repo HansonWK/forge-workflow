@@ -6,6 +6,10 @@ allowed-tools: Read, Grep, Glob, Bash, Edit, Write
 
 # Testing (method)
 
+Follow the project's testing guidelines in `docs/testing.md` if it exists (method, coverage
+philosophy, test levels, mocking, libraries, where UI components live). The defaults below apply when
+it doesn't.
+
 ## Philosophy — test behaviour, not implementation
 
 - A "unit" is a **meaningful behaviour**, not a function/class. Assert on **inputs → outputs /
@@ -35,6 +39,8 @@ Skip only when purely creating new files with no existing tests.
 
 ## Coverage bar
 
+- **Test business logic and boundaries; don't chase 100% line coverage of mid-function
+  implementation** — that's usually wasted effort (unless `docs/testing.md` says otherwise).
 - Every new exported function or significant path gets tests: happy path, error cases, edge cases
   (null/undefined/empty). If a sibling has tests and the new code doesn't, that's a gap.
 

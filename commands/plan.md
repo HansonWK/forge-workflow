@@ -61,7 +61,7 @@ approval. Do not ask the user to run /signoff manually.
 - Each subtask should be small and committable
 - Claude should NEVER commit without explicit user permission
 - After completing a subtask, suggest a commit message and wait for user to commit
-- Ask clarifying questions if approach is genuinely ambiguous
+- If the approach is genuinely ambiguous or decisions are needed, apply the `clarify` skill rather than guessing
 - Always check for a plan first and carry on from wherever we stopped work last
 - Always track the work we have done in the plan so we can stop and start work as needed
 - Stop and prompt the user rather than making assumptions on unknowns or areas of clarification

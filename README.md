@@ -110,6 +110,7 @@ Start work with `/begin`. Claude researches the codebase, creates a plan broken 
 | `/install` | Configure workflow for your project |
 | `/customize` | Add/update a workflow piece (skill/command/agent) |
 | `/attribution` | Record credits/resources in ATTRIBUTION.md |
+| `/clarify` | Interview me to pin down missing info/decisions |
 
 ### Agents
 
@@ -133,7 +134,7 @@ Skills are the single source of truth for the workflow's rubrics and verifiers â
 when needed (progressive disclosure). Forge invokes skills explicitly, so they work across model
 generations.
 
-- **Rubrics/methods:** `code-review`, `security-review`, `testing`, `writing-plans`, `logging-compliance`
+- **Rubrics/methods:** `code-review`, `security-review`, `testing`, `writing-plans`, `logging-compliance`, `architecture` (keep code within your pattern), `clarify` (interview to pin down missing decisions)
 - **Verification:** `verify` (build/lint/test, self-fix to green), `verify-acceptance` (does it
   satisfy the goal + acceptance criteria), `verify-plan` (critique the plan before building),
   `double-check` (independent second opinion from a *different* AI CLI, e.g. Codex)

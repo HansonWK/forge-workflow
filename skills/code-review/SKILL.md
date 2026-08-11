@@ -8,8 +8,9 @@ allowed-tools: Read, Grep, Glob, Bash
 
 Review a change and report findings the developer can act on. This is a **rubric**, not a fixed
 checklist — apply judgement, and weigh findings by real impact on this codebase. Read the project's
-conventions first (`CLAUDE.md` / `CONTRIBUTING.md` / equivalent) and review changed code against
-*those*, not generic ideals.
+conventions first — `CLAUDE.md` / `CONTRIBUTING.md` and any of `docs/coding.md`,
+`docs/architecture.md`, `docs/testing.md` that exist — and review changed code against *those*, not
+generic ideals.
 
 ## Scope
 
@@ -24,6 +25,8 @@ context.
   values are **Critical** — compare against every original usage.
 - **Conventions** — matches the project's stated conventions and the surrounding code's idiom
   (naming, structure, immutability, types). Reads like the code around it.
+- **Architecture** — stays within the project's pattern and boundary rules (see the `architecture`
+  skill / `docs/architecture.md`): logic in the right layer, no forbidden cross-boundary dependencies.
 - **Security (lite pass)** — no unvalidated trust-boundary input, injection, secrets in code, or
   broken authz. (Deep OWASP work is the `security-review` skill / `/security`.)
 - **Performance (lens)** — no N+1s, unbatched calls to rate-limited upstreams, needless refetching,
