@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Forge — intro</title>
+<style>
+  :root{
+    --bg:#10171B; --bg-deep:#0A0F12; --surface:#19232A; --surface-2:#1F2B33;
+    --edge:#C7D0D3; --text:#E8EBEA; --muted:#93A0A5;
+    --forge:#F0863C; --spark:#F6C445; --cool:#57B89A;
+    --title:"Arial Narrow","Roboto Condensed","Helvetica Neue Condensed",system-ui,sans-serif;
+    --body:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background:var(--bg); color:var(--text); font-family:var(--body);
+    overflow:hidden; -webkit-font-smoothing:antialiased;
+  }
+  /* forge-glow + teal crosshair grid backdrop */
+  .bg{position:fixed;inset:0;z-index:0;pointer-events:none}
+  .bg::before{content:"";position:absolute;inset:0;
+    background:
+      linear-gradient(rgba(78,150,150,.14) 1px,transparent 1px) 0 0/100% 96px,
+      linear-gradient(90deg,rgba(78,150,150,.14) 1px,transparent 1px) 0 0/96px 100%;
+    mask:radial-gradient(120% 90% at 50% 40%,#000 55%,transparent 100%);}
+  .bg::after{content:"";position:absolute;inset:0;
+    background:
+      radial-gradient(60% 55% at 78% 82%,rgba(240,134,60,.20),transparent 60%),
+      radial-gradient(50% 45% at 18% 12%,rgba(87,184,154,.10),transparent 60%),
+      radial-gradient(120% 100% at 50% 50%,transparent 40%,var(--bg-deep) 100%);}
+
+  main{position:relative;height:100vh;width:100vw;z-index:1}
+  .slide{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;
+    padding:min(9vh,90px) clamp(28px,8vw,120px);opacity:0;pointer-events:none;
+    transition:opacity .5s ease, transform .5s cubic-bezier(.2,.75,.2,1)}
+  .slide.active{opacity:1;pointer-events:auto}
+
+  .kicker{font-family:var(--title);text-transform:uppercase;letter-spacing:.32em;
+    font-size:13px;font-weight:700;color:var(--cool);margin-bottom:22px;
+    display:flex;align-items:center;gap:14px}
+  .kicker::before{content:"";width:34px;height:2px;background:linear-gradient(90deg,var(--forge),var(--spark))}
+
+  h1{font-family:var(--title);text-transform:uppercase;font-weight:800;letter-spacing:.01em;
+    line-height:.96;font-size:clamp(40px,8.4vw,104px)}
+  .mega{font-size:clamp(84px,20vw,240px);letter-spacing:.02em;line-height:.86}
+  h1 .accent, .mega .accent{
+    background:linear-gradient(92deg,var(--forge),var(--spark));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    filter:drop-shadow(0 0 22px rgba(240,134,60,.45))}
+  .sub{margin-top:26px;max-width:64ch;font-size:clamp(17px,2vw,23px);color:var(--muted);line-height:1.5}
+  .sub b{color:var(--text);font-weight:600}
+
+  /* metal panel base */
+  .panel{background:linear-gradient(180deg,var(--surface-2),var(--surface));
+    border-top:1px solid rgba(199,208,211,.45);
+    box-shadow:0 1px 0 rgba(199,208,211,.06) inset,0 18px 40px -24px #000;
+    clip-path:polygon(0 0,calc(100% - 18px) 0,100% 18px,100% 100%,18px 100%,0 calc(100% - 18px));}
+
+  /* bulleted points */
+  ul.points{list-style:none;margin-top:30px;display:grid;gap:15px;max-width:74ch}
+  ul.points li{position:relative;padding-left:30px;font-size:clamp(16px,1.7vw,20px);line-height:1.45}
+  ul.points li::before{content:"";position:absolute;left:0;top:.55em;width:11px;height:11px;
+    transform:rotate(45deg);background:linear-gradient(135deg,var(--forge),var(--spark));
+    box-shadow:0 0 12px rgba(240,134,60,.6)}
+  ul.points b{color:#fff}
+  code{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:.88em;
+    color:var(--spark);background:rgba(246,196,69,.08);padding:.08em .4em;border-radius:3px}
+
+  /* shift: template -> forged */
+  .shift{margin-top:34px;display:flex;align-items:stretch;gap:0;max-width:900px}
+  .shift .col{flex:1;padding:26px 28px}
+  .shift .col .lbl{font-family:var(--title);text-transform:uppercase;letter-spacing:.2em;font-size:12px;color:var(--muted);margin-bottom:10px}
+  .shift .col .val{font-size:clamp(18px,2vw,26px);font-weight:700}
+  .shift .a{background:linear-gradient(180deg,#161f25,#121a1f);border-top:1px solid rgba(199,208,211,.18)}
+  .shift .a .val{color:var(--muted)}
+  .shift .arrow{display:flex;align-items:center;justify-content:center;width:64px;color:var(--forge);
+    font-size:34px;filter:drop-shadow(0 0 12px rgba(240,134,60,.5))}
+  .shift .b .val .accent{background:linear-gradient(92deg,var(--forge),var(--spark));-webkit-background-clip:text;background-clip:text;color:transparent}
+
+  /* flow (the loop) */
+  .flow{margin-top:38px;display:flex;flex-wrap:wrap;align-items:center;gap:12px 6px}
+  .step{font-family:var(--title);text-transform:uppercase;letter-spacing:.08em;font-weight:700;
+    font-size:clamp(13px,1.5vw,18px);padding:12px 16px;background:var(--surface);
+    border-top:1px solid rgba(199,208,211,.4);color:var(--text);
+    clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,10px 100%,0 calc(100% - 10px))}
+  .step.hot{background:linear-gradient(180deg,#33241a,#241a13);
+    box-shadow:0 0 24px -6px rgba(240,134,60,.5);color:#fff}
+  .step.hot span{background:linear-gradient(92deg,var(--forge),var(--spark));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .arw{color:var(--forge);font-weight:800;filter:drop-shadow(0 0 8px rgba(240,134,60,.5))}
+  .note{margin-top:26px;color:var(--muted);font-size:clamp(14px,1.5vw,17px);line-height:1.5;max-width:78ch}
+  .note b{color:var(--cool)}
+  .checks{padding:13px 15px 15px;border:1.5px dashed rgba(87,184,154,.55);border-radius:3px;background:rgba(87,184,154,.05)}
+  .chk-label{font-family:var(--title);text-transform:uppercase;letter-spacing:.16em;font-size:11px;color:var(--cool);margin-bottom:10px}
+  .chk-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .chk{font-family:var(--title);text-transform:uppercase;letter-spacing:.06em;font-weight:700;font-size:clamp(12px,1.4vw,16px);
+    padding:9px 13px;background:var(--surface);border-top:1px solid rgba(199,208,211,.4);color:var(--text);
+    clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px))}
+  .chk.more{background:transparent;border:1px dashed rgba(147,160,165,.55);color:var(--cool);letter-spacing:.02em;clip-path:none;border-radius:3px;font-weight:600}
+  .entries{margin-top:34px;display:grid;gap:15px;max-width:940px}
+  .entry{position:relative;display:grid;grid-template-columns:minmax(160px,auto) 1fr;gap:26px;align-items:center;
+    padding:18px 24px 18px 26px;background:linear-gradient(180deg,var(--surface-2),var(--surface));border-top:1px solid rgba(199,208,211,.26)}
+  .entry::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,var(--forge),var(--spark));box-shadow:0 0 14px rgba(240,134,60,.5)}
+  .entry .cmd{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:clamp(15px,1.7vw,20px);font-weight:600;color:var(--spark);white-space:nowrap}
+  .entry .desc{color:var(--muted);font-size:clamp(14px,1.5vw,18px);line-height:1.4}
+  .entry .desc b{color:var(--text)}
+  @media(max-width:640px){.entry{grid-template-columns:1fr;gap:6px}}
+
+  /* two panels */
+  .panels{margin-top:34px;display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:1000px}
+  .card{padding:30px 30px 32px}
+  .card .tag{font-family:var(--title);text-transform:uppercase;letter-spacing:.14em;font-size:12px;font-weight:700}
+  .card.add .tag{color:var(--forge)} .card.fix .tag{color:var(--cool)}
+  .card h3{font-family:var(--title);text-transform:uppercase;font-size:clamp(20px,2.4vw,30px);font-weight:800;margin:8px 0 4px}
+  .card .who{color:var(--muted);font-size:14px;margin-bottom:16px}
+  .card ul{list-style:none;display:grid;gap:9px}
+  .card li{position:relative;padding-left:20px;font-size:15px;line-height:1.4;color:var(--text)}
+  .card.add li::before{content:"";position:absolute;left:0;top:.5em;width:8px;height:8px;transform:rotate(45deg);background:var(--forge)}
+  .card.fix li::before{content:"";position:absolute;left:0;top:.5em;width:8px;height:8px;transform:rotate(45deg);background:var(--cool)}
+
+  .close h1{font-size:clamp(64px,15vw,190px)}
+  .close .sub{margin-top:20px;font-size:clamp(18px,2.2vw,26px)}
+
+  /* chrome: dots, counter, hint */
+  .chrome{position:fixed;z-index:3;left:0;right:0;bottom:26px;display:flex;align-items:center;
+    justify-content:center;gap:22px;pointer-events:none}
+  .dots{display:flex;gap:10px}
+  .dot{width:9px;height:9px;transform:rotate(45deg);background:#2b3841;transition:.3s;pointer-events:auto;cursor:pointer}
+  .dot.on{background:linear-gradient(135deg,var(--forge),var(--spark));box-shadow:0 0 12px rgba(240,134,60,.7)}
+  .count{position:fixed;top:28px;right:clamp(28px,8vw,120px);z-index:3;font-family:var(--title);
+    letter-spacing:.18em;font-size:14px;color:var(--muted)}
+  .count b{color:var(--text)}
+  .brand{position:fixed;top:26px;left:clamp(28px,8vw,120px);z-index:3;font-family:var(--title);
+    text-transform:uppercase;letter-spacing:.34em;font-weight:800;font-size:15px;color:var(--text)}
+  .brand::after{content:"";display:inline-block;width:8px;height:8px;margin-left:10px;transform:rotate(45deg);
+    background:linear-gradient(135deg,var(--forge),var(--spark));box-shadow:0 0 10px rgba(240,134,60,.7)}
+  .hint{font-size:12px;color:var(--muted);font-family:var(--title);letter-spacing:.18em;text-transform:uppercase}
+  @media(max-width:720px){.panels,.shift{grid-template-columns:1fr;flex-direction:column}.shift .arrow{transform:rotate(90deg)}}
+</style>
+</head>
+<body>
+<div class="bg"></div>
+<div class="brand">Forge</div>
+<div class="count"><b id="cur">1</b> / <span id="tot">6</span></div>
+
+<main id="deck">
+
+  <section class="slide">
+    <div class="kicker">AI-assisted development for Claude Code</div>
+    <h1 class="mega"><span class="accent">Forge</span></h1>
+    <p class="sub">A shared development workflow you and the AI <b>forge</b> to fit your project — and keep improving together.</p>
+  </section>
+
+  <section class="slide">
+    <div class="kicker">What it is</div>
+    <h1>A workflow that lives<br>in your <span class="accent">repo</span></h1>
+    <ul class="points">
+      <li>Markdown <b>commands, skills, and agents</b> committed to <code>.claude/</code></li>
+      <li>Every developer shares the same workflow, quality gates, and conventions</li>
+      <li>Version-controlled — improvements go through <b>PRs</b> like any other code</li>
+      <li><code>npx forge-workflow install</code>, then <code>/install</code> to configure it for your stack</li>
+    </ul>
+  </section>
+
+  <section class="slide">
+    <div class="kicker">The concept</div>
+    <h1>You don't install it.<br>You <span class="accent">forge</span> it.</h1>
+    <div class="shift">
+      <div class="col a panel"><div class="lbl">Ships as</div><div class="val">A generic template</div></div>
+      <div class="arrow">➜</div>
+      <div class="col b panel"><div class="lbl">Becomes</div><div class="val"><span class="accent">Your</span> forged workflow</div></div>
+    </div>
+    <ul class="points">
+      <li><code>/install</code> stands up a baseline tailored to your language, tools, and tracker</li>
+      <li>You and Claude <b>shape it</b> — tell it how your team works and it rewrites the files</li>
+      <li><b>Skills</b> are the single source of truth; the loop <b>self-verifies</b> before you review</li>
+      <li>It starts good and gets sharper the more you use it</li>
+    </ul>
+  </section>
+
+  <section class="slide">
+    <div class="kicker">Main entry points</div>
+    <h1>The <span class="accent">core loop</span></h1>
+    <div class="flow">
+      <div class="step">/begin</div><div class="arw">→</div>
+      <div class="step">/research</div><div class="arw">→</div>
+      <div class="step">/plan</div><div class="arw">→</div>
+      <div class="step hot"><span>/next</span></div><div class="arw">→</div>
+      <div class="checks">
+        <div class="chk-label">Pre-PR checks — extensible</div>
+        <div class="chk-row">
+          <div class="chk">/security</div>
+          <div class="chk">/performance</div>
+          <div class="chk more">+ SEO · logs · docs …</div>
+        </div>
+      </div>
+      <div class="arw">→</div>
+      <div class="step">/pr</div>
+    </div>
+    <p class="note"><b>/next</b> cycles each subtask: dev → verify → review → present.&nbsp; Before the PR, run the checks your team cares about — <b>/security</b> and <b>/performance</b> come in the box; add your own (SEO, logs, docs) as skills.</p>
+  </section>
+
+  <section class="slide">
+    <div class="kicker">Other entry points</div>
+    <h1>Beyond the <span class="accent">loop</span></h1>
+    <div class="entries">
+      <div class="entry"><div class="cmd">/cr</div><div class="desc">Review any branch — <b>worktree-isolated</b>, without leaving your current work.</div></div>
+      <div class="entry"><div class="cmd">/security · /performance</div><div class="desc">Run the deep audits standalone — plus <b>/audit</b> for a full multi-dimension sweep.</div></div>
+      <div class="entry"><div class="cmd">/ticket</div><div class="desc">Turn a bug you <b>found or researched</b> into a well-formed ticket.</div></div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="kicker">Keeping it sharp</div>
+    <h1>Two ways it <span class="accent">evolves</span></h1>
+    <div class="panels">
+      <div class="card add panel">
+        <div class="tag">/customize</div>
+        <h3>You add</h3>
+        <div class="who">You-initiated · additive</div>
+        <ul>
+          <li>Author a new skill, command, or agent</li>
+          <li>Larger changes — your own logs, dashboards, or KQL</li>
+          <li>Encodes a recurring need once, instead of re-typing it</li>
+        </ul>
+      </div>
+      <div class="card fix panel">
+        <div class="tag">/recalibrate</div>
+        <h3>Claude corrects</h3>
+        <div class="who">Claude-initiated · corrective</div>
+        <ul>
+          <li>Fires when Claude gets pushback on the workflow</li>
+          <li>Routes the fix to the right home — memory vs a shared file</li>
+          <li>Makes a correction <b>stick</b> so it doesn't recur</li>
+        </ul>
+      </div>
+    </div>
+    <p class="note">Both keep the workflow encoding how your team <b>actually builds</b>.</p>
+  </section>
+
+  <section class="slide close">
+    <div class="kicker">Get building</div>
+    <h1><span class="accent">Forge</span> it.</h1>
+    <p class="sub">The workflow gets sharper every time you use it.</p>
+  </section>
+
+</main>
+
+<div class="chrome"><div class="dots" id="dots"></div><div class="hint">← → to move</div></div>
+
+<script>
+  const slides=[...document.querySelectorAll('.slide')];
+  const dotsWrap=document.getElementById('dots');
+  const cur=document.getElementById('cur');
+  document.getElementById('tot').textContent=slides.length;
+  let i=0;
+  slides.forEach((_,n)=>{const d=document.createElement('div');d.className='dot';d.onclick=()=>go(n);dotsWrap.appendChild(d);});
+  const dots=[...document.querySelectorAll('.dot')];
+  function render(){
+    slides.forEach((s,n)=>{
+      const off=n-i;
+      s.style.transform=`translateX(${off*44}px)`;
+      s.classList.toggle('active',off===0);
+    });
+    dots.forEach((d,n)=>d.classList.toggle('on',n===i));
+    cur.textContent=i+1;
+  }
+  function go(n){i=Math.max(0,Math.min(slides.length-1,n));render();}
+  addEventListener('keydown',e=>{
+    if(e.key==='ArrowRight'||e.key===' '||e.key==='PageDown'){e.preventDefault();go(i+1);}
+    else if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();go(i-1);}
+    else if(e.key==='Home'){go(0);} else if(e.key==='End'){go(slides.length-1);}
+  });
+  let sx=null;
+  addEventListener('touchstart',e=>sx=e.touches[0].clientX,{passive:true});
+  addEventListener('touchend',e=>{if(sx===null)return;const dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>50)go(i+(dx<0?1:-1));sx=null;});
+  render();
+</script>
+</body>
+</html>

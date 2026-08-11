@@ -2,6 +2,8 @@
 
 A shared, version-controlled AI development workflow for Claude Code — one your team and the AI *forge* to fit your project, and keep improving together.
 
+**▶ [Why Forge? — the 2-minute deck](https://hansonwk.github.io/forge-workflow/)**
+
 ## Why Forge Workflow?
 
 Most teams using Claude Code end up with every developer running their own ad-hoc prompts. Forge Workflow gives your team a **shared, version-controlled workflow** that lives in your repository — the same commands, agents, and quality gates for everyone.
