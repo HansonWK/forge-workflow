@@ -1,6 +1,12 @@
 node_modules/
 .DS_Store
 
-# This repo's own Claude workspace — dev-only working notes, settings, temp files.
-# forge-workflow ships from root-level commands/agents/docs/examples, not from here.
-.claude/
+# This repo's own Claude workspace. We COMMIT the repo-internal dev workflow used to
+# BUILD forge itself (.claude/commands, .claude/skills) — these are NOT shipped (forge
+# ships from the root-level commands/agents/skills/docs/examples). Everything else here
+# is local-only: the template cache, temp plans, settings, and private working notes.
+.claude/.forge/
+.claude/temp/
+.claude/settings.json
+.claude/settings.local.json
+.claude/docs/

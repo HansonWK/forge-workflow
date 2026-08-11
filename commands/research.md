@@ -63,4 +63,4 @@ Run /plan to create implementation plan, or /begin to run full workflow.
 
 - Use the researcher agent - don't do manual research
 - Output must go to a plan directory
-- Ask clarifying questions if scope is genuinely unclear
+- If scope is genuinely unclear or there are decisions to make, apply the `clarify` skill (structured rounds) rather than guessing

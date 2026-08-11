@@ -16,6 +16,7 @@ Present the following workflow guide to the user:
 | `/install` | Configure forge-workflow for your project (scan codebase, set up ticket tracker, update files) |
 | `/customize` | Add or update a workflow piece (skill/command/agent) to fit your team |
 | `/attribution` | Record what shaped the workflow (attribution vs resources) in ATTRIBUTION.md |
+| `/clarify` | Interview me to pin down missing info/decisions (or build a guideline doc) |
 
 ### Starting work
 

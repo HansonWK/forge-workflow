@@ -150,6 +150,29 @@ Branch naming convention?  Default: <TICKET-ID>-<kebab-case-summary>
 
 **STOP and wait.** Then ask about any core gaps you couldn't detect (e.g. no test runner found).
 
+### Project conventions (architecture, testing, coding)
+
+These guide how Claude writes and reviews code. For a **mature repo, infer first**: look for an
+existing `ARCHITECTURE.md` / `CONTRIBUTING.md` / testing configs and the patterns in the code, and
+propose what you found. Then, for each of **architecture**, **testing method**, and **coding
+guidelines**, ask the user (offering the common options + your inferred default; they can defer):
+
+- **Architecture** — hexagonal / layered / vertical slice / other. (Template: `$FORGE/examples/guidelines/architecture.md`.)
+- **Testing method & coverage** — TDD or predict-then-verify; 100% coverage vs business-logic-and-boundaries; unit vs component vs e2e; mocking; libraries; where UI components live. (Template: `.../testing.md`.)
+- **Coding guidelines** — the project-specific style / error-handling / naming decisions. (Template: `.../coding.md`.)
+
+For each one they want:
+
+1. Scaffold `docs/<topic>.md` from `$FORGE/examples/guidelines/<topic>.md`.
+2. Offer to fill it in now by interview — run `/clarify <topic>` (the `clarify` skill) — or leave the
+   template's questions for them to fill later.
+3. If they name a specific architecture, note it so the **`architecture` skill** (which reads
+   `docs/architecture.md`) keeps code within it.
+
+Whenever there isn't enough information here, use the **`clarify` skill** to draw it out rather than
+guessing. These docs are read by the `testing`, `code-review`, and `architecture` skills, and pointed
+to from `CLAUDE.md`.
+
 ### Commit-guard hook (optional, recommended)
 
 The never-commit guardrail is stated once in `CLAUDE.md`, but on long contexts / older models Claude
@@ -277,8 +300,10 @@ discover from the file system, and not depth that now lives in skills.
     - If the user keeps asking for the same step, or keeps adding the same acceptance criterion, suggest `/customize` to encode it as a new or updated skill.
     - When the user shares a resource you build from (a blog, doc, or someone's file), apply the `attribution` skill — offer to list it as attribution, a resource, or neither, and offer to trace it to its origin.
   - **Pointers, not depth:** note that the skills in `.claude/skills/` hold the
-    review/security/testing/planning/logging rubrics, and `@`-import config when useful (e.g.
-    `@.claude/docs/workflow-config.md`, `@.claude/docs/logging-strategy.md`) so it loads only when relevant.
+    review/security/testing/planning/logging rubrics, and `@`-import the project docs that exist when
+    useful (e.g. `@.claude/docs/workflow-config.md`, `@.claude/docs/architecture.md`,
+    `@.claude/docs/testing.md`, `@.claude/docs/coding.md`, `@.claude/docs/logging-strategy.md`) so they
+    load only when relevant.
   - A short **Forge Workflow** section (entry-point commands + working directories).
 - **If one exists:** ensure it has the **Working agreements** block and a `# Forge Workflow` section;
   add or update them. Do **not** inline testing/coding/security depth — point to the skills.

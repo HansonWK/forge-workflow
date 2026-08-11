@@ -37,6 +37,8 @@ so the rubric for "how we review code" or "how we verify a change" lives in exac
 | `logging-compliance` | logging-strategy rubric (observability module) | `/fix-logs`, `/dev`, `/audit` |
 | `authoring` | how to add/update workflow pieces (skill vs command vs agent; lean, decision-encoding) | `/customize` |
 | `attribution` | classify resources (attribution vs resource) and record credits in `ATTRIBUTION.md` | `/attribution`; proactively when a resource is shared |
+| `architecture` | keep code within the project's architecture (hexagonal / layered / vertical); reads `docs/architecture.md` | `/dev`, `code-review`; `/install` sets the pattern |
+| `clarify` | interview the user in rounds when info/decisions are missing; can build guideline docs | `/clarify`; anywhere info is missing |
 
 **Verification skills (close the loop)**
 
