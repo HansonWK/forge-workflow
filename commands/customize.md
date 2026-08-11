@@ -7,6 +7,7 @@ argument-hint: [what to add/change, or a recurring pattern to encode]
 
 Evolve this repo's workflow — add or update a **skill**, **command**, or **agent** — so a recurring
 need is encoded once instead of re-typed every time. This is how the workflow grows with your team.
+(To make a *correction* stick rather than add a new piece, use `/recalibrate`.)
 
 ## Instructions
 

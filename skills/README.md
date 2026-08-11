@@ -39,6 +39,12 @@ so the rubric for "how we review code" or "how we verify a change" lives in exac
 | `attribution` | classify resources (attribution vs resource) and record credits in `ATTRIBUTION.md` | `/attribution`; proactively when a resource is shared |
 | `architecture` | keep code within the project's architecture (hexagonal / layered / vertical); reads `docs/architecture.md` | `/dev`, `code-review`; `/install` sets the pattern |
 | `clarify` | interview the user in rounds when info/decisions are missing; can build guideline docs | `/clarify`; anywhere info is missing |
+| `slicing` | whether/where to split work into independently mergeable PRs | `/slice`, `/plan`, `/pr` |
+| `performance-review` | perf rubric — fast diff scan + deep audit | `/review`, `/performance`, `performance` agent |
+| `explain` | describe how existing code works — never a review | `/explain`, `explainer` agent |
+| `run-local` | run apps/services locally; who-runs-what (Claude bg vs your terminal) | `/run` |
+| `presentation` | self-contained HTML slide deck (Claude-style palette default) | `/deck` |
+| `recalibrate` | turn session corrections into proposed workflow-file edits | `/recalibrate`; Claude on pushback |
 
 **Verification skills (close the loop)**
 

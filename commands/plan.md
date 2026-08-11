@@ -62,6 +62,7 @@ approval. Do not ask the user to run /signoff manually.
 - Claude should NEVER commit without explicit user permission
 - After completing a subtask, suggest a commit message and wait for user to commit
 - If the approach is genuinely ambiguous or decisions are needed, apply the `clarify` skill rather than guessing
+- For non-trivial work, apply the `slicing` skill to decide whether it's one PR or a stack; record slices in plan.md
 - Always check for a plan first and carry on from wherever we stopped work last
 - Always track the work we have done in the plan so we can stop and start work as needed
 - Stop and prompt the user rather than making assumptions on unknowns or areas of clarification

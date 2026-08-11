@@ -92,7 +92,8 @@ Start work with `/begin`. Claude researches the codebase, creates a plan broken 
 | `/present` | Present changes for approval |
 | `/resume` | Resume existing plan |
 | `/status` | Show progress dashboard |
-| `/explain` | Deep-dive explanation/review of a file or component |
+| `/explain` | Explain how existing code works (not a review) |
+| `/run` | Run the app/service locally (Claude-bg vs your terminal) |
 
 **Finishing Work**
 | Command | What it does |
@@ -101,6 +102,8 @@ Start work with `/begin`. Claude researches the codebase, creates a plan broken 
 | `/double-check` | Independent second opinion from a different AI CLI |
 | `/security` | Run security audit |
 | `/pr` | Prepare and create pull request |
+| `/slice` | Decide whether/where to split into mergeable PRs |
+| `/performance` | Deep performance audit of a service or app |
 | `/ticket` | Create ticket from investigation |
 
 **Reference**
@@ -111,6 +114,8 @@ Start work with `/begin`. Claude researches the codebase, creates a plan broken 
 | `/customize` | Add/update a workflow piece (skill/command/agent) |
 | `/attribution` | Record credits/resources in ATTRIBUTION.md |
 | `/clarify` | Interview me to pin down missing info/decisions |
+| `/recalibrate` | Turn session corrections into workflow-file updates |
+| `/deck` | Build a self-contained HTML slide deck |
 
 ### Agents
 
@@ -135,6 +140,7 @@ when needed (progressive disclosure). Forge invokes skills explicitly, so they w
 generations.
 
 - **Rubrics/methods:** `code-review`, `security-review`, `testing`, `writing-plans`, `logging-compliance`, `architecture` (keep code within your pattern), `clarify` (interview to pin down missing decisions)
+- **More:** `slicing` (split into independently mergeable PRs), `performance-review`, `explain` (describe, never review), `run-local` (who-runs-what), `presentation` (Claude-style HTML decks), `recalibrate` (make corrections stick)
 - **Verification:** `verify` (build/lint/test, self-fix to green), `verify-acceptance` (does it
   satisfy the goal + acceptance criteria), `verify-plan` (critique the plan before building),
   `double-check` (independent second opinion from a *different* AI CLI, e.g. Codex)
