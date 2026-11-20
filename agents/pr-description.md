@@ -36,6 +36,13 @@ If the branch name contains a ticket ID, reference it at the top of the PR body 
 
 If ticket context was gathered (via the `ticket-tracker` agent), also note whether the PR fully addresses the ticket description and acceptance criteria. If no ticket ID is present in the branch name, skip this.
 
+### Proof and sign-off (from the work folder)
+
+When the work folder exists, add a **Proof** section: each AC from `plan.md` with how it was proved
+and the evidence (`## Proofs` in `status.md`, files in the proof folder; quote a log line or script
+output, link a screenshot). If `/pr` was told "go anyway", add **Not signed off**: the commits after
+`signoff_commit` and any sign-off check that didn't run. Never quote secrets or personal data.
+
 ## PR Size Assessment
 
 | Size   | Files Changed | Approach                                             |

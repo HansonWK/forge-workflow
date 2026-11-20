@@ -1,73 +1,79 @@
 ---
-description: Present research and plan for approval
+description: Final checks before the PR — run the plan's sign-off checks in parallel, fix, report, then open the PR
 ---
 
-# Signoff Phase
+# Sign-off
+
+The last step before the PR. Runs every check the plan chose, says what it runs and what it skipped,
+fixes what must be fixed, shows the completion report, and carries on into `/pr`.
 
 ## Prerequisites
 
-Requires both research.md and plan.md in the current work folder (`.claude/temp/work/<slug>/`). If missing:
+Every subtask in the work folder's `plan.md` has a `**SHA:**`. If not:
 
 ```
-Missing required files.
-- research.md: <found/not found>
-- plan.md: <found/not found>
-
-Run /research and /plan first, or /begin for full workflow.
+Subtasks still open: <N>: <title>, …
+/signoff is the final step, after /next has committed every subtask. (Plan approval is /present.)
 ```
 
-## Instructions
+Set `work_status: signoff` and `stage: Sign-off` in `status.md`; update the work page.
 
-Read both files, then present to the user with summaries followed by links for full review.
+## 1. Say what runs
 
-### Format
+Read `## Sign-off checks` in `status.md` (the plan's choice; the defaults in
+`docs/workflow-config.md` `## Sign-off` when it has none). Print the checks that will run, and each
+one skipped with its reason.
 
-1. **Research summary** — 3-5 bullet points covering: what was found, where the problem is, which files/services are involved, and the root cause.
-2. **Plan summary** — numbered list of subtasks with a one-line description of each. Include the total number of subtasks/commits.
-3. **Links** — present the full file paths on their own lines so they are clickable in the IDE.
+**Early PR:** if the developer asks for the PR now, run `/pr` straight away while the checks run, and
+update its description when they finish.
 
-```
-## Research Summary
-- <bullet points summarising key findings>
+## 2. Run the checks in parallel
 
-## Plan Summary
-<numbered subtask list with one-line descriptions>
+One subagent per check, all over the branch diff (`git diff <default branch>...HEAD`):
 
-Full details:
+| Check | Runs |
+| --- | --- |
+| `code-review` | the `pr-sanity-check` agent (the `code-review` skill), then a fresh subagent for the skill's second pass over the findings below Critical |
+| `logs` | (a) the events the ACs' proofs rely on are logged, enough to prove the work complete; (b) the `logging-compliance` skill against `docs/logging-strategy.md`. Queries follow `/logs`' query rules |
+| `performance` | frontend: the `performance-review` skill's Baseline mode (after, against the baseline); backend: its Scan mode |
+| `security` | the `security-auditor` agent, when the diff touches endpoints, auth, input handling, secrets or another security hotspot; otherwise skipped with the reason |
+| `seo` | when the frontend changes: titles and meta descriptions, canonical URLs, one `h1` and heading order, image `alt` text, structured data, `noindex`/robots, sitemap entries, redirects for moved pages |
+| `docs` | the `doc-writer` agent: docs and runbooks brought in line with the code; an alert in the report for any architectural change |
+| `acceptance` | the `verify-acceptance` skill's sign-off check: every AC proven, with its proof named |
 
-.claude/temp/work/<slug>/research.md
-.claude/temp/work/<slug>/plan.md
+## 3. Fix and tick
 
-Run /next to continue if approved, or provide feedback to restart the workflow.
-```
+- **Critical / High:** fix, then re-run that check. **Medium:** fix when straightforward. **Low:**
+  list it.
+- Tick each check in `status.md` with a short note: `- [x] code-review — 1 High fixed, 2 dropped by
+  the second pass`. A failing check's note starts `fail`, a skipped one's `skipped`.
+- **Test on dev:** write the steps that prove the ACs on the PR's environment and on dev, each with
+  what to expect, written before it runs. In page mode they're `devTests[]` in `work-page.json`
+  (`work-page` → The Test-on-dev tab); in simple mode, `## Test on dev` in `status.md`.
 
-Where `<slug>` is replaced with the actual task directory name.
+## 4. Completion report
 
-**STOP and wait for explicit user response.**
+The developer's reason to trust every step is complete:
 
-## Handling User Response
+- the ACs, each with its status and the proof that shows it;
+- the subtasks, each with its tier, its commit and how it was proved;
+- the proof evidence: log excerpts, script output, screenshot paths;
+- every check's result, the performance before/after, and the fixes made.
 
-### If user runs /next or says approved/go/y:
+**Page mode:** it's the work page's **Sign-off** tab — update progress, republish if
+`work-page.json` changed, and print `Work page: <url>` with a two-line summary. **Simple mode:**
+write it under `## Completion report` in `status.md` and show it in the terminal.
 
-Check that we are on the correct branch. Prompt the user if not.
-Update plan.md Status to `IN_PROGRESS`.
-Proceed with /next.
+## 5. Commit and carry on
 
-### If user provides feedback:
-
-Determine whether the feedback relates to:
-
-1. **Research concerns** (missing context, wrong assumptions, need to investigate more) — re-run the research phase incorporating the feedback, then re-run planning, then present signoff again.
-2. **Plan concerns** (wrong approach, missing steps, wrong scope, implementation details) — re-run the planning phase incorporating the feedback, then present signoff again.
-
-If unclear which phase the feedback targets, use your judgement based on content. Most feedback will be about the plan (implementation details, scope, ordering).
-
-After re-running the relevant phase, present the signoff again in the same format.
+- **Fixes made:** show the files per fix and **STOP** for approval (`/next`, "approved", "go").
+  On approval, commit them by name, one commit per check, in the project's commit message format.
+- Write `signoff_commit: <git rev-parse HEAD>` to `status.md`.
+- Carry on into `/pr` without waiting for a new command.
 
 ## Rules
 
-- NEVER proceed without explicit user approval
-- Present file paths as clickable links (on their own lines)
-- If user has concerns, address them by re-running the appropriate phase
-- Always make sure we are on the right branch before starting work
-- This is a 'hidden' workflow command — users should rarely need to call it directly. It runs automatically after /plan and /begin.
+- Run every chosen check; never mark one passed that didn't run.
+- Fixes follow the commit rules in the Working agreements (`CLAUDE.md`): by name, never amend.
+- A check this project can't run (no frontend, no observability module) isn't in its defaults;
+  don't stub it.

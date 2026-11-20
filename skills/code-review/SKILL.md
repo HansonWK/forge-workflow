@@ -1,6 +1,6 @@
 ---
 name: code-review
-description: Review a code change (a branch diff or working changes) against a quality/correctness/security/performance/tests rubric, classify findings by severity, and report them. Use for /review, /cr, the /next review phase, and pre-PR checks.
+description: Review a code change (a branch diff or working changes) against a quality/correctness/security/performance/tests rubric, classify findings by severity, re-check them in a second pass, and report them. Use for /signoff, /review, /cr and pre-PR checks.
 allowed-tools: Read, Grep, Glob, Bash
 ---
 
@@ -43,6 +43,20 @@ context.
 - **High** — bugs, missing error handling, architectural violations. Should be resolved.
 - **Medium** — code smells, missing edge-case tests, minor perf. Note; fix if cheap.
 - **Low** — style/preference. Note, don't block.
+
+## Second pass
+
+Before reporting, hand every finding below **Critical** to a **fresh subagent** that hasn't seen your
+reasoning: give it the diff, the finding (`file:line`, the claim, the severity) and the project's
+conventions, and ask it to confirm, re-grade, or rule it out. Each finding ends as one of:
+
+- **Confirmed** at its severity, or re-graded with the reason;
+- **Not a finding** — the code is correct, the issue is pre-existing, or it contradicts the
+  project's stated conventions. List these at the end in one line each, so they aren't raised again.
+
+Critical findings skip the second pass and are reported as they stand. Running as a subagent that
+can't start another (the `pr-sanity-check` agent), mark the findings `second pass: pending` and the
+caller runs it.
 
 ## Output
 

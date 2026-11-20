@@ -1,25 +1,23 @@
 ---
-description: Final checks and prepare pull request for current plan
+description: Open the pull request once sign-off has covered every commit
 ---
 
-# Check Pull Request
+# Pull Request
 
-Check that all everything has been commited and is ready for a pull request
+`/signoff` carries on into this. Run it directly for an early PR, or after `/signoff`.
 
-## Step 1: Check Security Audit Status
+## Step 1: Sign-off gate
 
-Check if `/security` has been run for this plan:
-
-- Look for security audit results in conversation history
-- If not run, remind user:
+Read `signoff_commit` in the work folder's `status.md`. If it's missing, or
+`git log <signoff_commit>..HEAD --oneline` isn't empty:
 
 ```
-Security audit not run. Consider running /security first.
-Note this is not neccisary for every PR, so use discretion
-Continue with PR anyway? (y/n)
+Sign-off hasn't covered <N> commit(s) (or hasn't run). Run /signoff, or say "go anyway".
 ```
 
-If user declines, stop and let them run `/security`.
+**STOP.** On "go anyway", carry on and list what wasn't signed off (the commits, or the checks that
+didn't run) under "Not signed off" in the description. **Early PR** (the developer asked while
+`/signoff` runs) skips the gate; update the description when the checks finish.
 
 For **large or high-stakes** change sets, also consider `/double-check` — an independent second
 opinion from a different AI CLI (the `double-check` skill) — before opening the PR. If the change is
@@ -28,10 +26,8 @@ smaller PRs.
 
 ## Step 2: Verify Plan Complete
 
-Find the current active plan and verify all subtasks are complete or marked as to do in another PR:
-
-1. Read the active plan (`.claude/temp/work/*/plan.md`)
-2. Check all subtasks have `- [x] Dev`, `- [x] Review`, `- [x] Present` checked
+Find the active plan (`.claude/temp/work/*/plan.md`) and check every subtask has a `**SHA:**` (an older
+plan: `- [x] Dev` and `- [x] Present`), or is marked as left for another PR.
 
 If incomplete:
 
@@ -39,8 +35,7 @@ If incomplete:
 Plan is not complete.
 
 Remaining subtasks:
-- Subtask <N>: <title> (needs: Dev, Review, Present)
-- Subtask <M>: <title> (needs: Present)
+- Subtask <N>: <title> (needs: Dev, Proved, commit)
 
 Run /next to continue.
 ```
@@ -85,9 +80,17 @@ Use the `pr-description` agent to generate the description, following this struc
 
 <Bulleted list of what was actually changed>
 
+## Proof
+
+<Each AC: how it was proved, with the evidence (a log line, script output, a screenshot)>
+
 ## Test plan
 
-<Bulleted checklist of how to verify the changes>
+<Bulleted checklist of how to verify the changes on the PR's environment and on dev>
+
+## Not signed off
+
+<Only after "go anyway": the commits or checks sign-off didn't cover>
 ```
 
 **Where to get the information:**
@@ -95,7 +98,8 @@ Use the `pr-description` agent to generate the description, following this struc
 - **Ticket ID**: from plan metadata or branch name
 - **Problem**: from research.md or task description — what was the user trying to solve?
 - **Changes**: from git diff and plan subtasks
-- **Test plan**: from test cases written and manual verification steps
+- **Proof**: from plan.md's ACs, `## Proofs` in status.md and the proof folder
+- **Test plan**: the Test-on-dev steps `/signoff` wrote
 
 ## Step 5: Present for Approval
 
@@ -119,11 +123,14 @@ If user provides feedback:
 - Adjust title/description
 - Present again
 
-## Step 6: Create PR
+## Step 6: Push and create the PR
 
-After approval, open the PR/MR in the browser so the user can make final edits before submitting, using the configured git hosting and default branch (see `docs/workflow-config.md`):
+Approving the PR is the developer saying push. Push the branch, then open the PR/MR in the browser so
+the user can make final edits before submitting, using the configured git hosting and default branch
+(see `docs/workflow-config.md`):
 
 ```bash
+git push -u origin <branch>
 # GitHub (default). For GitLab use `glab mr create`; for Bitbucket, open the compare URL.
 gh pr create --base <default-branch> --title "<title>" --body "<description>" --web
 ```
@@ -137,23 +144,32 @@ Update plan.md:
 - Set Status to `COMPLETE`
 - Add PR link if desired
 
-Update `status.md` in the same task directory:
+Update `status.md` in the same work folder:
 
-- Set `work_status` to `merged`
-- Set `merged_date` to today's date
-- Add the PR URL as a new line: `- pr_url: <url>`
+- Set `work_status: review` and `stage: PR` (`/status` moves it to `merged` once the branch merges)
+- Set `pr_url` once the PR exists (`gh pr view --json url -q .url`)
+
+In page mode, update progress: the Test-on-dev tab appears, and the Sign-off tab links the PR.
 
 ## Step 8: Report
 
 ```
-PR created: <url>
+PR opened in the browser: <url, once created>
+Work page: <url>      (page mode)
 
-Plan '<plan-name>' is now complete.
+Next: test on the PR's environment (or dev) — the Test on dev tab, or `## Test on dev` in status.md.
+Once it passes, I'll offer a comment for the ticket setting out the proof.
 ```
+
+After the run passes, draft the ticket comment (each AC, how it was proved, the evidence, the PR
+link), show it, and post it only on the developer's yes, through the `ticket-tracker` agent's Comment
+action. Never put secrets, personal data or private record content in it. In page mode, once the
+Test-on-dev tab is complete after the merge, ask once about deleting the page (`work-page` → After
+the merge).
 
 ## Rules
 
 - NEVER create PR with incomplete commits
 - NEVER create PR without user approval of title/description
-- Always ask user to push branch before creating PR
+- Push only the workflow branch, only after that approval; never the default branch
 - Use pr-description agent for consistent formatting

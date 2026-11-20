@@ -36,4 +36,4 @@ lets it run isolated/in the background; the skill keeps the rubric in one place.
 
 - Only flag issues in the changed code, not pre-existing ones.
 - Keep the report actionable — specific files, lines, fixes.
-- Never commit or push.
+- Report; the main loop commits on approval.

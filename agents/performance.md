@@ -25,4 +25,4 @@ skill keeps the rubric in one place.)
 ## Rules
 
 - Only flag issues you can explain concretely; never present an inference as a measurement.
-- Report first; never commit.
+- Report first; the main loop commits on approval.
