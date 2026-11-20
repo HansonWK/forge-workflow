@@ -13,7 +13,7 @@ argument-hint: <version e.g. 1.4.0>
   real version-bump mechanism, and whether a CI workflow (.github/workflows/*.yml)
   already performs part of this. Ask the user to confirm the file list — getting it
   wrong ships a half-bumped release. Keep the "changelog first, approve, then bump,
-  then report — never commit/push" spine.
+  then report, commit on approval" spine.
 -->
 
 # Release Workflow
@@ -74,14 +74,16 @@ Version bumped in N files:
   ✓ packages/foo/package.json
   ...
 
-Next steps:
-- Review and commit all changes with message: "RELEASE: v$VERSION"
-- Push and create a PR targeting the default branch
+Approve to commit these files with message "RELEASE: v$VERSION".
+Then say push to push the branch and open a PR targeting the default branch.
 ```
+
+On approval, stage the listed files by name and commit them on the release branch (never the
+default branch).
 
 ## Rules
 
-- Never commit or push — the user handles all git operations
+- Commit only on approval and push only when the developer says push (the Working agreements in `CLAUDE.md`)
 - Do not proceed past Step 2 without explicit changelog approval from the user
 - Only bump the top-level `"version"` field — do not touch dependency version references
 - Keep the versioned-file list in sync with the real project layout

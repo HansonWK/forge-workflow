@@ -31,11 +31,13 @@ Run the package manager's install to sync the lockfile, then the project's forma
 
 ## Step 5: Report
 
-List every file updated and give the next steps (commit with the project's release-commit message convention, push, open a PR to the default branch).
+List every file updated and **STOP** for approval. On approval, stage those files by name and commit
+them with the project's release-commit message, on a workflow branch (never the default branch).
+Push and open a PR to the default branch only when the developer says so.
 
 ## Rules
 
-- Never commit or push — the user handles all git operations
+- Commit only on approval and push only when asked (the Working agreements in `CLAUDE.md`)
 - Do not proceed past Step 2 without explicit changelog approval
 - Only bump version fields — never dependency version references
 - Keep the versioned-file list in `docs/workflow-config.md` in sync with the real layout

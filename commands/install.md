@@ -313,7 +313,14 @@ discover from the file system, and not depth that now lives in skills.
   - A one-paragraph **repo purpose** and any **gotchas** (non-obvious constraints, footguns).
   - A **Working agreements** block — the guardrails, stated **once and authoritatively** (this is the
     single source of truth; commands reference it rather than restating it):
-    - Never commit or push without explicit user approval — suggest a commit message; the user commits.
+    - **Approval means commit.** When the developer approves a stop (`/next`, "approved", "go"),
+      commit each subtask's files, staged by name (never `git add -A`), under its title in the
+      project's commit message format. Never amend or force-push.
+    - **Commit only on a branch the workflow owns** — one `/begin` or `/branch` created, or one
+      matching `<branch convention>`. Never on the default branch, a release or hotfix branch you
+      didn't create, or a branch the developer named outside the pattern: stop and suggest a
+      correctly named branch instead.
+    - **Push only when the developer says push.** `/pr` pushes when it opens the PR.
     - Never fetch/read **production** secret values (dev/test only); adding secrets to any environment is fine.
     - The **work folder** is `.claude/temp/work/<slug>/` (research, plan, status for one piece of
       work); **the proof folder** is its `proof/`. Other ephemeral files live in `.claude/temp/`.
