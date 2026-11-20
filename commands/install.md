@@ -381,7 +381,7 @@ discover from the file system, and not depth that now lives in skills.
 - Scopes/services: [list]
 
 ## Forge Workflow
-- Version: 1.2.0
+- Version: 1.3.0
 ```
 
 ---
