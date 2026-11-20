@@ -48,6 +48,23 @@ Report as: **Summary** → **Timeline** (chronological, deduplicated) → **Issu
 
 Always leave the user able to get the data themselves. Offer a ready-to-run query for their provider, filled in with the service, entity, and time range. Ask for the identifiers you need. See `docs/logging-strategy.md` for the standard custom dimensions to filter and project.
 
+## Query rules
+
+Wherever the workflow queries logs — a proof, `/signoff`'s logs check, the test on dev, any polling
+loop:
+
+- **Validate a query once**, on a short time window, before putting it in a loop or relying on an
+  empty result. A query with a syntax error can return nothing, and nothing looks the same as
+  "nothing happened yet".
+- **Know the query language's reserved words** — the traps for this project's provider are listed
+  below (`/install` writes them; the KQL ones are in the reference example).
+- **Count successes alongside errors** before calling anything broken or fixed. An empty error count
+  proves nothing if the success count is empty too.
+- **Bound every polling loop** with a timeout. Say what it's waiting for, and stop on a query error
+  rather than retrying it.
+
+**Traps in this project's query language:** _`/install` fills these for the configured provider._
+
 ## Rules
 
 - Sample first, expand only if needed
