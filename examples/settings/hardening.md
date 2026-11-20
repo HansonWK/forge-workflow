@@ -24,12 +24,12 @@ array if missing), skip entries already present, and leave every other setting u
       "Bash(git push * -f*)"
     ],
     "ask": [
-      "Edit(.claude/hooks/**)",
-      "Write(.claude/hooks/**)",
-      "Edit(.claude/settings.json)",
-      "Write(.claude/settings.json)",
-      "Edit(.claude/settings.local.json)",
-      "Write(.claude/settings.local.json)"
+      "Edit(**/.claude/hooks/**)",
+      "Write(**/.claude/hooks/**)",
+      "Edit(**/.claude/settings.json)",
+      "Write(**/.claude/settings.json)",
+      "Edit(**/.claude/settings.local.json)",
+      "Write(**/.claude/settings.local.json)"
     ]
   }
 }
@@ -39,5 +39,7 @@ array if missing), skip entries already present, and leave every other setting u
 
 - `.env.*` isn't denied wholesale: that would also lock out committed `.env.example` files.
 - `ask` beats `allow`, so a broad `Edit(.claude/**)` allow still prompts for hooks and settings.
+- The `ask` rules start with `**/` so they also cover worktrees kept under the project
+  (e.g. `.claude/worktrees/<slug>/.claude/hooks/`), which a plain `.claude/hooks/**` misses.
 - A `Read` deny also blocks `Edit` and `Write` on the path, so any step that must write a denied
   file (e.g. `/secret` with a plain `.env` provider) does it through the shell, never the Write tool.
