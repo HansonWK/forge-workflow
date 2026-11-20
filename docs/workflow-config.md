@@ -26,6 +26,20 @@
 - **Default branch:** main
 - **Branch convention:** <TICKET-ID>-<kebab-case-summary>
 
+## Workflow
+- **Work page:** page
+
+## Sign-off
+- **Default checks:** code-review, logs, performance, security, seo, docs, acceptance
+
+## Environments
+- **PR environment:** none
+- **Dev:** dev (https://dev.example.com)
+- **Deployed version:** `curl -s https://dev.example.com/version`
+
+## House style
+- **Stylesheet:** .claude/skills/presentation/house-style.css (forge neutral)
+
 ## Working Directories
 - **Work folder:** .claude/temp/work/<slug>/ (research.md, plan.md, status.md for one piece of work)
 - **Proof folder:** <work folder>/proof/ (proof scripts, captured logs, screenshots; not committed)

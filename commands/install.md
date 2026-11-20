@@ -173,6 +173,33 @@ Whenever there isn't enough information here, use the **`clarify` skill** to dra
 guessing. These docs are read by the `testing`, `code-review`, and `architecture` skills, and pointed
 to from `CLAUDE.md`.
 
+### Work page, proofs and sign-off
+
+These tailor the core loop. Infer first, then confirm in one round:
+
+- **Work page default** — `page` (each piece of work gets a live claude.ai artifact; the `work-page`
+  skill) or `simple` (the plan in the terminal). Recommend `page` when this account has Claude
+  artifacts; `/begin -s` picks simple per task either way.
+- **House style** — keep forge's neutral palette, or give the project's colours and fonts. Rewrite
+  `.claude/skills/presentation/house-style.css` (keep every token name, light and dark); the decks,
+  pages and work page all read it.
+- **Kinds of proof this project can run** — e.g. `npm run test`, starting a service with test data
+  and reading its logs, a Playwright screenshot. Write them into `writing-plans` → Proof.
+- **Tier signals** — what makes a subtask Medium or High here (a migration, a shared schema, auth, a
+  public API, work across two apps), from the architecture and the scan. Write them into
+  `writing-plans` → "Tier signals in this project".
+- **Sign-off defaults** — start from `code-review, logs, performance, security, seo, docs,
+  acceptance`. Drop `seo` and the frontend performance check with no frontend, `logs` without the
+  observability module. Record them under `## Sign-off`.
+- **Performance baseline** (frontend only) — the command that measures the affected pages (e.g. a
+  Lighthouse run against the local app). Write it into `performance-review` → Baseline.
+- **Environments** — whether PRs get their own environment (a preview), the dev environment, and how
+  to read what's deployed there (the CLI or URL that shows the running SHA; names only, never secret
+  values). Record them under `## Environments`; the Test-on-dev tab and the proofs use them.
+- **The proof folder** — `proof/` in the work folder unless the project already keeps proofs
+  elsewhere; if so, set it in the config, the CLAUDE.md agreement and `PROOF_DIR` in
+  `work-page/progress.mjs`.
+
 ### Commit-guard hook (optional, recommended)
 
 The commit policy is stated once in `CLAUDE.md` (approval means commit, only on a workflow branch,
@@ -282,11 +309,12 @@ Each module's setup is: **read the reference example → ask the provider/config
    | `npm audit`, `npm run test:coverage` | The package manager's equivalents |
    | `https://mycompany.atlassian.net` | Real Jira URL (if Jira) |
    | `~/AI/config/jira.env` | Real credentials path (if changed) |
-   | `main` (PR base / diff base) | The detected default branch |
+   | `main` (PR base / diff base, the hardening push denies) | The detected default branch |
+   | `OWNED_BRANCH` / `OWNED_HINT` in `examples/hooks/commit-guard.sh` | The branch convention (only when the hook is installed) |
    | `gh pr create` | The hosting flow (GitHub `gh`, GitLab `glab`, Bitbucket web) |
 
    **Adapt the skills and agents to the stack** (not just string swaps) — keep the rubric/structure, rewrite stack-specific specifics to match the detected project:
-   - Skills: `code-review`, `security-review`, `testing` (test framework), `logging-compliance` (only if the observability module is installed).
+   - Skills: `code-review`, `security-review`, `testing` (test framework), `writing-plans` (proof kinds, tier signals), `performance-review` (the baseline command), `logging-compliance` (only if the observability module is installed).
    - Agents: `test-writer` (framework mechanics), `doc-writer`, `pr-description`, `explainer`.
 
    (`pr-sanity-check` and `security-auditor` are thin runners that apply the skills — adapt the skills, not those agents.)
@@ -302,6 +330,11 @@ When `docs/workflow-config.md` already exists:
 1. Read it — get the installed version and the `## Modules` state. Read `$FORGE/VERSION` (the version now staged); a higher value means an **upgrade** (if `$FORGE` looks stale, re-stage first with `npx forge-workflow install`).
 2. For each file: compare your committed `.claude/<file>` against the newly-staged `$FORGE/<file>`. Re-apply shipped improvements while **preserving your customizations**. Because `$FORGE` holds the exact new template, this is a real diff — not a guess; where a difference is genuinely ambiguous, show it and ask.
 3. For modules: only act on ones the user chose to add/reconfigure this run (Phase 4). Don't touch `installed` modules unless asked.
+   **Upgrading from 1.x:** `/deck` is now `/presentation` — offer to remove `.claude/commands/deck.md`.
+   Work now lives in `.claude/temp/work/<slug>/`; `/next` and `/resume` point at any old-style
+   `.claude/temp/<slug>/` folder rather than moving it. `/signoff` is now the final checks and
+   `/present` the plan approval, and Claude commits on approval: ask the Phase 3 "Work page, proofs and
+   sign-off" questions and offer the new commit-guard and hardening blocks.
 4. **Present a summary of all changes before writing**, then **STOP and wait for confirmation.** Then write and update the version + `## Modules` state.
 
 ### `CLAUDE.md`
@@ -361,6 +394,20 @@ discover from the file system, and not depth that now lives in skills.
 - Hosting: [GitHub / GitLab / Bitbucket]
 - Default branch: [detected]
 - Branch convention: [convention]
+
+## Workflow
+- Work page: [page / simple]
+
+## Sign-off
+- Default checks: [code-review, logs, performance, security, seo, docs, acceptance — minus those this project can't run]
+
+## Environments
+- PR environment: [e.g. a preview per PR, or none]
+- Dev: [name / URL]
+- Deployed version: [how to read the running SHA, names only]
+
+## House style
+- Stylesheet: .claude/skills/presentation/house-style.css ([forge neutral / project palette])
 
 ## Working Directories
 - Work folder: .claude/temp/work/<slug>/
