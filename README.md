@@ -117,7 +117,7 @@ Start work with `/begin`. Claude researches the codebase, creates a plan broken 
 | `/attribution` | Record credits/resources in ATTRIBUTION.md |
 | `/clarify` | Interview me to pin down missing info/decisions |
 | `/recalibrate` | Turn session corrections into workflow-file updates |
-| `/deck` | Build a self-contained HTML slide deck |
+| `/presentation` | Build a deck or a page as a live Artifact (`--slides` / `--page`) |
 
 ### Agents
 
@@ -142,7 +142,7 @@ when needed (progressive disclosure). Forge invokes skills explicitly, so they w
 generations.
 
 - **Rubrics/methods:** `code-review`, `security-review`, `testing`, `writing-plans`, `logging-compliance`, `architecture` (keep code within your pattern), `clarify` (interview to pin down missing decisions)
-- **More:** `slicing` (split into independently mergeable PRs), `performance-review`, `explain` (describe, never review), `run-local` (who-runs-what), `presentation` (Claude-style HTML decks), `recalibrate` (make corrections stick)
+- **More:** `slicing` (split into independently mergeable PRs), `performance-review`, `explain` (describe, never review), `run-local` (who-runs-what), `presentation` (decks and pages as live Artifacts, in a neutral house style), `recalibrate` (make corrections stick)
 - **Verification:** `verify` (build/lint/test, self-fix to green), `verify-acceptance` (does it
   satisfy the goal + acceptance criteria), `verify-plan` (critique the plan before building),
   `double-check` (independent second opinion from a *different* AI CLI, e.g. Codex)

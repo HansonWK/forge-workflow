@@ -63,7 +63,7 @@ Present the following workflow guide to the user:
 | -------------------- | ------------------------------------------------------ |
 | `/ticket`            | Create a ticket from an investigation                  |
 | `/explain <target>`  | Explain how existing code works (not a review)         |
-| `/deck`              | Build a self-contained HTML slide deck                 |
+| `/presentation`      | Build a deck or a page as a live Artifact (`--slides` / `--page`) |
 | `/workflow`          | Show this command reference                            |
 
 ### Optional modules

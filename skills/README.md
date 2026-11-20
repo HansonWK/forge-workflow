@@ -43,7 +43,7 @@ so the rubric for "how we review code" or "how we verify a change" lives in exac
 | `performance-review` | perf rubric — fast diff scan + deep audit | `/review`, `/performance`, `performance` agent |
 | `explain` | describe how existing code works — never a review | `/explain`, `explainer` agent |
 | `run-local` | run apps/services locally; who-runs-what (Claude bg vs your terminal) | `/run` |
-| `presentation` | self-contained HTML slide deck (Claude-style palette default) | `/deck` |
+| `presentation` | a deck or a page as a live Artifact, in the house style (`house-style.css`); export on request | `/presentation` |
 | `recalibrate` | turn session corrections into proposed workflow-file edits | `/recalibrate`; Claude on pushback |
 
 **Verification skills (close the loop)**

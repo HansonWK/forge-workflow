@@ -1,0 +1,271 @@
+/* Forge house style: warm neutral, light and dark. /install replaces this file with the project's own.
+   The deck and page shells, the work page and the test report all read these tokens. */
+:root {
+  --bg: #f0eee6;
+  --surface: #faf9f5;
+  --surface-2: #e8e5da;
+  --ink: #1f1e1c;
+  --muted: #6b6a65;
+  --line: #dcd8cc;
+  --line-strong: #b9b4a6;
+  --accent: #b4532f;
+  --accent-bright: #d97757;
+  --accent-ink: #ffffff;
+  --accent-soft: #f3e1d8;
+  --accent-2: #3f7fb8;
+  --inverse-bg: #1f1e1c;
+  --inverse-ink: #faf9f5;
+  --inverse-muted: #b8b5ab;
+  --inverse-line: #3a3935;
+  --ok: #276b40;
+  --ok-soft: #e1efe4;
+  --warn: #8f5a12;
+  --warn-soft: #f5e8d2;
+  --bad: #b3392b;
+  --bad-soft: #f6e0dc;
+  --code-bg: #e8e5da;
+  --f-body: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --f-head: var(--f-body);
+  --f-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --r: 6px;
+  --r-pill: 999px;
+  --s-xxs: 4px;
+  --s-xs: 8px;
+  --s-s: 12px;
+  --s-m: 16px;
+  --s-l: 24px;
+  --s-2xl: 40px;
+  --s-4xl: 72px;
+  --size-body-s: 13px;
+  --size-body-m: 15px;
+  --size-body-l: 18px;
+  --size-h-l: clamp(20px, 2.6vw, 28px);
+  --size-h-xxl: clamp(30px, 5vw, 54px);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --bg: #1f1e1c;
+    --surface: #2a2926;
+    --surface-2: #34332f;
+    --ink: #f0eee6;
+    --muted: #a8a59c;
+    --line: #3d3c37;
+    --line-strong: #5a5851;
+    --accent: #e8906f;
+    --accent-bright: #e8906f;
+    --accent-ink: #1f1e1c;
+    --accent-soft: #3d2a22;
+    --accent-2: #7fb0dc;
+    --inverse-bg: #141412;
+    --inverse-ink: #f0eee6;
+    --inverse-muted: #a8a59c;
+    --inverse-line: #2e2d2a;
+    --ok: #6cc58f;
+    --ok-soft: #1b3324;
+    --warn: #e7b061;
+    --warn-soft: #3a2c15;
+    --bad: #f08a7c;
+    --bad-soft: #3d1f1b;
+    --code-bg: #34332f;
+    color-scheme: dark;
+  }
+}
+:root[data-theme='dark'] {
+  --bg: #1f1e1c;
+  --surface: #2a2926;
+  --surface-2: #34332f;
+  --ink: #f0eee6;
+  --muted: #a8a59c;
+  --line: #3d3c37;
+  --line-strong: #5a5851;
+  --accent: #e8906f;
+  --accent-bright: #e8906f;
+  --accent-ink: #1f1e1c;
+  --accent-soft: #3d2a22;
+  --accent-2: #7fb0dc;
+  --inverse-bg: #141412;
+  --inverse-ink: #f0eee6;
+  --inverse-muted: #a8a59c;
+  --inverse-line: #2e2d2a;
+  --ok: #6cc58f;
+  --ok-soft: #1b3324;
+  --warn: #e7b061;
+  --warn-soft: #3a2c15;
+  --bad: #f08a7c;
+  --bad-soft: #3d1f1b;
+  --code-bg: #34332f;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: var(--size-body-m) / 1.55 var(--f-body);
+}
+a {
+  color: var(--accent);
+}
+code,
+pre {
+  font-family: var(--f-mono);
+  font-size: 0.9em;
+}
+
+/* Components for deck slides and page sections. */
+h1,
+h2 {
+  font-family: var(--f-head);
+  line-height: 1.12;
+  letter-spacing: -0.01em;
+  margin: 0;
+  text-wrap: balance;
+}
+h1 {
+  font-size: var(--size-h-xxl);
+}
+h3 {
+  font-size: var(--size-body-l);
+  margin: 0;
+}
+.eyebrow {
+  margin: 0;
+  font-size: var(--size-body-s);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.accent {
+  color: var(--accent);
+}
+.lede {
+  margin: 0;
+  font-size: var(--size-body-l);
+  color: var(--muted);
+  max-width: 60ch;
+}
+.inverse {
+  background: var(--inverse-bg);
+  color: var(--inverse-ink);
+}
+.inverse .eyebrow,
+.inverse .lede {
+  color: var(--inverse-muted);
+}
+.inverse .accent {
+  color: var(--accent-bright);
+}
+ul.clean {
+  margin: 0;
+  padding-left: 1.1em;
+  display: grid;
+  gap: var(--s-xs);
+}
+.cmd {
+  font-family: var(--f-mono);
+  font-size: 0.9em;
+  background: var(--code-bg);
+  border-radius: var(--r);
+  padding: 0.1em 0.45em;
+}
+.tag {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  border-radius: var(--r-pill);
+  padding: 1px 8px;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.callout {
+  border-left: 4px solid var(--accent-bright);
+  background: var(--surface);
+  padding: var(--s-s) var(--s-m);
+  border-radius: 0 var(--r) var(--r) 0;
+}
+.panels {
+  display: grid;
+  gap: var(--s-m);
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+.panels > * {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: var(--s-m);
+}
+.flow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-xs);
+  align-items: center;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.flow > li {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: var(--s-xs) var(--s-s);
+}
+.flow > li + li::before {
+  content: '→';
+  margin-right: var(--s-xs);
+  color: var(--accent);
+}
+.term {
+  background: var(--inverse-bg);
+  color: var(--inverse-ink);
+  border-radius: var(--r);
+  padding: var(--s-s) var(--s-m);
+  overflow-x: auto;
+  font-family: var(--f-mono);
+  font-size: var(--size-body-s);
+  white-space: pre;
+}
+.table-wrap {
+  overflow-x: auto;
+}
+.table-wrap table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: var(--size-body-s);
+}
+.table-wrap th,
+.table-wrap td {
+  text-align: left;
+  padding: var(--s-xs) var(--s-s);
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+.table-wrap th {
+  color: var(--muted);
+  font-weight: 600;
+}
+.bar {
+  display: inline-block;
+  height: 8px;
+  border-radius: var(--r-pill);
+  background: var(--accent-bright);
+  vertical-align: middle;
+}
+dl.kv {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: var(--s-xxs) var(--s-m);
+  margin: 0;
+}
+dl.kv dt {
+  font-weight: 600;
+}
+dl.kv dd {
+  margin: 0;
+  color: var(--muted);
+}
