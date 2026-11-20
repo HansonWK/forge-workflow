@@ -44,6 +44,12 @@ Skip only when purely creating new files with no existing tests.
 - Every new exported function or significant path gets tests: happy path, error cases, edge cases
   (null/undefined/empty). If a sibling has tests and the new code doesn't, that's a gap.
 
+## End-to-end tests
+
+Suggest a new e2e test only for a new feature or a core business rule, not every time: CI time is
+expensive. Where an app is under active work, the work's final proof is the e2e test's spec — the
+steps and data that proved the AC become the test.
+
 ## What NOT to test
 
 Framework internals, third-party libraries, trivial pass-throughs, pure type transformations,

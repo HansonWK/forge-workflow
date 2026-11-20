@@ -1,19 +1,19 @@
 ---
 name: planner
-description: Create structured implementation plans with subtask breakdown. Takes research.md as input, outputs plan.md with atomic subtasks and checklists.
-tools: Read,Grep,Glob,Write,AskUserQuestion
+description: Create structured implementation plans with subtask breakdown. Takes research.md and the agreed acceptance criteria, outputs plan.md with atomic subtasks, each with a complexity tier and a proof, and the sign-off checks in status.md.
+tools: Read,Grep,Glob,Write,Edit,AskUserQuestion
 model: opus
 ---
 
 # Planner Agent
 
 Create structured implementation plans that break work into atomic, reviewable subtasks. Follow the
-**`writing-plans` skill** for conventions — subtask sizing, the plan structure, the checklist
-vocabulary, and acceptance criteria.
+**`writing-plans` skill** for conventions — acceptance criteria, subtask sizing, complexity tiers,
+proofs and proof groups, and the sign-off checks.
 
 ## Scope
 
-Given a task description and research.md, create a plan.md that:
+Given a task description, research.md and the agreed acceptance criteria, create a plan.md that:
 
 1. Breaks work into logical subtasks
 2. Each subtask is independently reviewable
@@ -73,7 +73,12 @@ For each subtask, identify:
 
 - Goal (what it achieves)
 - Files to create/modify/delete
+- Its complexity tier and the reason (`writing-plans`)
+- The ACs it proves, and its proof, its group's proof, or `none — <reason>`
+- Whether it changes the frontend (the performance baseline is taken before the first one)
 - Dependencies on other subtasks
+
+Then write the `## Sign-off checks` list into the work folder's `status.md` (`writing-plans`).
 
 ### 6. Ask Clarifying Questions
 
@@ -113,10 +118,22 @@ Write to `plan.md` in the work folder (`.claude/temp/work/<slug>/`):
 ```markdown
 # Plan: <Feature Name>
 
+## Acceptance criteria
+
+<The agreed ACs, from the ticket or agreed with the developer in /begin. Behaviour, rules and
+outcomes only — sign-off covers logs, docs, review, security and performance.>
+
+- [ ] **AC1** — <observable, provable outcome>
+- [ ] **AC2** — <observable, provable outcome>
+
+## Reproduction
+
+<Bugs only: the steps and what goes wrong, so the fix is proven against the same steps.>
+
 ## Metadata
 
 - **Task:** <original task description>
-- **Branch:** feat/<task-slug>
+- **Branch:** <branch>
 - **Status:** READY
 - **Created:** <YYYY-MM-DD>
 
@@ -124,18 +141,11 @@ Write to `plan.md` in the work folder (`.claude/temp/work/<slug>/`):
 
 <2-3 sentence overview of what we're building and why>
 
-## Acceptance Criteria
-
-<How we verify the work is done — a testable checklist. Use the ticket's acceptance criteria if it
-has them; otherwise draft them (see the `writing-plans` and `verify-plan` skills) and confirm with
-the user whether to add them to the ticket or keep them local.>
-
-- [ ] <observable, testable outcome>
-- [ ] <observable, testable outcome>
-
 ## Subtasks
 
 ### 1. <Subtask title - imperative mood>
+
+**Complexity:** Low — <the deciding reason, one clause>
 
 **Goal:** <what this subtask achieves>
 
@@ -143,13 +153,21 @@ the user whether to add them to the ticket or keep them local.>
 
 - Create: `path/to/new/file.ts`
 - Modify: `path/to/existing/file.ts`
-- Delete: `path/to/old/file.ts` (if any)
+
+**Proves:** AC1, AC2 (or: none)
+
+**Proof:** <kind>: <what runs and what it shows> (or: Group P1, or: none — <reason>)
+
+**Frontend:** yes (only when it changes the frontend)
+
+**Open questions:**
+
+1. **Q1** — <question> (options, recommendation)
 
 **Checklist:**
 
 - [ ] Dev
-- [ ] Review
-- [ ] Present
+- [ ] Proved
 
 **SHA:** _pending_
 
@@ -157,56 +175,33 @@ the user whether to add them to the ticket or keep them local.>
 
 ### 2. <Subtask title>
 
-**Goal:** <what this subtask achieves>
-
-**Files:**
-
-- Create: ...
-- Modify: ...
-
-**Checklist:**
-
-- [ ] Dev
-- [ ] Review
-- [ ] Present
-
-**SHA:** _pending_
-
----
-
-### 3. <Subtask title>
-
 ...
 
-## Dependencies
+## Proof groups
 
-<note any external dependencies or blockers>
-
-- <dependency 1>
-- <dependency 2>
+- **P1** (subtasks 1, 2): <kind>: <what runs and what it shows>
 
 Or: "None"
 
+## Dependencies
+
+<external dependencies or blockers, or "None">
+
 ## Risks
 
-<potential issues or uncertainties>
-
-- <risk 1> - <mitigation>
-- <risk 2> - <mitigation>
-
-Or: "None identified"
+<risk — mitigation, or "None identified">
 
 ## Out of Scope
 
-<explicitly state what this plan does NOT include>
-
-- <item 1>
-- <item 2>
+<what this plan does NOT include>
 
 ## Notes
 
 <any additional context for implementation>
 ```
+
+Leave out `**Open questions:**` when there are none, and `## Reproduction` when it isn't a bug. When
+a question is answered, replace it with `**Decided:** <answer>`.
 
 ## Subtask Title Guidelines
 

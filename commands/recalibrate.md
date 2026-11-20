@@ -4,8 +4,8 @@ description: Turn this session's corrections and friction into proposed workflow
 
 # Recalibrate
 
-Apply the **`recalibrate` skill**: review the session for corrections, preferences, gaps, and friction;
-propose routed edits to the workflow files (per-developer memory vs a shared skill / command /
+Apply the **`recalibrate` skill**: review the session for corrections, preferences, gaps, and friction,
+and the tier ledger (`.claude/temp/ledger/tier-overrides.tsv`) for tier signals; propose routed edits to the workflow files (per-developer memory vs a shared skill / command /
 CLAUDE.md / guideline doc); and promote team truths out of private memory. Propose — the user picks
 what lands.
 
@@ -14,5 +14,5 @@ or larger changes, use `/customize` instead.
 
 ## Rules
 
-- Propose, never apply silently; show diffs; never commit.
+- Propose, never apply silently; show diffs; commit only what the developer approves.
 - Subtract as well as add; re-read each touched file whole to catch contradictions.
