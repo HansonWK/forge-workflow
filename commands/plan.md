@@ -25,9 +25,9 @@ If no plan exists, run the `planner` agent to create the implementation plan:
 ## What the Planner Does
 
 1. Reads research.md to understand context
-2. Breaks work into subtasks (small, committable steps)
-3. Defines goals and files for each subtask
-4. Creates trackable checklists
+2. Puts the agreed acceptance criteria at the top of plan.md
+3. Breaks work into subtasks (small, committable steps), each with a complexity tier, the ACs it proves and its proof
+4. Writes the sign-off checks to status.md
 5. At any point where there are unknowns or clarifications needed, pause to prompt the user for more information
 
 ## Optional Integrations
@@ -43,24 +43,21 @@ For small tasks, add a final unit-test subtask to add unit tests at the end.
 
 ## Verify the plan
 
-For non-trivial tasks, apply the **`verify-plan` skill** before signoff: critique the plan against
-research and the acceptance criteria and fix gaps. If there are **no** acceptance criteria (none on
-the ticket and none in the plan), draft a testable set and ask the user whether to add them to the
-ticket (best — testers can verify later) or keep them local to the plan; record them in plan.md
-either way.
+For non-trivial tasks, apply the **`verify-plan` skill**: critique the plan against research and the
+acceptance criteria and fix gaps. With no agreed ACs (`/plan` run without `/begin`), it proposes them
+and agrees them with the developer first.
 
 ## After Planning
 
-After the plan is verified, automatically run /signoff to present the research and plan for user
-approval. Do not ask the user to run /signoff manually.
+After the plan is verified, automatically run `/present` for plan approval. Do not ask the user to
+run it manually.
 
 ## Rules
 
 - Use the planner agent - don't create plan manually
 - Research must exist first
 - Each subtask should be small and committable
-- Claude should NEVER commit without explicit user permission
-- After completing a subtask, suggest a commit message and wait for user to commit
+- Commits happen in `/next`, once the developer approves a stop (the Working agreements in `CLAUDE.md`)
 - If the approach is genuinely ambiguous or decisions are needed, apply the `clarify` skill rather than guessing
 - For non-trivial work, apply the `slicing` skill to decide whether it's one PR or a stack; record slices in plan.md
 - Always check for a plan first and carry on from wherever we stopped work last

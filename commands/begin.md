@@ -1,11 +1,16 @@
 ---
-description: Start new work - research, plan, and signoff
-argument-hint: <task-description>
+description: Start new work - research, agree the ACs, plan, and present the plan for approval
+argument-hint: [-s | --simple] <task-description>
 ---
 
 # Begin New Work
 
-Task: $ARGUMENTS
+Input: $ARGUMENTS
+
+**Mode.** If the first word is `-s` or `--simple`, strip it: the rest is the task, and the work runs
+in **simple** mode (the plan in the terminal, no work page). `-s` anywhere else is task text. With no
+flag, use the default under `## Workflow` in `docs/workflow-config.md` (`page` unless it says
+`simple`). Everything else — tiers, proofs, stops, commits, sign-off — is the same in both modes.
 
 ## Step 0: Safety Checks
 
@@ -36,18 +41,18 @@ Check if the task description contains a ticket ID (e.g., `PROJ-1234`):
   ```
 
   If yes, run `/branch <TICKET-ID>` to pull latest main and create the branch, then continue with Step 1.
-  If no, remind them they'll need to create a branch before committing:
+  If no, remind them I only commit on a workflow branch:
 
   ```
-  Reminder: You'll need to create a feature branch before any commits.
-  I'll start the research and planning — you can create the branch when ready.
+  Reminder: I only commit on a workflow branch (see the Working agreements in CLAUDE.md).
+  I'll start the research and planning — create the branch before /next.
   ```
 
 - **No ticket:** Remind the user to create a branch:
 
   ```
   You're on main with no feature branch. I'll start research and planning,
-  but you'll need to create a feature branch before any commits.
+  but I only commit on a workflow branch — create one before /next.
   (Tip: use /branch <TICKET-ID> if you have a ticket)
   ```
 
@@ -137,6 +142,7 @@ In the work folder, create `status.md` using the template defined in `/status` (
 - Set `fix_version` to `null`
 - Set `name` to a human-readable version of the task description
 - Set `summary` to a one-line summary of the task
+- Set `mode` to `page` or `simple` (see **Mode** above)
 
 ## Step 3: Research Phase
 
@@ -158,39 +164,43 @@ The researcher will:
 - Identify patterns to follow
 - Document findings in research.md
 
-## Step 4: Planning Phase
+## Step 4: Acceptance criteria
+
+Make sure the ACs are there and understood before planning (`writing-plans` → Acceptance criteria).
+
+- **The ticket has provable ACs:** use them, and say in one line if any is too vague to prove.
+- **None, or too vague:** propose a provable set from the research and the ticket, and agree it with
+  the developer (**STOP and wait**). Then ask whether to add them to the ticket (best, so testers can
+  verify later; via the `ticket-tracker` agent) or keep them local to the plan.
+- **A bug:** record how it reproduces; the fix is proven against the same steps.
+
+## Step 5: Planning Phase
 
 Use the `planner` agent to create the implementation plan.
 
 Provide the agent with:
 
-- The task description
+- The task description and the agreed ACs
 - Path to research.md
 - Output path: `plan.md` in the work folder
 
-The planner will:
+The planner puts the ACs at the top of `plan.md`, breaks the work into subtasks — each with a
+complexity tier, the ACs it proves and its proof — and writes the sign-off checks to `status.md`.
+Then apply the `verify-plan` skill and set `work_status: planning`.
 
-- Break work into subtasks (small, committable steps)
-- Define goals and files for each subtask
-- Capture acceptance criteria (drafting them and confirming with you if the ticket has none)
-- Create trackable checklists
+## Step 6: Present
 
-Then the plan is verified (the `verify-plan` skill) before signoff.
-
-## Step 5: Signoff
-
-Run /signoff to present the research and plan for user approval. This will show the user clickable file paths and wait for their response.
-
-Do NOT proceed without signoff.
+Run `/present`: it shows the plan (on the work page, or in the terminal in simple mode) and stops for
+approval. After approval, `/next` starts the subtasks.
 
 ## Rules
 
-- NEVER skip research or planning phases
-- NEVER proceed past signoff without explicit approval
-- If research or planning raises questions, ask them before signoff
+- NEVER skip research, the ACs or planning
+- NEVER start a subtask before the plan is approved in `/present`
+- If research or planning raises questions, ask them (or put them on the subtask) before `/present`
 - The ticket tracker is an optional enhancement - proceed without it if unavailable
 
 ## Tracking
 
-- **plan.md checkboxes**: Track cross-session progress (persistent)
-- **TodoWrite**: Track in-session subtasks (ephemeral, for complex phases)
+- **plan.md**: the canonical plan and cross-session progress
+- **status.md**: stage, batch, proofs and sign-off checks (and the work page's data source)
