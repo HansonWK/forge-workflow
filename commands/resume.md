@@ -6,14 +6,13 @@ description: Resume an existing plan
 
 ## Step 1: Scan for Plans
 
-First, try to match by ticket ID from the current branch name (e.g., branch `PROJ-1234-some-feature` → look for `.claude/temp/PROJ-1234-*/plan.md`). If no branch match, use the provided slug argument.
+First, try to match by ticket ID from the current branch name (e.g., branch `PROJ-1234-some-feature` → look for `.claude/temp/work/PROJ-1234-*/plan.md`). If no branch match, use the provided slug argument.
 
 ```bash
 # Try ticket ID from branch first
 git branch --show-current
 # Then search for matching plan directories
-ls -d .claude/temp/*/ 2>/dev/null
-find .claude/temp/ -name "plan.md" 2>/dev/null
+ls -d .claude/temp/work/*/ 2>/dev/null
 ```
 
 For each plan.md found, extract:
@@ -34,7 +33,7 @@ Also read `status.md` from the same directory (if it exists) to get:
 If no plans found:
 
 ```
-No plans found in .claude/temp/<slug> or no <slug> folder found.
+No plans found in .claude/temp/work/.
 Run /begin to start new work.
 ```
 
@@ -72,8 +71,8 @@ Cancelled.
 
 For selected plan:
 
-1. Read `.claude/temp/<name>/research.md` - understand the research
-2. Read `.claude/temp/<name>/plan.md` - understand the plan and progress
+1. Read the work folder's `research.md` - understand the research
+2. Read its `plan.md` - understand the plan and progress
 
 Determine current position:
 

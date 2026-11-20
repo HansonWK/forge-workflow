@@ -30,7 +30,7 @@ smaller PRs.
 
 Find the current active plan and verify all subtasks are complete or marked as to do in another PR:
 
-1. Read `.claude/temp/*/plan.md` for active plan
+1. Read the active plan (`.claude/temp/work/*/plan.md`)
 2. Check all subtasks have `- [x] Dev`, `- [x] Review`, `- [x] Present` checked
 
 If incomplete:

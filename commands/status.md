@@ -5,7 +5,7 @@ argument-hint: <ticket-number> optional
 
 # Status
 
-Show the status of work tracked in `.claude/temp/` by reading `status.md` files.
+Show the status of work tracked in the work folders (`.claude/temp/work/<slug>/`) by reading their `status.md` files.
 
 Two modes:
 
@@ -53,7 +53,7 @@ If the agent call fails, log the error and continue without ticket data for that
 
 ### 1. Find the folder
 
-Search `.claude/temp/` for a directory matching the argument:
+Search the work folders for one matching the argument:
 
 - If argument looks like a ticket ID (e.g., `PROJ-1234`), match directories starting with that ID
 - Otherwise, match directories containing the argument as a substring
@@ -69,7 +69,7 @@ If multiple matches, list them and ask user to pick.
 
 ### 2. Read status.md
 
-Read `.claude/temp/<folder>/status.md`. If it doesn't exist, create one with defaults (see "Creating status.md" below).
+Read its `status.md`. If it doesn't exist, create one with defaults (see "Creating status.md" below).
 
 ### 3. Update from external sources
 
@@ -121,7 +121,7 @@ Save changes back to the file.
 ### 1. Scan all folders
 
 ```bash
-ls -d .claude/temp/*/ 2>/dev/null
+ls -d .claude/temp/work/*/ 2>/dev/null
 ```
 
 For each directory, check if `status.md` exists. Skip directories without one (they're not tracked tasks — e.g., standalone files or non-task folders).

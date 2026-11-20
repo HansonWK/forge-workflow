@@ -108,7 +108,7 @@ Ask using `AskUserQuestion`. Do NOT force questions - only ask if truly needed.
 
 ## Output Format
 
-Write to `.claude/temp/<slug>/plan.md`:
+Write to `plan.md` in the work folder (`.claude/temp/work/<slug>/`):
 
 ```markdown
 # Plan: <Feature Name>

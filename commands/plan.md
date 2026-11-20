@@ -15,12 +15,12 @@ Run /research first, or /begin for full workflow.
 
 ## Instructions
 
-Find the current task directory (using our task <slug>, or the most recent folder in .claude/temp/ with research.md but no plan.md).
+Find the current task directory (using our task <slug>, or the most recent work folder in `.claude/temp/work/` with research.md but no plan.md).
 If a plan.md already exists, check it is correct for the task description and then run /resume. If it is not complete or not correct, ask the user to manually review.
 If no plan exists, run the `planner` agent to create the implementation plan:
 
 - Input: research.md + task description + existing plan if it exists
-- Output: `.claude/temp/<slug>/plan.md`
+- Output: `plan.md` in the work folder
 
 ## What the Planner Does
 

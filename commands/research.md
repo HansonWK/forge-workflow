@@ -11,26 +11,26 @@ Task: $ARGUMENTS
 
 Run the `researcher` agent to explore the codebase for this task.
 
-### If plan directory exists
+### If the work folder exists
 
-Output to the existing plan directory's research.md.
+Output to the existing work folder's research.md.
 
-### If no plan directory
+### If no work folder
 
 Generate a slug using the same naming rules as `/begin` Step 1:
 
 - If ticket ID found (from branch or task description) → `<TICKET-ID>-<slug>`
 - If no ticket ID → prompt user for task type (bugfix/housekeeping/spike/refactor) or ticket ID, then use `<task-type>-<slug>`
 
-Ask user to confirm, then create:
+Ask user to confirm, then create the work folder:
 
 ```bash
-mkdir -p .claude/temp/<slug>
+mkdir -p .claude/temp/work/<slug>
 ```
 
-After creating the directory, create `.claude/temp/<slug>/status.md` using the template from `/status` ("Creating status.md" section) with `work_status: research`.
+In it, create `status.md` using the template from `/status` ("Creating status.md" section) with `work_status: research`.
 
-Output to `.claude/temp/<slug>/research.md`.
+Output to `research.md` in the work folder.
 
 ## What the Researcher Does
 
@@ -54,7 +54,7 @@ If the task references a GitHub issue or PR, fetch context using `gh`. If not re
 ## After Research
 
 ```
-Research complete: .claude/temp/<slug>/research.md
+Research complete: .claude/temp/work/<slug>/research.md
 
 Run /plan to create implementation plan, or /begin to run full workflow.
 ```
@@ -62,5 +62,5 @@ Run /plan to create implementation plan, or /begin to run full workflow.
 ## Rules
 
 - Use the researcher agent - don't do manual research
-- Output must go to a plan directory
+- Output must go to the work folder
 - If scope is genuinely unclear or there are decisions to make, apply the `clarify` skill (structured rounds) rather than guessing

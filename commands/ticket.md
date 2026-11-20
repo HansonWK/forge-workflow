@@ -22,7 +22,7 @@ If key facts are missing (repro steps, environment, the affected component, expe
 
 ### 2. Write the Begin Prompt
 
-Create a file at `.claude/temp/<topic>/prompt.md` with:
+Create a folder `.claude/temp/work/<topic>/` and write `prompt.md` in it:
 
 ```markdown
 # Prompt: <Short title>
@@ -51,7 +51,7 @@ Create a file at `.claude/temp/<topic>/prompt.md` with:
 
 <How to verify the fix works>
 
-> Once a ticket ID exists, rename this `.claude/temp/<topic>/` folder to `<TICKET-ID>-<slug>` so it matches the branch and plan naming convention.
+> Once a ticket ID exists, rename this `<topic>/` folder to `<TICKET-ID>-<slug>` so it matches the branch and plan naming convention.
 ```
 
 ### 3. Write the Ticket
@@ -86,12 +86,12 @@ Show a summary of the ticket, the files created, and how to start work later:
 
 - **Ticket:** `<summary of ticket content>`
 - **Files created:**
-  - `.claude/temp/<topic>/ticket.md` — ticket description
-  - `.claude/temp/<topic>/prompt.md` — prompt for `/begin`
+  - `ticket.md` — ticket description
+  - `prompt.md` — prompt for `/begin`
 
 To start work later, run:
 
-    /begin @.claude/temp/<topic>/prompt.md
+    /begin @.claude/temp/work/<topic>/prompt.md
 
 ## Rules
 

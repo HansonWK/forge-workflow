@@ -8,8 +8,8 @@ description: Execute next subtask cycle in current plan
 
 Look for an active plan:
 
-1. First try to match by ticket ID from the current branch name (e.g., branch `PROJ-1234-feature` → look for `.claude/temp/PROJ-1234-*/plan.md`)
-2. Fall back to checking all `.claude/temp/*/plan.md` files
+1. First try to match by ticket ID from the current branch name (e.g., branch `PROJ-1234-feature` → look for `.claude/temp/work/PROJ-1234-*/plan.md`)
+2. Fall back to checking every work folder's `plan.md` (`.claude/temp/work/*/plan.md`)
 3. Find one with Status: `IN_PROGRESS` or `READY`
 4. If multiple, show list and ask user to select
 5. If none, error: "No active plan found. Run /begin to start new work or /resume to resume existing."

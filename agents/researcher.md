@@ -117,7 +117,7 @@ Ask using `AskUserQuestion`. Do NOT force questions - only ask if truly needed.
 
 ## Output Format
 
-Write to `.claude/temp/<slug>/research.md`:
+Write to `research.md` in the work folder (`.claude/temp/work/<slug>/`):
 
 ````markdown
 # Research: <Task Description>

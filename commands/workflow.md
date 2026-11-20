@@ -85,7 +85,7 @@ set up appear; run `/install` (or `/install <module>`) to add a skipped one late
 ### Tips
 
 - You don't need to call `/dev`, `/present`, or `/signoff` directly — `/next` and `/begin` orchestrate these for you. `/signoff` runs automatically after planning and presents clickable file links for you to review.
-- All plan and research files live in `.claude/temp/` — clean up after your PR is merged
+- Each piece of work lives in its work folder, `.claude/temp/work/<slug>/` — clean up after your PR is merged
 - Optional modules are opt-in. Re-running `/install` re-offers any module you skipped, so you can grow the workflow as the project needs it.
 - Skills (`.claude/skills/`) hold the review/security/testing/verification rubrics; commands call them for you — you don't invoke skills directly. `/dev` self-verifies (build/lint/test + acceptance criteria) before the approval gate.
 - The workflow evolves with you: run `/customize` to add/update a skill/command/agent — and Claude will suggest it when it notices you repeating the same request.

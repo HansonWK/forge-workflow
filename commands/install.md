@@ -315,7 +315,8 @@ discover from the file system, and not depth that now lives in skills.
     single source of truth; commands reference it rather than restating it):
     - Never commit or push without explicit user approval — suggest a commit message; the user commits.
     - Never fetch/read **production** secret values (dev/test only); adding secrets to any environment is fine.
-    - Plans/research and other ephemeral files live in `.claude/temp/`.
+    - The **work folder** is `.claude/temp/work/<slug>/` (research, plan, status for one piece of
+      work); **the proof folder** is its `proof/`. Other ephemeral files live in `.claude/temp/`.
     - If the user keeps asking for the same step, or keeps adding the same acceptance criterion, suggest `/customize` to encode it as a new or updated skill.
     - When the user shares a resource you build from (a blog, doc, or someone's file), apply the `attribution` skill — offer to list it as attribution, a resource, or neither, and offer to trace it to its origin.
   - **Pointers, not depth:** note that the skills in `.claude/skills/` hold the
@@ -355,6 +356,9 @@ discover from the file system, and not depth that now lives in skills.
 - Branch convention: [convention]
 
 ## Working Directories
+- Work folder: .claude/temp/work/<slug>/
+- Proof folder: <work folder>/proof/
+- Tier ledger: .claude/temp/ledger/tier-overrides.tsv
 - AI temp files: .claude/temp/
 - AI docs: .claude/docs/
 

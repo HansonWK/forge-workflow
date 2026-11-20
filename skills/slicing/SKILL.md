@@ -7,7 +7,7 @@ allowed-tools: Read, Grep, Glob, Bash
 # Slicing (rubric)
 
 Work out **whether** a piece of work should be split, and **where** the cuts go. Apply judgement.
-Read `.claude/temp/<slug>/plan.md` and the project's conventions/architecture docs before deciding.
+Read `plan.md` in the work folder (`.claude/temp/work/<slug>/`) and the project's conventions/architecture docs before deciding.
 
 Splitting is not free. **Default to a single PR.** Split only when a reason below actually applies.
 

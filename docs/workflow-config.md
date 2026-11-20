@@ -27,6 +27,9 @@
 - **Branch convention:** <TICKET-ID>-<kebab-case-summary>
 
 ## Working Directories
+- **Work folder:** .claude/temp/work/<slug>/ (research.md, plan.md, status.md for one piece of work)
+- **Proof folder:** <work folder>/proof/ (proof scripts, captured logs, screenshots; not committed)
+- **Tier ledger:** .claude/temp/ledger/tier-overrides.tsv
 - **AI temp files:** .claude/temp/
 - **AI docs:** .claude/docs/
 

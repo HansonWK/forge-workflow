@@ -93,24 +93,24 @@ Generate a folder name for this task:
 Present to user:
 
 ```
-Creating plan directory: .claude/temp/<slug>/
+Creating work folder: .claude/temp/work/<slug>/
 Is this name ok? (press 'y' to confirm, or type a different name)
 ```
 
 Wait for user confirmation or alternative name.
 
-## Step 2: Create Directory
+## Step 2: Create the work folder
 
-Check if directory already exists:
+Check if the work folder already exists:
 
 ```bash
-ls .claude/temp/<slug> 2>/dev/null
+ls .claude/temp/work/<slug> 2>/dev/null
 ```
 
-**If directory exists:**
+**If it exists:**
 
 ```
-Plan directory '.claude/temp/<slug>/' already exists.
+Work folder '<slug>' already exists.
 Options:
 1. Use a different slug
 2. Resume existing plan (/resume)
@@ -118,15 +118,15 @@ Options:
 
 Do not overwrite existing plans.
 
-**If directory doesn't exist:**
+**If it doesn't exist:**
 
 ```bash
-mkdir -p .claude/temp/<slug>
+mkdir -p .claude/temp/work/<slug>
 ```
 
 ### Create status.md
 
-After creating the directory, create `.claude/temp/<slug>/status.md` using the template defined in `/status` ("Creating status.md" section).
+In the work folder, create `status.md` using the template defined in `/status` ("Creating status.md" section).
 
 - Set `work_status` to `research` (about to start research phase)
 - Set `task_type` based on Step 1 result (ticket → `feature`, or the chosen type)
@@ -149,7 +149,7 @@ Provide the agent with:
 
 - The task description
 - Any ticket context (if available)
-- Output path: `.claude/temp/<slug>/research.md`
+- Output path: `research.md` in the work folder
 
 The researcher will:
 
@@ -166,7 +166,7 @@ Provide the agent with:
 
 - The task description
 - Path to research.md
-- Output path: `.claude/temp/<slug>/plan.md`
+- Output path: `plan.md` in the work folder
 
 The planner will:
 

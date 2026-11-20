@@ -6,7 +6,7 @@ description: Present research and plan for approval
 
 ## Prerequisites
 
-Requires both research.md and plan.md in the current task directory (`.claude/temp/<slug>/`). If missing:
+Requires both research.md and plan.md in the current work folder (`.claude/temp/work/<slug>/`). If missing:
 
 ```
 Missing required files.
@@ -35,8 +35,8 @@ Read both files, then present to the user with summaries followed by links for f
 
 Full details:
 
-.claude/temp/<slug>/research.md
-.claude/temp/<slug>/plan.md
+.claude/temp/work/<slug>/research.md
+.claude/temp/work/<slug>/plan.md
 
 Run /next to continue if approved, or provide feedback to restart the workflow.
 ```
