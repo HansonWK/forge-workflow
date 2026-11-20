@@ -37,7 +37,11 @@ Quoted text and heredoc bodies are data, so a commit message that mentions `--am
       {
         "matcher": "Bash",
         "hooks": [
-          { "type": "command", "command": "bash .claude/hooks/commit-guard.sh", "onFailure": "block" }
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/commit-guard.sh\"",
+            "onFailure": "block"
+          }
         ]
       }
     ]
@@ -47,6 +51,8 @@ Quoted text and heredoc bodies are data, so a commit message that mentions `--am
 
 ## Notes
 
+- The command uses `$CLAUDE_PROJECT_DIR`, so the hook still runs after Claude's shell has `cd`'d into
+  the work folder or a subdirectory.
 - It needs `node` (to read the hook input) and `perl`, both present wherever forge runs.
 - The settings-hardening block (`examples/settings/hardening.md`) also denies pushing the default
   branch and force-pushing; the hook catches the forms a permission pattern can't, such as a bare
