@@ -193,6 +193,12 @@ Then apply the `verify-plan` skill and set `work_status: planning`.
 Run `/present`: it shows the plan (on the work page, or in the terminal in simple mode) and stops for
 approval. After approval, `/next` starts the subtasks.
 
+## Work page
+
+In page mode, `/present` builds and publishes the page from `plan.md` (the `work-page` skill); `/begin`
+only records `mode`. If the page can't be published, the skill's fallback renders it locally and the
+work carries on.
+
 ## Rules
 
 - NEVER skip research, the ACs or planning

@@ -87,7 +87,8 @@ Read its `status.md`. If it doesn't exist, create one with defaults (see "Creati
 
 ### 4. Write updated status.md
 
-Save changes back to the file.
+Save changes back to the file. In page mode, if anything changed, update the page's progress
+(`work-page` → Keeping it live).
 
 ### 5. Display
 

@@ -57,6 +57,11 @@ you're not blocked, and surface only issues found.
 Check `- [x] Dev` in plan.md, and `- [x] Proved` once its proof passed (or it has none); set
 `work_status: in-progress` in status.md.
 
+## Work page
+
+`/dev` writes nothing to the page: its proof result and evidence go in `status.md` and the proof
+folder, and `/next` updates the page at the stop (`work-page` → Keeping it live).
+
 ## After dev
 
 Report to `/next`: the files changed, checks green (via `verify`), the proof's result and evidence
