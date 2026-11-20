@@ -175,32 +175,37 @@ to from `CLAUDE.md`.
 
 ### Commit-guard hook (optional, recommended)
 
-The never-commit guardrail is stated once in `CLAUDE.md`, but on long contexts / older models Claude
-can still commit without asking. Offer a deterministic enforcement hook:
+The commit policy is stated once in `CLAUDE.md` (approval means commit, only on a workflow branch,
+push only when asked), but on long contexts Claude can still drift. Offer the enforcement hook:
 
 ```
-I can add a commit-guard hook that blocks Claude from running `git commit` / `git push` (you commit
-yourself). It adds `.claude/hooks/commit-guard.sh` and a PreToolUse entry to `.claude/settings.json`.
-Add it? (recommended)
+I can add a commit-guard hook that lets me commit only on your workflow branches (<branch convention>),
+never on the default branch, never amending or staging everything, and never pushing the default
+branch. It adds `.claude/hooks/commit-guard.sh` (+ its test) and a PreToolUse entry to
+`.claude/settings.json`. Add it? (recommended)
 ```
 
-Only with **explicit consent**, install it from `.claude/examples/hooks/commit-guard.md` (the script
-+ the `settings.json` entry; merge into any existing `hooks`). If they decline, leave settings
-untouched and record `commit-guard: declined` in the config Modules-adjacent notes.
+Only with **explicit consent**, install it as `.claude/examples/hooks/commit-guard.md` says: copy the
+script and its test, fill `OWNED_BRANCH` / `OWNED_HINT` from the branch convention, run the test,
+and merge the `settings.json` entry into any existing `hooks`. On a re-run, a project with the 1.x
+hook (it refused every commit) gets this one offered as its replacement. If they decline, leave
+settings untouched and record `commit-guard: declined` in the config Modules-adjacent notes.
 
 ### Settings hardening (optional, recommended)
 
-Show the `deny` / `ask` block from `$FORGE/examples/settings/hardening.md`, then offer it:
+Show the block from `$FORGE/examples/settings/hardening.md`, then offer it:
 
 ```
 I can merge a permissions block into `.claude/settings.json` that denies reading `.env` files and
-printing the environment, denies force-push, and makes me ask before editing `.claude/hooks/**` or
-the settings files. Merge it? (recommended)
+printing the environment, denies force-push and pushing the default branch, pre-approves edits in
+the work folder and the tier ledger, and makes me ask before editing `.claude/hooks/**` or the
+settings files. Merge it? (recommended)
 ```
 
-Only with **explicit consent**, merge it as the example says (add missing entries to the existing
-`permissions` arrays; touch nothing else). If they decline, leave settings untouched and record
-`settings-hardening: declined` alongside the commit-guard note.
+Only with **explicit consent**, merge it as the example says (replace `main` in the push denies with
+the default branch; add missing entries to the existing `permissions` arrays; touch nothing else).
+If they decline, leave settings untouched and record `settings-hardening: declined` alongside the
+commit-guard note.
 
 ---
 

@@ -219,7 +219,11 @@ Add to your `.claude/settings.json` for the best experience:
       "Bash(git push --force*)",
       "Bash(git push * --force*)",
       "Bash(git push -f*)",
-      "Bash(git push * -f*)"
+      "Bash(git push * -f*)",
+      "Bash(git push * main)",
+      "Bash(git push * main *)",
+      "Bash(git push *:main)",
+      "Bash(git push *:main *)"
     ],
     "ask": [
       "Edit(**/.claude/hooks/**)",
@@ -234,9 +238,11 @@ Add to your `.claude/settings.json` for the best experience:
 ```
 
 This lets Claude read your codebase freely and manage its own workspace files without prompting,
-while keeping secrets out of the conversation, blocking force-pushes, and asking before Claude
-changes its own hooks or settings (`ask` beats `allow`). `/install` offers to merge the `deny` and
-`ask` lists for you (`examples/settings/hardening.md`).
+while keeping secrets out of the conversation, blocking force-pushes and pushes to the default
+branch, and asking before Claude changes its own hooks or settings (`ask` beats `allow`). `/install`
+offers to merge the hardening block for you (`examples/settings/hardening.md`); without the broad
+`.claude/**` allow, that block pre-approves the work folder (`.claude/temp/work/**`) and the tier
+ledger (`.claude/temp/ledger/**`).
 
 - `.env.*` isn't denied wholesale: that would also lock out committed `.env.example` files.
 - The `ask` rules start with `**/` so they also cover worktrees kept under the project, which a
