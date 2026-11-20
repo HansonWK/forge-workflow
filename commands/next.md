@@ -107,7 +107,7 @@ All subtasks committed. Next: /signoff — the final checks, then the PR.
 
 ## Rules
 
-- Never commit without approval of the stop, and never push (`/pr` pushes).
+- Commit only once the developer approves the stop, and don't push (`/pr` pushes).
 - Never lower a tier; only the developer does.
 - Read the page's input only at a stop, never mid-batch.
 - Keep `plan.md` canonical: a rename, tier change or answer goes there first, then the page.

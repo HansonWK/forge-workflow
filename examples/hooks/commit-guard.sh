@@ -64,7 +64,7 @@ check_branch() {
   branch=$(git -C "$dir" symbolic-ref -q --short HEAD)
   [ -n "$branch" ] || block "this checkout is on a detached HEAD. Claude commits only on a workflow branch ($OWNED_HINT): create one with git switch -c first."
   is_default "$branch" "$(default_branch "$dir")" &&
-    block "'$branch' is the default branch. Claude never commits on it: create a workflow branch ($OWNED_HINT) with git switch -c first."
+    block "'$branch' is the default branch, which Claude doesn't commit on: create a workflow branch ($OWNED_HINT) with git switch -c first."
   printf '%s' "$branch" | grep -Eq "$OWNED_BRANCH" ||
     block "'$branch' is not a branch the workflow owns ($OWNED_HINT). Claude commits only on those: suggest a correctly named branch to the developer instead."
 }
