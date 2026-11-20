@@ -188,6 +188,20 @@ Only with **explicit consent**, install it from `.claude/examples/hooks/commit-g
 + the `settings.json` entry; merge into any existing `hooks`). If they decline, leave settings
 untouched and record `commit-guard: declined` in the config Modules-adjacent notes.
 
+### Settings hardening (optional, recommended)
+
+Show the `deny` / `ask` block from `$FORGE/examples/settings/hardening.md`, then offer it:
+
+```
+I can merge a permissions block into `.claude/settings.json` that denies reading `.env` files and
+printing the environment, denies force-push, and makes me ask before editing `.claude/hooks/**` or
+the settings files. Merge it? (recommended)
+```
+
+Only with **explicit consent**, merge it as the example says (add missing entries to the existing
+`permissions` arrays; touch nothing else). If they decline, leave settings untouched and record
+`settings-hardening: declined` alongside the commit-guard note.
+
 ---
 
 ## Phase 4 — Optional Modules
@@ -402,7 +416,7 @@ Suggest next steps: `/workflow` to see all commands; commit the workflow files s
 
 ## Explicit Exclusions
 
-- Do **NOT** modify `.claude/settings.json` / `.claude/settings.local.json` **except** the optional commit-guard hook above, and only with the user's explicit consent. Never change other settings.
+- Do **NOT** modify `.claude/settings.json` / `.claude/settings.local.json` **except** the optional commit-guard hook and settings-hardening block above, and only with the user's explicit consent. Never change other settings.
 - Do **NOT** set up MCP servers — some agents reference optional MCP tools, but those are configured independently.
 - Do **NOT** delete existing files the user has in `.claude/` (other than removing a module's own generic command files when the user marks it n/a and confirms).
 - Do **NOT** write real secret values into the repo or the config.

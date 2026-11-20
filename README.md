@@ -209,12 +209,38 @@ Add to your `.claude/settings.json` for the best experience:
       "Read",
       "Edit(.claude/**)",
       "Write(.claude/**)"
+    ],
+    "deny": [
+      "Read(**/.env)",
+      "Read(**/.env.local)",
+      "Bash(cat *.env*)",
+      "Bash(printenv:*)",
+      "Bash(env)",
+      "Bash(git push --force*)",
+      "Bash(git push * --force*)",
+      "Bash(git push -f*)",
+      "Bash(git push * -f*)"
+    ],
+    "ask": [
+      "Edit(.claude/hooks/**)",
+      "Write(.claude/hooks/**)",
+      "Edit(.claude/settings.json)",
+      "Write(.claude/settings.json)",
+      "Edit(.claude/settings.local.json)",
+      "Write(.claude/settings.local.json)"
     ]
   }
 }
 ```
 
-This lets Claude read your codebase freely and manage its own workspace files without prompting.
+This lets Claude read your codebase freely and manage its own workspace files without prompting,
+while keeping secrets out of the conversation, blocking force-pushes, and asking before Claude
+changes its own hooks or settings (`ask` beats `allow`). `/install` offers to merge the `deny` and
+`ask` lists for you (`examples/settings/hardening.md`).
+
+- `.env.*` isn't denied wholesale: that would also lock out committed `.env.example` files.
+- A `Read` deny also blocks `Edit` and `Write` on the path, so any step that must write a denied
+  file does it through the shell, never the Write tool.
 
 If you use a formatter, add a hook to auto-format on file writes:
 

@@ -58,7 +58,8 @@ Show an overview: the (transformed) name, a **redacted** value preview, the envi
 
 ## Step 6: Execute
 
-Run the provider command and report success/failure.
+Run the provider command and report success/failure. A plain `.env` provider writes through the
+shell, never the Write/Edit tools: the settings hardening's `Read` deny on `.env` blocks those too.
 
 ## Rules
 
