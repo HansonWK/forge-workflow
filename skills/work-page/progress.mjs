@@ -77,9 +77,9 @@ const evidenceFor = (key) =>
 
 const proofs = Object.fromEntries(
   section(status, 'Proofs')
-    .map((l) => l.match(/^- (P?\d+): (pass|fail|blocked|skipped)\s*[—-]?\s*(.*)$/))
+    .map((l) => l.match(/^- (P?\d+): (pass|fail|blocked|skipped|skip)\b\s*[—-]?\s*(.*)$/i))
     .filter(Boolean)
-    .map(([, key, result, summary]) => [key, { result, summary, evidence: evidenceFor(key) }]),
+    .map(([, key, result, summary]) => [key.toUpperCase(), { result: result.toLowerCase(), summary, evidence: evidenceFor(key.toUpperCase()) }]),
 );
 
 const git = (...a) => {
