@@ -362,7 +362,9 @@
       blocked: ['Blocked', 'warn'],
       skipped: ['Skipped', ''],
       stub: ['Stub', 'warn'],
+      skip: ['Skipped', ''],
       pending: ['Not run', ''],
+      todo: ['Not started', ''],
       'in progress': ['In progress', 'accent'],
       'not started': ['Not started', ''],
     };
@@ -393,7 +395,7 @@
     };
     const fill = (node, ...kids) => node.replaceChildren(...kids.flat().filter((c) => c != null && c !== false));
     const chip = (text, kind = '') => el('span', { class: `chip ${kind}`, text });
-    const result = (r) => chip(...(RESULT[r] || [r || 'Not run', '']));
+    const result = (r) => chip(...(RESULT[String(r ?? '').toLowerCase()] || [r || 'Not run', '']));
     const progressFor = (n) => (state.progress.subtasks || {})[n] || {};
     const effective = (s) => {
       const o = state.overrides[s.n] || {};
@@ -645,7 +647,7 @@
           const c = state.checks[t.id] || {};
           const ev = state.evidence[t.id];
           return el('div', { class: 'card' },
-            el('div', { class: 'row' }, el('b', { text: t.id }), result(c.state ? c.state.toLowerCase() : 'pending'), rich('span', t.step)),
+            el('div', { class: 'row' }, el('b', { text: t.id }), result(c.state || 'pending'), rich('span', t.step)),
             t.expect ? el('div', {}, el('span', { class: 'label', text: 'Expect ' }), rich('span', t.expect)) : null,
             c.note ? rich('div', c.note, { class: 'note' }) : null,
             ev?.rows?.length ? el('div', { class: 'tbl-wrap' }, el('table', {}, el('tr', {}, el('th', { text: 'Check' }), el('th', { text: 'Expected' }), el('th', { text: 'Actual' })), ev.rows.map((r) => el('tr', {}, rich('td', r.check), rich('td', r.expected), el('td', {}, r.ok ? chip(String(r.actual ?? ''), 'ok') : chip(String(r.actual ?? ''), 'bad')))))) : null,

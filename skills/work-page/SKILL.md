@@ -121,7 +121,8 @@ It appears from `stage: PR` on. Two ways to fill it:
   written at `/signoff` from the ACs' proofs, with `expect` written before the step runs.
 
 Either way the results go in two collections Claude writes with one `ArtifactData` `batch`:
-`checks/<stepId>` = `{state, note}` (`Pass`, `Fail`, `In progress`, `Not started`, `Skipped`) and
+`checks/<stepId>` = `{state, note}` (`Pass`, `Fail`, `In progress`, `Not started`, `Skipped`, or
+`todo` / `skip`; either case) and
 `evidence/<caseId>` = `{status, at, rows: [{check, expected, actual, ok}], text}`. After every message
 where the developer says they did something, update that step's state and note and write its log
 proof before replying. Query logs as `/logs`' query rules say: validate a query on a short window
