@@ -224,9 +224,9 @@ Show the block from `$FORGE/examples/settings/hardening.md`, then offer it:
 
 ```
 I can merge a permissions block into `.claude/settings.json` that denies reading `.env` files and
-printing the environment, denies force-push and pushing the default branch, pre-approves edits in
-the work folder and the tier ledger, and makes me ask before editing `.claude/hooks/**` or the
-settings files. Merge it? (recommended)
+printing the environment, denies force-push and pushing the default branch, makes me ask before
+any other push (even in auto mode), pre-approves edits in the work folder and the tier ledger, and
+makes me ask before editing `.claude/hooks/**` or the settings files. Merge it? (recommended)
 ```
 
 Only with **explicit consent**, merge it as the example says (replace `main` in the push denies with
