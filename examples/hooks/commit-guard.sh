@@ -4,10 +4,10 @@
 # `git commit --amend` / `-a`, `git add -A` / `--all` / `.`, and a `git push` that targets the default branch.
 # Exit code 2 blocks the call and shows stderr to Claude.
 
-# The branches /begin, /branch and /audit-fix create. /install fills both from the branch convention
-# in docs/workflow-config.md.
-OWNED_BRANCH='^([A-Z][A-Z0-9]+-[0-9]+-[a-z0-9][a-z0-9-]*|(bugfix|housekeeping|spike|refactor)-[a-z0-9][a-z0-9-]*|audit/[a-z0-9][a-z0-9-]*)$'
-OWNED_HINT='<TICKET-ID>-<summary>, bugfix-, housekeeping-, spike- or refactor-<slug>, or audit/<slug>'
+# OWNED_BRANCH and OWNED_HINT: the branches the workflow owns, shared with push-branch.sh.
+owned_file="$(dirname "$0")/../scripts/owned-branch.sh"
+OWNED_BRANCH=
+. "$owned_file" 2>/dev/null
 
 block() {
   echo "Blocked: $1" >&2
@@ -88,6 +88,7 @@ check_branch() {
   dir=$1
   git -C "$dir" rev-parse --git-dir >/dev/null 2>&1 ||
     block "the commit guard can't find a git checkout at '$dir', so it can't check the branch. Commit from the checkout, with a plain path."
+  [ -n "$OWNED_BRANCH" ] || block "the commit guard can't read $owned_file, so it can't tell which branches the workflow owns."
   branch=$(git -C "$dir" symbolic-ref -q --short HEAD)
   [ -n "$branch" ] || block "this checkout is on a detached HEAD. Claude commits only on a workflow branch ($OWNED_HINT): create one with git switch -c first."
   is_default "$branch" "$(default_branch "$dir")" &&

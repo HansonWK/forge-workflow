@@ -16,8 +16,9 @@ to Claude):
 - `git commit --amend`, `git commit -a`;
 - `git add -A`, `--all`, `.`;
 - a `git push` that targets the default branch, including a bare `git push` while on it;
-- anything it can't check: hook input that isn't JSON, no `node` on PATH, or a commit or push in a
-  folder it can't resolve to a git checkout and branch (`cd "$SOME_VAR"`, `cd -`, a detached HEAD).
+- anything it can't check: hook input that isn't JSON, no `node` on PATH, a commit without
+  `.claude/scripts/owned-branch.sh`, or a commit or push in a folder it can't resolve to a git
+  checkout and branch (`cd "$SOME_VAR"`, `cd -`, a detached HEAD).
 
 Everything else (status, diff, log, `git add <file>`, pushing a workflow branch) runs normally.
 Quoted text, heredoc and here-string bodies are data, so a commit message that mentions `--amend` is
@@ -26,11 +27,11 @@ fine. Quoted paths keep their spaces, and `$CLAUDE_PROJECT_DIR` and `$HOME` (or 
 ## Install
 
 1. Copy `commit-guard.sh` and `commit-guard.test.sh` from this folder to `.claude/hooks/` and make
-   them executable.
-2. Set `OWNED_BRANCH` (a regex) and `OWNED_HINT` (its plain-words form) at the top of the script
-   from the branch convention in `docs/workflow-config.md`, keeping the task-type prefixes `/begin`
-   uses and `audit/` if the audit module is installed. Add one branch of each kind to the test's
-   first loop.
+   them executable, and `../scripts/owned-branch.sh` to `.claude/scripts/` (the push script shares it).
+2. Set `OWNED_BRANCH` (a regex) and `OWNED_HINT` (its plain-words form) in `owned-branch.sh` from
+   the branch convention in `docs/workflow-config.md`, keeping the task-type prefixes `/begin` uses
+   and `audit/` if the audit module is installed. Add one branch of each kind to the test's first
+   loop.
 3. Run `bash .claude/hooks/commit-guard.test.sh`; it must print `all checks passed`.
 4. Add the hook to `.claude/settings.json` (merge into any existing `hooks`):
 

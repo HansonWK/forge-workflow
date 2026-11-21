@@ -208,15 +208,15 @@ push only when asked), but on long contexts Claude can still drift. Offer the en
 ```
 I can add a commit-guard hook that lets me commit only on your workflow branches (<branch convention>),
 never on the default branch, never amending or staging everything, and never pushing the default
-branch. It adds `.claude/hooks/commit-guard.sh` (+ its test) and a PreToolUse entry to
-`.claude/settings.json`. Add it? (recommended)
+branch. It adds `.claude/hooks/commit-guard.sh` (+ its test), `.claude/scripts/owned-branch.sh`
+(the branch convention) and a PreToolUse entry to `.claude/settings.json`. Add it? (recommended)
 ```
 
 Only with **explicit consent**, install it as `.claude/examples/hooks/commit-guard.md` says: copy the
-script and its test, fill `OWNED_BRANCH` / `OWNED_HINT` from the branch convention, run the test,
-and merge the `settings.json` entry into any existing `hooks`. On a re-run, a project with the 1.x
-hook (it refused every commit) gets this one offered as its replacement. If they decline, leave
-settings untouched and record `commit-guard: declined` in the config Modules-adjacent notes.
+script, its test and `owned-branch.sh`, fill `OWNED_BRANCH` / `OWNED_HINT` from the branch
+convention, run the test, and merge the `settings.json` entry into any existing `hooks`. On a
+re-run, a project with the 1.x hook (it refused every commit) gets this one offered as its
+replacement. If they decline, leave settings untouched and record `commit-guard: declined` in the config Modules-adjacent notes.
 
 ### Settings hardening (optional, recommended)
 
@@ -310,7 +310,7 @@ Each module's setup is: **read the reference example → ask the provider/config
    | `https://mycompany.atlassian.net` | Real Jira URL (if Jira) |
    | `~/AI/config/jira.env` | Real credentials path (if changed) |
    | `main` (PR base / diff base, the hardening push denies) | The detected default branch |
-   | `OWNED_BRANCH` / `OWNED_HINT` in `examples/hooks/commit-guard.sh` | The branch convention (only when the hook is installed) |
+   | `OWNED_BRANCH` / `OWNED_HINT` in `examples/scripts/owned-branch.sh` | The branch convention (only when the hook is installed) |
    | `gh pr create` | The hosting flow (GitHub `gh`, GitLab `glab`, Bitbucket web) |
 
    **Adapt the skills and agents to the stack** (not just string swaps) — keep the rubric/structure, rewrite stack-specific specifics to match the detected project:

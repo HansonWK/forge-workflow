@@ -153,6 +153,14 @@ check_ps blocked 'Set-Location $env:SOME_DIR; git commit -m "Fix"'
 CLAUDE_PROJECT_DIR=$repo check allowed 'cd "$CLAUDE_PROJECT_DIR" && git commit -m "Fix"' "$other"
 CLAUDE_PROJECT_DIR=$repo check_ps allowed 'Set-Location $env:CLAUDE_PROJECT_DIR; git commit -m "Fix"' "$other"
 
+# Without owned-branch.sh in ../scripts/, the guard refuses commits, even with OWNED_BRANCH in the
+# environment, and lets the rest run.
+mkdir -p "$tmp/lone/hooks"
+cp "$guard" "$tmp/lone/hooks/"
+on PROJ-1-x
+OWNED_BRANCH=. guard="$tmp/lone/hooks/commit-guard.sh" check blocked 'git commit -m "Fix"'
+OWNED_BRANCH=. guard="$tmp/lone/hooks/commit-guard.sh" check allowed 'git status'
+
 git -C "$repo" checkout -q --detach
 check blocked 'git commit -m "Fix"'
 check blocked 'git push'
