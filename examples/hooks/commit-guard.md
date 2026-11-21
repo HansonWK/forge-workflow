@@ -15,11 +15,13 @@ to Claude):
 - `git commit` on the default branch, a detached HEAD, or a branch outside `OWNED_BRANCH`;
 - `git commit --amend`, `git commit -a`;
 - `git add -A`, `--all`, `.`;
-- a `git push` that targets the default branch, including a bare `git push` while on it.
+- a `git push` that targets the default branch, including a bare `git push` while on it;
+- anything it can't check: hook input that isn't JSON, no `node` on PATH, or a commit or push in a
+  folder it can't resolve to a git checkout and branch (`cd "$SOME_VAR"`, `cd -`, a detached HEAD).
 
 Everything else (status, diff, log, `git add <file>`, pushing a workflow branch) runs normally.
 Quoted text, heredoc and here-string bodies are data, so a commit message that mentions `--amend` is
-fine.
+fine. Quoted paths keep their spaces, and `$CLAUDE_PROJECT_DIR` and `$HOME` (or `$env:…`) resolve.
 
 ## Install
 

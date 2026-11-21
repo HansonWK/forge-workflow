@@ -9,31 +9,37 @@
 OWNED_BRANCH='^([A-Z][A-Z0-9]+-[0-9]+-[a-z0-9][a-z0-9-]*|(bugfix|housekeeping|spike|refactor)-[a-z0-9][a-z0-9-]*|audit/[a-z0-9][a-z0-9-]*)$'
 OWNED_HINT='<TICKET-ID>-<summary>, bugfix-, housekeeping-, spike- or refactor-<slug>, or audit/<slug>'
 
+block() {
+  echo "Blocked: $1" >&2
+  exit 2
+}
+
+# Input the guard can't read is refused, never waved through.
+command -v node >/dev/null 2>&1 ||
+  block "the commit guard needs node to read the hook input, and node isn't on PATH. Install node, or ask the developer to run the command."
 input=$(cat)
 {
+  IFS= read -r -d '' parsed
   IFS= read -r -d '' tool
   IFS= read -r -d '' start_dir
   IFS= read -r -d '' cmd
 } < <(printf '%s' "$input" | node -e '
   let s = "";
   process.stdin.on("data", (d) => (s += d)).on("end", () => {
-    let j = {};
+    let j;
     try { j = JSON.parse(s); } catch {}
-    process.stdout.write([j.tool_name, j.cwd, j.tool_input?.command].map((v) => v ?? "").join("\0") + "\0");
+    if (!j || typeof j !== "object") return process.stdout.write("bad\0");
+    process.stdout.write(["ok", j.tool_name, j.cwd, j.tool_input?.command].map((v) => v ?? "").join("\0") + "\0");
   });')
+[ "$parsed" = ok ] || block "the commit guard couldn't read the hook input as JSON, so it can't check this command."
 case "$tool" in Bash | PowerShell) ;; *) exit 0 ;; esac
 [ -n "$cmd" ] || exit 0
 start_dir=${start_dir:-${CLAUDE_PROJECT_DIR:-$PWD}}
 
-block() {
-  echo "Blocked: $1" >&2
-  exit 2
-}
-
 # Heredoc and here-string bodies are data. In PowerShell a backtick escapes the next character or
-# continues the line, and a { } block holds commands. Quoted text stays one word, with any separator
-# inside it neutralised, so a commit message never splits the command and `echo "git commit"` is not
-# a commit.
+# continues the line, and a { } block holds commands. Quoted text stays one word: its spaces and
+# separators are swapped for control bytes (decoded again for paths), so a commit message never splits
+# the command, `echo "git commit"` is not a commit, and `cd "/a b"` still finds "/a b".
 if [ "$tool" = PowerShell ]; then
   body=$(printf '%s\n' "${cmd//$'\r'/}" | awk '
     inside { if ($0 ~ /^["\047]@/) inside = 0; next }
@@ -47,14 +53,23 @@ else
     }
     { print }')
 fi
-words=$(printf '%s\n' "$body" | perl -pe 's/"([^"]*)"|\x27([^\x27]*)\x27/my $q = defined $1 ? $1 : $2; $q =~ s{[;&|\s()]}{_}g; length $q ? $q : "_"/ge')
+words=$(printf '%s\n' "$body" | perl -pe 's/"([^"]*)"|\x27([^\x27]*)\x27/my $q = defined $1 ? $1 : $2; $q =~ tr{ \t;&|()\n}{\x10-\x17}; length $q ? $q : "\x18"/ge')
 
+# A path the guard can't work out (another variable, cd -) resolves to a folder that doesn't exist,
+# and a commit there is refused.
 resolve() {
-  case "$1" in
+  local p v f
+  p=$(printf '%s' "$1" | tr '\020\021\022\023\024\025\026\027' ' \t;&|()\n' | tr -d '\030')
+  for v in CLAUDE_PROJECT_DIR HOME; do
+    for f in "\${$v}" "\$env:$v" "\$$v"; do
+      case "$p" in "$f" | "$f"/* | "$f"\\*) p=${!v}${p#"$f"}; break 2 ;; esac
+    done
+  done
+  case "$p" in
     '' | '~') printf '%s' "$HOME" ;;
-    '~/'* | '~\'*) printf '%s' "$HOME/${1#'~'?}" ;;
-    /* | [A-Za-z]:[\\/]* | '\\'*) printf '%s' "$1" ;;
-    *) printf '%s' "$2/$1" ;;
+    '~/'* | '~\'*) printf '%s' "$HOME/${p#'~'?}" ;;
+    /* | [A-Za-z]:[\\/]* | '\\'*) printf '%s' "$p" ;;
+    *) printf '%s' "$2/$p" ;;
   esac
 }
 
@@ -71,7 +86,8 @@ is_default() {
 
 check_branch() {
   dir=$1
-  git -C "$dir" rev-parse --git-dir >/dev/null 2>&1 || return 0
+  git -C "$dir" rev-parse --git-dir >/dev/null 2>&1 ||
+    block "the commit guard can't find a git checkout at '$dir', so it can't check the branch. Commit from the checkout, with a plain path."
   branch=$(git -C "$dir" symbolic-ref -q --short HEAD)
   [ -n "$branch" ] || block "this checkout is on a detached HEAD. Claude commits only on a workflow branch ($OWNED_HINT): create one with git switch -c first."
   is_default "$branch" "$(default_branch "$dir")" &&
@@ -91,11 +107,15 @@ check_push() {
   for ref in "${positional[@]:1}"; do
     target=${ref##*:}
     target=${target#refs/heads/}
-    [ "$target" = HEAD ] && target=$(git -C "$dir" symbolic-ref -q --short HEAD 2>/dev/null)
+    if [ "$target" = HEAD ]; then
+      target=$(git -C "$dir" symbolic-ref -q --short HEAD 2>/dev/null)
+      [ -n "$target" ] || block "the commit guard can't tell which branch HEAD is at '$dir', so it can't check git push $ref."
+    fi
     is_default "$target" "$default" && block "git push $ref targets the default branch. Claude never pushes it: push the workflow branch and open a PR."
   done
-  if [ ${#positional[@]} -le 1 ] && git -C "$dir" rev-parse --git-dir >/dev/null 2>&1; then
-    branch=$(git -C "$dir" symbolic-ref -q --short HEAD)
+  if [ ${#positional[@]} -le 1 ]; then
+    branch=$(git -C "$dir" symbolic-ref -q --short HEAD 2>/dev/null)
+    [ -n "$branch" ] || block "the commit guard can't tell which branch a bare git push at '$dir' would push. Name the remote and branch."
     is_default "$branch" "$default" && block "a bare git push on '$branch' pushes the default branch. Claude never pushes it."
   fi
 }
