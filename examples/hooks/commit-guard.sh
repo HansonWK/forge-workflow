@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# PreToolUse hook (Bash): Claude commits only on a branch the workflow owns, files staged by name, never amending.
+# PreToolUse hook (Bash and PowerShell): Claude commits only on a branch the workflow owns, files staged by name, never amending.
 # Refuses `git commit` on the default branch, a detached HEAD or a branch outside OWNED_BRANCH,
 # `git commit --amend` / `-a`, `git add -A` / `--all` / `.`, and a `git push` that targets the default branch.
 # Exit code 2 blocks the call and shows stderr to Claude.
@@ -21,7 +21,8 @@ input=$(cat)
     try { j = JSON.parse(s); } catch {}
     process.stdout.write([j.tool_name, j.cwd, j.tool_input?.command].map((v) => v ?? "").join("\0") + "\0");
   });')
-[ "$tool" = Bash ] && [ -n "$cmd" ] || exit 0
+case "$tool" in Bash | PowerShell) ;; *) exit 0 ;; esac
+[ -n "$cmd" ] || exit 0
 start_dir=${start_dir:-${CLAUDE_PROJECT_DIR:-$PWD}}
 
 block() {
@@ -29,20 +30,30 @@ block() {
   exit 2
 }
 
-# Heredoc bodies are data. Quoted text stays one word, with any separator inside it neutralised,
-# so a commit message never splits the command and `echo "git commit"` is not a commit.
-words=$(printf '%s\n' "${cmd//$'\\\n'/ }" | awk '
-  marker != "" { if ($0 == marker) marker = ""; next }
-  match($0, /<<-?[[:space:]]*["\047]?[A-Za-z_][A-Za-z0-9_]*/) {
-    marker = substr($0, RSTART, RLENGTH); sub(/^<<-?[[:space:]]*["\047]?/, "", marker)
-  }
-  { print }' | perl -pe 's/"([^"]*)"|\x27([^\x27]*)\x27/my $q = defined $1 ? $1 : $2; $q =~ s{[;&|\s()]}{_}g; length $q ? $q : "_"/ge')
+# Heredoc and here-string bodies are data. In PowerShell a backtick escapes the next character or
+# continues the line, and a { } block holds commands. Quoted text stays one word, with any separator
+# inside it neutralised, so a commit message never splits the command and `echo "git commit"` is not
+# a commit.
+if [ "$tool" = PowerShell ]; then
+  body=$(printf '%s\n' "${cmd//$'\r'/}" | awk '
+    inside { if ($0 ~ /^["\047]@/) inside = 0; next }
+    /@["\047][[:space:]]*$/ { sub(/@["\047][[:space:]]*$/, "_"); print; inside = 1; next }
+    { print }' | perl -0pe 's/`\n/ /g; s/`["\x27]/_/g; s/`(.)/$1/g; s/[{}]/;/g')
+else
+  body=$(printf '%s\n' "${cmd//$'\\\n'/ }" | awk '
+    marker != "" { if ($0 == marker) marker = ""; next }
+    match($0, /<<-?[[:space:]]*["\047]?[A-Za-z_][A-Za-z0-9_]*/) {
+      marker = substr($0, RSTART, RLENGTH); sub(/^<<-?[[:space:]]*["\047]?/, "", marker)
+    }
+    { print }')
+fi
+words=$(printf '%s\n' "$body" | perl -pe 's/"([^"]*)"|\x27([^\x27]*)\x27/my $q = defined $1 ? $1 : $2; $q =~ s{[;&|\s()]}{_}g; length $q ? $q : "_"/ge')
 
 resolve() {
   case "$1" in
     '' | '~') printf '%s' "$HOME" ;;
-    '~/'*) printf '%s' "$HOME/${1#'~/'}" ;;
-    /*) printf '%s' "$1" ;;
+    '~/'* | '~\'*) printf '%s' "$HOME/${1#'~'?}" ;;
+    /* | [A-Za-z]:[\\/]* | '\\'*) printf '%s' "$1" ;;
     *) printf '%s' "$2/$1" ;;
   esac
 }
@@ -129,9 +140,14 @@ while IFS= read -r segment; do
   i=0
   while [ $i -lt ${#w[@]} ] && [[ ${w[$i]} =~ ^[A-Za-z_][A-Za-z0-9_]*= ]]; do i=$((i + 1)); done
   [ $i -lt ${#w[@]} ] || continue
-  case "${w[$i]}" in
-    cd | pushd) dir=$(resolve "${w[$((i + 1))]}" "$dir") ;;
-    git | */git) check_git "$dir" "${w[@]:$((i + 1))}" ;;
+  # PowerShell names are case-insensitive, and Windows finds git.exe from git.
+  case $(printf '%s' "${w[$i]}" | tr '[:upper:]' '[:lower:]') in
+    cd | pushd | chdir | sl | set-location | push-location)
+      i=$((i + 1))
+      case $(printf '%s' "${w[$i]}" | tr '[:upper:]' '[:lower:]') in -path | -literalpath) i=$((i + 1)) ;; esac
+      dir=$(resolve "${w[$i]}" "$dir")
+      ;;
+    git | */git | *'\'git | git.exe | */git.exe | *'\'git.exe) check_git "$dir" "${w[@]:$((i + 1))}" ;;
   esac
 done < <(printf '%s\n' "$words" | perl -pe 's/&&|\|\||[;&|]/\n/g; s/[()]/ /g')
 

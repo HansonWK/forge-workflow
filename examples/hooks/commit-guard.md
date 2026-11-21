@@ -9,7 +9,8 @@ It's opt-in: `/install` offers it and only adds it with your explicit consent.
 
 ## What it refuses
 
-A `PreToolUse` hook on the `Bash` tool. It refuses (exit 2, with the reason shown to Claude):
+A `PreToolUse` hook on the `Bash` and `PowerShell` tools. It refuses (exit 2, with the reason shown
+to Claude):
 
 - `git commit` on the default branch, a detached HEAD, or a branch outside `OWNED_BRANCH`;
 - `git commit --amend`, `git commit -a`;
@@ -17,7 +18,8 @@ A `PreToolUse` hook on the `Bash` tool. It refuses (exit 2, with the reason show
 - a `git push` that targets the default branch, including a bare `git push` while on it.
 
 Everything else (status, diff, log, `git add <file>`, pushing a workflow branch) runs normally.
-Quoted text and heredoc bodies are data, so a commit message that mentions `--amend` is fine.
+Quoted text, heredoc and here-string bodies are data, so a commit message that mentions `--amend` is
+fine.
 
 ## Install
 
@@ -35,7 +37,7 @@ Quoted text and heredoc bodies are data, so a commit message that mentions `--am
   "hooks": {
     "PreToolUse": [
       {
-        "matcher": "Bash",
+        "matcher": "Bash|PowerShell",
         "hooks": [
           {
             "type": "command",
@@ -53,7 +55,10 @@ Quoted text and heredoc bodies are data, so a commit message that mentions `--am
 
 - The command uses `$CLAUDE_PROJECT_DIR`, so the hook still runs after Claude's shell has `cd`'d into
   the work folder or a subdirectory.
-- It needs `node` (to read the hook input) and `perl`, both present wherever forge runs.
+- It needs `node` (to read the hook input), `perl` and `bash`. On Windows, Git for Windows provides
+  `bash` and `perl`; the hook runs through it for PowerShell commands too.
+- For PowerShell it also reads `;` chains, `{ }` blocks, backtick escapes and line continuations,
+  `& git` / `git.exe`, and `Set-Location` / `sl` / `Push-Location`, case-insensitively.
 - The settings-hardening block (`examples/settings/hardening.md`) also denies pushing the default
   branch and force-pushing; the hook catches the forms a permission pattern can't, such as a bare
   `git push` on the default branch.
