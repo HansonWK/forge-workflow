@@ -203,7 +203,7 @@ These tailor the core loop. Infer first, then confirm in one round:
 ### Commit-guard hook (optional, recommended)
 
 The commit policy is stated once in `CLAUDE.md` (approval means commit, only on a workflow branch,
-push only when asked), but on long contexts Claude can still drift. Offer the enforcement hook:
+push only through the push script after a yes), but on long contexts Claude can still drift. Offer the enforcement hook:
 
 ```
 I can add a commit-guard hook that lets me commit only on your workflow branches (<branch convention>),
@@ -372,7 +372,9 @@ discover from the file system, and not depth that now lives in skills.
       matching `<branch convention>`. Never on the default branch, a release or hotfix branch you
       didn't create, or a branch the developer named outside the pattern: stop and suggest a
       correctly named branch instead.
-    - **Push only when the developer says push.** `/pr` pushes when it opens the PR.
+    - **Push only through `.claude/scripts/push-branch.sh`**, and only after the developer says yes
+      to a workflow step that pushes (`/pr` asks once: "The current work is not pushed. Approve to
+      push and open the PR?"). Any other push goes through the permission prompt.
     - Never fetch/read **production** secret values (dev/test only); adding secrets to any environment is fine.
     - The **work folder** is `.claude/temp/work/<slug>/` (research, plan, status for one piece of
       work); **the proof folder** is its `proof/`. Other ephemeral files live in `.claude/temp/`.

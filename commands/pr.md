@@ -17,7 +17,8 @@ Sign-off hasn't covered <N> commit(s) (or hasn't run). Run /signoff, or say "go 
 
 **STOP.** On "go anyway", carry on and list what wasn't signed off (the commits, or the checks that
 didn't run) under "Not signed off" in the description. **Early PR** (the developer asked while
-`/signoff` runs) skips the gate; update the description when the checks finish.
+`/signoff` runs) skips the gate and asks the Step 5 question; update the description when the checks
+finish.
 
 For **large or high-stakes** change sets, also consider `/double-check` — an independent second
 opinion from a different AI CLI (the `double-check` skill) — before opening the PR. If the change is
@@ -101,7 +102,10 @@ Use the `pr-description` agent to generate the description, following this struc
 - **Proof**: from plan.md's ACs, `## Proofs` in status.md and the proof folder
 - **Test plan**: the Test-on-dev steps `/signoff` wrote
 
-## Step 5: Present for Approval
+## Step 5: Ask once
+
+The work is not pushed when `git log @{u}..HEAD --oneline` lists commits or fails (no upstream).
+Show the preview and end it with the one question:
 
 ```markdown
 ## Pull Request Preview
@@ -113,27 +117,28 @@ Use the `pr-description` agent to generate the description, following this struc
 
 ---
 
-**Approve?** (y/go, or provide feedback)
+The current work is not pushed. Approve to push and open the PR?
 ```
 
-**STOP and wait for user approval.**
+When it's already pushed, the question is `Approve to open the PR?`. An early PR asks the same.
 
-If user provides feedback:
+**STOP and wait.** Any yes ("yes", "go", "approved", `/next`) approves the push, the title and the
+description together. Feedback instead changes the title or description; show them again with the
+same question.
 
-- Adjust title/description
-- Present again
+## Step 6: Push and open the PR
 
-## Step 6: Push and create the PR
-
-Approving the PR is the developer saying push. Push the branch, then open the PR/MR in the browser so
-the user can make final edits before submitting, using the configured git hosting and default branch
-(see `docs/workflow-config.md`):
+On the yes, push through the push script (skip it when already pushed), then open the PR/MR in the
+browser so the user can make final edits before submitting, using the configured git hosting and
+default branch (see `docs/workflow-config.md`):
 
 ```bash
-git push -u origin <branch>
-# GitHub (default). For GitLab use `glab mr create`; for Bitbucket, open the compare URL.
+bash .claude/scripts/push-branch.sh
+# GitHub (default). For GitLab use `glab mr create`; for Bitbucket, open the PR link the script printed.
 gh pr create --base <default-branch> --title "<title>" --body "<description>" --web
 ```
+
+If the script refuses, show its reason and stop: never push another way.
 
 **IMPORTANT:** Always open the PR in the browser (GitHub's `--web`, or the platform equivalent) rather than submitting it directly. The user reviews and makes final edits before clicking "Create" on the hosting site. Do NOT create the PR without opening it for review.
 
@@ -170,6 +175,6 @@ the merge).
 ## Rules
 
 - NEVER create PR with incomplete commits
-- NEVER create PR without user approval of title/description
-- Push only the workflow branch, only after that approval; never the default branch
+- NEVER push or open the PR before the developer's yes to the Step 5 question
+- Push only through `.claude/scripts/push-branch.sh`; any other push goes through the permission prompt
 - Use pr-description agent for consistent formatting

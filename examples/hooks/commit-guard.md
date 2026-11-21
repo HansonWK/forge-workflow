@@ -2,8 +2,9 @@
 
 Forge's commit policy (the CLAUDE.md Working agreements): **approval means commit**. Claude commits
 each approved subtask, staging files by name, only on a branch the workflow owns, and never amends or
-force-pushes. It pushes only when the developer says push (`/pr` pushes when it opens the PR). This
-hook enforces the parts a long context can forget, deterministically.
+force-pushes. It pushes only through `.claude/scripts/push-branch.sh`, after the developer's yes to
+a step that pushes (`/pr` asks once). This hook enforces the parts a long context can forget,
+deterministically.
 
 It's opt-in: `/install` offers it and only adds it with your explicit consent.
 

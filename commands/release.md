@@ -33,11 +33,14 @@ Run the package manager's install to sync the lockfile, then the project's forma
 
 List every file updated and **STOP** for approval. On approval, stage those files by name and commit
 them with the project's release-commit message, on a workflow branch (never the default branch).
-Push and open a PR to the default branch only when the developer says so.
+Then ask once: `Release $VERSION is not pushed. Approve to push and open the PR?` On a yes, push with
+`bash .claude/scripts/push-branch.sh` and open the PR to the default branch as `/pr` Step 6 does. A
+release branch outside the branch convention is one the script refuses: push it with
+`git push -u origin <branch>`, which goes through the permission prompt.
 
 ## Rules
 
-- Commit only on approval and push only when asked (the Working agreements in `CLAUDE.md`)
+- Commit only on approval, and push only after the developer's yes to the push question (the Working agreements in `CLAUDE.md`)
 - Do not proceed past Step 2 without explicit changelog approval
 - Only bump version fields — never dependency version references
 - Keep the versioned-file list in `docs/workflow-config.md` in sync with the real layout

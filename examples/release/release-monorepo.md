@@ -75,15 +75,17 @@ Version bumped in N files:
   ...
 
 Approve to commit these files with message "RELEASE: v$VERSION".
-Then say push to push the branch and open a PR targeting the default branch.
 ```
 
 On approval, stage the listed files by name and commit them on the release branch (never the
-default branch).
+default branch). Then ask once: `Release $VERSION is not pushed. Approve to push and open the PR?`
+On a yes, push with `bash .claude/scripts/push-branch.sh` and open a PR targeting the default
+branch. If the release branch is outside the branch convention, the script refuses it: push with
+`git push -u origin <branch>`, which goes through the permission prompt.
 
 ## Rules
 
-- Commit only on approval and push only when the developer says push (the Working agreements in `CLAUDE.md`)
+- Commit only on approval, and push only after the developer's yes to the push question (the Working agreements in `CLAUDE.md`)
 - Do not proceed past Step 2 without explicit changelog approval from the user
 - Only bump the top-level `"version"` field — do not touch dependency version references
 - Keep the versioned-file list in sync with the real project layout

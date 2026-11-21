@@ -51,7 +51,7 @@ As issues are resolved, prefix the resolved issue heading with `[FIXED]` (e.g. `
 
 ## Rules
 
-- Follow the commit rules in the Working agreements (`CLAUDE.md`): commit on approval, push only when asked.
+- Follow the commit rules in the Working agreements (`CLAUDE.md`): commit on approval; `/pr` asks before it pushes.
 - Implement only what's in the audit file (plus the tests those fixes need). No drive-by changes.
 - If a fix turns out to be wrong or needs a product decision, skip it and report — don't force it.
 - Keep each PR group independently reviewable and green before moving on.
