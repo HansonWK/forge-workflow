@@ -220,8 +220,7 @@ Add to your `.claude/settings.json` for the best experience:
   "permissions": {
     "allow": [
       "Read",
-      "Edit(.claude/**)",
-      "Write(.claude/**)"
+      "Edit(.claude/**)"
     ],
     "deny": [
       "Read(**/.env)",
@@ -241,11 +240,8 @@ Add to your `.claude/settings.json` for the best experience:
     "ask": [
       "Bash(git push:*)",
       "Edit(**/.claude/hooks/**)",
-      "Write(**/.claude/hooks/**)",
       "Edit(**/.claude/settings.json)",
-      "Write(**/.claude/settings.json)",
-      "Edit(**/.claude/settings.local.json)",
-      "Write(**/.claude/settings.local.json)"
+      "Edit(**/.claude/settings.local.json)"
     ]
   }
 }
@@ -259,6 +255,7 @@ hooks or settings (`ask` beats `allow`). `/install` offers to merge the hardenin
 work folder (`.claude/temp/work/**`) and the tier ledger (`.claude/temp/ledger/**`).
 
 - `.env.*` isn't denied wholesale: that would also lock out committed `.env.example` files.
+- File rules are `Edit(...)` only: they cover every file-editing tool, `Write` included.
 - The `ask` rules start with `**/` so they also cover worktrees kept under the project, which a
   plain `.claude/hooks/**` misses.
 - A `Read` deny also blocks `Edit` and `Write` on the path, so any step that must write a denied

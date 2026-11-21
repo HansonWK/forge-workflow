@@ -15,9 +15,7 @@ array if missing), skip entries already present, and leave every other setting u
   "permissions": {
     "allow": [
       "Edit(.claude/temp/work/**)",
-      "Write(.claude/temp/work/**)",
-      "Edit(.claude/temp/ledger/**)",
-      "Write(.claude/temp/ledger/**)"
+      "Edit(.claude/temp/ledger/**)"
     ],
     "deny": [
       "Read(**/.env)",
@@ -37,11 +35,8 @@ array if missing), skip entries already present, and leave every other setting u
     "ask": [
       "Bash(git push:*)",
       "Edit(**/.claude/hooks/**)",
-      "Write(**/.claude/hooks/**)",
       "Edit(**/.claude/settings.json)",
-      "Write(**/.claude/settings.json)",
-      "Edit(**/.claude/settings.local.json)",
-      "Write(**/.claude/settings.local.json)"
+      "Edit(**/.claude/settings.local.json)"
     ]
   }
 }
@@ -52,7 +47,8 @@ array if missing), skip entries already present, and leave every other setting u
 - `/install` replaces `main` in the push denies with the project's default branch.
 - Claude Code asks before any `Edit`/`Write` under `.claude/` unless it's pre-approved, so the work
   folder and the tier ledger need the `allow` entries, or headless and `acceptEdits` runs stall.
-
+- File rules are `Edit(...)` only: they cover every file-editing tool, `Write` included, and a
+  `Write(...)` rule is never matched (`claude doctor` flags it).
 - `.env.*` isn't denied wholesale: that would also lock out committed `.env.example` files.
 - `ask` beats `allow`, so a broad `Edit(.claude/**)` allow still prompts for hooks and settings.
 - The `git push` ask holds in auto mode too, so a push needs the developer even when `/pr` runs it.
