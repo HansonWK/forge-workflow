@@ -1,8 +1,8 @@
 # Settings hardening (optional, recommended)
 
 A permissions block that keeps secrets out of the conversation, blocks force-pushes and pushes to
-the default branch, asks before every other push, pre-approves the work folder, and makes Claude ask
-before it changes its own guardrails. `/install` offers it and merges it into
+the default branch, lets the push script run and asks before every other push, pre-approves the
+work folder, and makes Claude ask before it changes its own guardrails. `/install` offers it and merges it into
 `.claude/settings.json` only with your explicit consent.
 
 ## The block
@@ -15,7 +15,9 @@ array if missing), skip entries already present, and leave every other setting u
   "permissions": {
     "allow": [
       "Edit(.claude/temp/work/**)",
-      "Edit(.claude/temp/ledger/**)"
+      "Edit(.claude/temp/ledger/**)",
+      "Bash(bash .claude/scripts/push-branch.sh)",
+      "Bash(bash .claude/scripts/push-branch.sh --dry-run)"
     ],
     "deny": [
       "Read(**/.env)",
@@ -35,6 +37,7 @@ array if missing), skip entries already present, and leave every other setting u
     "ask": [
       "Bash(git push:*)",
       "Edit(**/.claude/hooks/**)",
+      "Edit(**/.claude/scripts/**)",
       "Edit(**/.claude/settings.json)",
       "Edit(**/.claude/settings.local.json)"
     ]
@@ -51,8 +54,11 @@ array if missing), skip entries already present, and leave every other setting u
   `Write(...)` rule is never matched (`claude doctor` flags it).
 - `.env.*` isn't denied wholesale: that would also lock out committed `.env.example` files.
 - `ask` beats `allow`, so a broad `Edit(.claude/**)` allow still prompts for hooks and settings.
-- The `git push` ask holds in auto mode too, so a push needs the developer even when `/pr` runs it.
-  `deny` beats `ask`, so force-pushes and default-branch pushes are still refused outright.
+- Claude pushes through `.claude/scripts/push-branch.sh` (`examples/scripts/push-branch.md`), after
+  the developer's yes in chat. Every other push asks, in auto mode too, and `deny` beats `ask`, so
+  force-pushes and default-branch pushes are still refused outright. Without the push script, drop
+  its two `allow` rules.
+- The `.claude/scripts/**` ask keeps Claude from changing the push script it runs unprompted.
 - The `ask` rules start with `**/` so they also cover worktrees kept under the project
   (e.g. `.claude/worktrees/<slug>/.claude/hooks/`), which a plain `.claude/hooks/**` misses.
 - A `Read` deny also blocks `Edit` and `Write` on the path, so any step that must write a denied

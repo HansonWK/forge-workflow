@@ -220,7 +220,9 @@ Add to your `.claude/settings.json` for the best experience:
   "permissions": {
     "allow": [
       "Read",
-      "Edit(.claude/**)"
+      "Edit(.claude/**)",
+      "Bash(bash .claude/scripts/push-branch.sh)",
+      "Bash(bash .claude/scripts/push-branch.sh --dry-run)"
     ],
     "deny": [
       "Read(**/.env)",
@@ -240,6 +242,7 @@ Add to your `.claude/settings.json` for the best experience:
     "ask": [
       "Bash(git push:*)",
       "Edit(**/.claude/hooks/**)",
+      "Edit(**/.claude/scripts/**)",
       "Edit(**/.claude/settings.json)",
       "Edit(**/.claude/settings.local.json)"
     ]
@@ -249,8 +252,9 @@ Add to your `.claude/settings.json` for the best experience:
 
 This lets Claude read your codebase freely and manage its own workspace files without prompting,
 while keeping secrets out of the conversation, blocking force-pushes and pushes to the default
-branch, asking before every other push (even in auto mode), and asking before Claude changes its own
-hooks or settings (`ask` beats `allow`). `/install` offers to merge the hardening block for you
+branch, letting it push only through the push script (`examples/scripts/push-branch.md`) and asking
+before every other push (even in auto mode), and asking before Claude changes its own hooks, scripts
+or settings (`ask` beats `allow`). `/install` offers to merge the hardening block for you
 (`examples/settings/hardening.md`); without the broad `.claude/**` allow, that block pre-approves the
 work folder (`.claude/temp/work/**`) and the tier ledger (`.claude/temp/ledger/**`).
 

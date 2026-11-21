@@ -216,7 +216,25 @@ Only with **explicit consent**, install it as `.claude/examples/hooks/commit-gua
 script, its test and `owned-branch.sh`, fill `OWNED_BRANCH` / `OWNED_HINT` from the branch
 convention, run the test, and merge the `settings.json` entry into any existing `hooks`. On a
 re-run, a project with the 1.x hook (it refused every commit) gets this one offered as its
-replacement. If they decline, leave settings untouched and record `commit-guard: declined` in the config Modules-adjacent notes.
+replacement. If they decline, leave settings untouched and record `commit-guard: declined` in the
+config Modules-adjacent notes.
+
+### Push script (optional, recommended)
+
+Offer it with the commit guard:
+
+```
+I can add a push script, `.claude/scripts/push-branch.sh` (+ its test), that pushes the current
+workflow branch to origin and nothing else. I'd run it without a permission prompt, only after you
+say yes to a step that pushes (`/pr` asks once); any other push asks. Add it? (recommended)
+```
+
+Only with **explicit consent**, install it as `.claude/examples/scripts/push-branch.md` says: copy
+the script, its test and `owned-branch.sh` (shared with the commit guard), fill `OWNED_BRANCH` /
+`OWNED_HINT`, run the test, and merge its two `allow` rules. If they decline, write
+`git push -u origin <branch>` (which asks) wherever the commands and the Working agreements run
+`bash .claude/scripts/push-branch.sh`, drop its `allow` rules from the hardening block, and record
+`push-script: declined` alongside the commit-guard note.
 
 ### Settings hardening (optional, recommended)
 
@@ -224,9 +242,10 @@ Show the block from `$FORGE/examples/settings/hardening.md`, then offer it:
 
 ```
 I can merge a permissions block into `.claude/settings.json` that denies reading `.env` files and
-printing the environment, denies force-push and pushing the default branch, makes me ask before
-any other push (even in auto mode), pre-approves edits in the work folder and the tier ledger, and
-makes me ask before editing `.claude/hooks/**` or the settings files. Merge it? (recommended)
+printing the environment, denies force-push and pushing the default branch, lets me run the push
+script and makes me ask before any other push (even in auto mode), pre-approves edits in the work
+folder and the tier ledger, and makes me ask before editing `.claude/hooks/**`, `.claude/scripts/**`
+or the settings files. Merge it? (recommended)
 ```
 
 Only with **explicit consent**, merge it as the example says (replace `main` in the push denies with
@@ -310,7 +329,7 @@ Each module's setup is: **read the reference example → ask the provider/config
    | `https://mycompany.atlassian.net` | Real Jira URL (if Jira) |
    | `~/AI/config/jira.env` | Real credentials path (if changed) |
    | `main` (PR base / diff base, the hardening push denies) | The detected default branch |
-   | `OWNED_BRANCH` / `OWNED_HINT` in `examples/scripts/owned-branch.sh` | The branch convention (only when the hook is installed) |
+   | `OWNED_BRANCH` / `OWNED_HINT` in `examples/scripts/owned-branch.sh` | The branch convention (only when the hook or the push script is installed) |
    | `gh pr create` | The hosting flow (GitHub `gh`, GitLab `glab`, Bitbucket web) |
 
    **Adapt the skills and agents to the stack** (not just string swaps) — keep the rubric/structure, rewrite stack-specific specifics to match the detected project:
@@ -334,7 +353,7 @@ When `docs/workflow-config.md` already exists:
    Work now lives in `.claude/temp/work/<slug>/`; `/next` and `/resume` point at any old-style
    `.claude/temp/<slug>/` folder rather than moving it. `/signoff` is now the final checks and
    `/present` the plan approval, and Claude commits on approval: ask the Phase 3 "Work page, proofs and
-   sign-off" questions and offer the new commit-guard and hardening blocks.
+   sign-off" questions and offer the new commit-guard, push script and hardening blocks.
 4. **Present a summary of all changes before writing**, then **STOP and wait for confirmation.** Then write and update the version + `## Modules` state.
 
 ### `CLAUDE.md`
