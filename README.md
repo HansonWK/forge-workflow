@@ -237,10 +237,19 @@ Add to your `.claude/settings.json` for the best experience:
       "Bash(git push * main)",
       "Bash(git push * main *)",
       "Bash(git push *:main)",
-      "Bash(git push *:main *)"
+      "Bash(git push *:main *)",
+      "Bash(git -C * push --force*)",
+      "Bash(git -C * push * --force*)",
+      "Bash(git -C * push -f*)",
+      "Bash(git -C * push * -f*)",
+      "Bash(git -C * push * main)",
+      "Bash(git -C * push * main *)",
+      "Bash(git -C * push *:main)",
+      "Bash(git -C * push *:main *)"
     ],
     "ask": [
       "Bash(git push:*)",
+      "Bash(git -C * push*)",
       "Edit(**/.claude/hooks/**)",
       "Edit(**/.claude/scripts/**)",
       "Edit(**/.claude/settings.json)",
@@ -260,6 +269,8 @@ work folder (`.claude/temp/work/**`) and the tier ledger (`.claude/temp/ledger/*
 
 - `.env.*` isn't denied wholesale: that would also lock out committed `.env.example` files.
 - File rules are `Edit(...)` only: they cover every file-editing tool, `Write` included.
+- A `git push` rule doesn't match `git -C <dir> push`, so the push ask and denies each have a `-C`
+  form.
 - The `ask` rules start with `**/` so they also cover worktrees kept under the project, which a
   plain `.claude/hooks/**` misses.
 - A `Read` deny also blocks `Edit` and `Write` on the path, so any step that must write a denied

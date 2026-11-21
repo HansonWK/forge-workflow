@@ -2,8 +2,8 @@
 
 A permissions block that keeps secrets out of the conversation, blocks force-pushes and pushes to
 the default branch, lets the push script run and asks before every other push, pre-approves the
-work folder, and makes Claude ask before it changes its own guardrails. `/install` offers it and merges it into
-`.claude/settings.json` only with your explicit consent.
+work folder, and makes Claude ask before it changes its own guardrails. `/install` offers it and
+merges it into `.claude/settings.json` only with your explicit consent.
 
 ## The block
 
@@ -32,10 +32,19 @@ array if missing), skip entries already present, and leave every other setting u
       "Bash(git push * main)",
       "Bash(git push * main *)",
       "Bash(git push *:main)",
-      "Bash(git push *:main *)"
+      "Bash(git push *:main *)",
+      "Bash(git -C * push --force*)",
+      "Bash(git -C * push * --force*)",
+      "Bash(git -C * push -f*)",
+      "Bash(git -C * push * -f*)",
+      "Bash(git -C * push * main)",
+      "Bash(git -C * push * main *)",
+      "Bash(git -C * push *:main)",
+      "Bash(git -C * push *:main *)"
     ],
     "ask": [
       "Bash(git push:*)",
+      "Bash(git -C * push*)",
       "Edit(**/.claude/hooks/**)",
       "Edit(**/.claude/scripts/**)",
       "Edit(**/.claude/settings.json)",
@@ -59,6 +68,8 @@ array if missing), skip entries already present, and leave every other setting u
   force-pushes and default-branch pushes are still refused outright. Without the push script, drop
   its two `allow` rules.
 - The `.claude/scripts/**` ask keeps Claude from changing the push script it runs unprompted.
+- A `git push` rule doesn't match `git -C <dir> push`, so the push ask and denies each have a `-C`
+  form.
 - The `ask` rules start with `**/` so they also cover worktrees kept under the project
   (e.g. `.claude/worktrees/<slug>/.claude/hooks/`), which a plain `.claude/hooks/**` misses.
 - A `Read` deny also blocks `Edit` and `Write` on the path, so any step that must write a denied
