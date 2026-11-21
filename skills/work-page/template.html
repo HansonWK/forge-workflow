@@ -679,7 +679,7 @@
       state.db = db;
       db.doc('state/progress').onSnapshot(
         (snap) => {
-          if (!snap.fromCache) {
+          if (!snap.metadata?.fromCache) {
             clearTimeout(timer);
             state.liveNote = '';
           }
