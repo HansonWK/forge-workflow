@@ -38,7 +38,8 @@ Work is **finished** when all three hold:
    on top.
 3. **Proven**: every line in `status.md`'s `## Proofs` is `pass`, or `skipped` with a reason the
    developer accepted, and no `## Sign-off checks` note starts `fail`. A status with neither section
-   predates recorded proofs and counts as proven when its ticket is Done.
+   predates recorded proofs and counts as proven when its ticket is Done (with no ticket tracker,
+   when merged).
 
 | Case | Group |
 | --- | --- |
@@ -46,7 +47,7 @@ Work is **finished** when all three hold:
 | Merged, but a proof failed or is missing | **Needs an answer**: name what's missing |
 | PR closed unmerged, or `work_status: cancelled` | **Needs an answer**: on a yes, record `abandoned` or `cancelled` |
 | No PR, ticket Done (a spike) | **Needs an answer**: on a yes, record `done` |
-| No ticket | **Needs an answer**, with its PR and release |
+| No ticket, in a project with a ticket tracker | **Needs an answer**, with its PR and release |
 | Merged, not yet released | **Awaiting production**: untouched |
 | No merged PR | **In flight**: report `work_status` and the ticket status, untouched |
 
