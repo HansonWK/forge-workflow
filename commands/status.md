@@ -158,11 +158,19 @@ For each status.md where work_status is NOT `done`, `complete`, or `cancelled`:
 - **Review/Merged:** <N> tasks awaiting QA or merge
 - **Complete:** <N> tasks done or cancelled
 
-<N> tasks are marked done/cancelled and could be cleaned up.
-Would you like to review any of these for deletion?
+<N> tasks are done or cancelled: /clean-up records and removes finished work.
 ```
 
-Wait for user response. If they say yes, list the done/cancelled folders and let them pick which to delete. Do NOT auto-delete.
+### 4. Clean-up check
+
+Read the last row of `.claude/temp/ledger/clean-up.tsv` (`<date>\t<marker>`). It's **overdue** when
+the project releases (`## Clean-up` in the config) and more than one release has reached production
+since `<marker>`, or when it doesn't release and `<date>` is more than two weeks ago. No file counts as
+overdue once any work is done or cancelled. Print one line, never stop:
+
+```
+Clean-up last ran <date> (<marker>): overdue, run /clean-up.
+```
 
 ---
 
@@ -249,7 +257,7 @@ Replace: `- work_status: <new-value>`
 
 - Ticket tracking is always optional — never block on missing configuration
 - Prompt for ticket-tracker setup at most once per invocation
-- Never auto-delete folders — always let the user decide
+- Never delete folders — `/clean-up` does that, after writing each piece of work's record
 - Update status.md files in-place, don't recreate them
 - If a status.md is malformed, fix it rather than erroring
 - Show clear, actionable output — the user should know what to do next

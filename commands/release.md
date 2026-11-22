@@ -38,6 +38,9 @@ Then ask once: `Release $VERSION is not pushed. Approve to push and open the PR?
 release branch outside the branch convention is one the script refuses: push it with
 `git push -u origin <branch>`, which goes through the permission prompt.
 
+End by suggesting `/clean-up` once $VERSION reaches production: it records and removes the work this
+release shipped.
+
 ## Rules
 
 - Commit only on approval, and push only after the developer's yes to the push question (the Working agreements in `CLAUDE.md`)

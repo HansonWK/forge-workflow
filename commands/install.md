@@ -200,6 +200,24 @@ These tailor the core loop. Infer first, then confirm in one round:
   elsewhere; if so, set it in the config, the CLAUDE.md agreement and `PROOF_DIR` in
   `work-page/progress.mjs`.
 
+### Worktrees and clean-up
+
+Infer first, then confirm in one round. Record the answers under `## Clean-up` in the config and fill
+the placeholders in the `worktree` and `clean-up` skills:
+
+- **Releases** — yes when Phase 1 found release signals or the release module is set up; otherwise
+  ask. It sets the cadence: `/clean-up` after each release reaches production, or each sprint.
+- **Release check** (releases only) — how to tell a piece of work reached production, e.g. the
+  ticket's fix version is released in the tracker and the ticket is Done.
+- **Worktree folder** — `.claude/worktrees` unless the project keeps worktrees elsewhere; **kept
+  checkouts** — any kept on purpose (e.g. a `gh-pages` publishing checkout), each with its reason.
+- **Build output** and **per-checkout indexes** — from the scan (`dist/`, `.next/`, a code-graph
+  index folder).
+- **`post-checkout` hook** — `git worktree add` runs it. Check husky, lefthook and
+  `.git/hooks/post-checkout`; if it installs or builds an index, write how a worktree skips it into
+  the `worktree` skill.
+- **Never touch** — `user/` and `ledger/`, plus any `.claude/temp/` paths the project adds.
+
 ### Commit-guard hook (optional, recommended)
 
 The commit policy is stated once in `CLAUDE.md` (approval means commit, only on a workflow branch,
@@ -244,7 +262,7 @@ Show the block from `$FORGE/examples/settings/hardening.md`, then offer it:
 I can merge a permissions block into `.claude/settings.json` that denies reading `.env` files and
 printing the environment, denies force-push and pushing the default branch, lets me run the push
 script and makes me ask before any other push (even in auto mode), pre-approves edits in the work
-folder and the tier ledger, and makes me ask before editing `.claude/hooks/**`, `.claude/scripts/**`
+folder, the clean-up records and the ledgers, and makes me ask before editing `.claude/hooks/**`, `.claude/scripts/**`
 or the settings files. Merge it? (recommended)
 ```
 
@@ -331,6 +349,7 @@ Each module's setup is: **read the reference example → ask the provider/config
    | `main` (PR base / diff base, the hardening push denies) | The detected default branch |
    | `OWNED_BRANCH` / `OWNED_HINT` in `examples/scripts/owned-branch.sh` | The branch convention (only when the hook or the push script is installed) |
    | `gh pr create` | The hosting flow (GitHub `gh`, GitLab `glab`, Bitbucket web) |
+   | `<cadence>`, `<release check>`, `<worktree folder>`, `<kept checkouts>`, `<build output>`, `<per-checkout indexes>`, `<post-checkout note>`, `<never-touch list>` in the `worktree` and `clean-up` skills | The "Worktrees and clean-up" answers (Phase 3) |
 
    **Adapt the skills and agents to the stack** (not just string swaps) — keep the rubric/structure, rewrite stack-specific specifics to match the detected project:
    - Skills: `code-review`, `security-review`, `testing` (test framework), `writing-plans` (proof kinds, tier signals), `performance-review` (the baseline command), `logging-compliance` (only if the observability module is installed).
@@ -350,8 +369,10 @@ When `docs/workflow-config.md` already exists:
 2. For each file: compare your committed `.claude/<file>` against the newly-staged `$FORGE/<file>`. Re-apply shipped improvements while **preserving your customizations**. Because `$FORGE` holds the exact new template, this is a real diff — not a guess; where a difference is genuinely ambiguous, show it and ask.
 3. For modules: only act on ones the user chose to add/reconfigure this run (Phase 4). Don't touch `installed` modules unless asked.
    **Upgrading from 1.x:** `/deck` is now `/presentation` — offer to remove `.claude/commands/deck.md`.
-   Work now lives in `.claude/temp/work/<slug>/`; `/next` and `/resume` point at any old-style
-   `.claude/temp/<slug>/` folder rather than moving it. `/signoff` is now the final checks and
+   Work now lives in `.claude/temp/work/<slug>/`; `/clean-up`'s Phase 0 moves old-style
+   `.claude/temp/<slug>/` folders there, and `/next` and `/resume` point at them until it runs. Ask
+   the "Worktrees and clean-up" questions; a merged hardening block gains
+   `Edit(.claude/temp/complete/**)`, offered like any missing entry. `/signoff` is now the final checks and
    `/present` the plan approval, and Claude commits on approval: ask the Phase 3 "Work page, proofs and
    sign-off" questions and offer the new commit-guard, push script and hardening blocks.
 4. **Present a summary of all changes before writing**, then **STOP and wait for confirmation.** Then write and update the version + `## Modules` state.
@@ -378,6 +399,8 @@ discover from the file system, and not depth that now lives in skills.
     - Never fetch/read **production** secret values (dev/test only); adding secrets to any environment is fine.
     - The **work folder** is `.claude/temp/work/<slug>/` (research, plan, status for one piece of
       work); **the proof folder** is its `proof/`. Other ephemeral files live in `.claude/temp/`.
+      `/clean-up` keeps one record per finished piece of work in `.claude/temp/complete/<slug>.md`:
+      to find past work, search there first (the `clean-up` skill's Finding old work).
     - If the user keeps asking for the same step, or keeps adding the same acceptance criterion, suggest `/customize` to encode it as a new or updated skill.
     - When the user shares a resource you build from (a blog, doc, or someone's file), apply the `attribution` skill — offer to list it as attribution, a resource, or neither, and offer to trace it to its origin.
   - **Pointers, not depth:** note that the skills in `.claude/skills/` hold the
@@ -427,6 +450,16 @@ discover from the file system, and not depth that now lives in skills.
 - Dev: [name / URL]
 - Deployed version: [how to read the running SHA, names only]
 
+## Clean-up
+- Releases: [yes / no]
+- Cadence: [each release, once in production / each sprint]
+- Release check: [e.g. fix version released in the tracker + ticket Done; n/a without releases]
+- Worktree folder: [.claude/worktrees]
+- Kept checkouts: [none, or path — branch — why]
+- Build output: [e.g. dist/, .next/]
+- Per-checkout indexes: [none, or path — how worktrees skip it]
+- Never touch: [user/, ledger/, project additions]
+
 ## House style
 - Stylesheet: .claude/skills/presentation/house-style.css ([forge neutral / project palette])
 
@@ -434,6 +467,9 @@ discover from the file system, and not depth that now lives in skills.
 - Work folder: .claude/temp/work/<slug>/
 - Proof folder: <work folder>/proof/
 - Tier ledger: .claude/temp/ledger/tier-overrides.tsv
+- Worktrees: [worktree folder]/<name>/
+- Records: .claude/temp/complete/<slug>.md
+- Clean-up ledger: .claude/temp/ledger/clean-up.tsv
 - AI temp files: .claude/temp/
 - AI docs: .claude/docs/
 
@@ -486,13 +522,23 @@ Modules:
 [Created / Updated] CLAUDE.md
 ```
 
-Recommend `.gitignore` additions if missing:
+Recommend `.gitignore` additions if missing (comments on their own line: git reads a trailing `#` as
+part of the pattern):
 
 ```
-.claude/.forge/                # Regenerable template cache (re-staged by the installer)
-.claude/temp/                  # Ephemeral work files
-.claude/settings.local.json    # Personal settings
+# Regenerable template cache (re-staged by the installer)
+.claude/.forge/
+# Ephemeral work files
+.claude/temp
+# Worktrees (the worktree skill)
+.claude/worktrees/
+# Personal settings
+.claude/settings.local.json
 ```
+
+Offer to replace a `.claude/temp/` line with `.claude/temp`: the trailing slash doesn't ignore a
+symlink, so a worktree that links the main checkout's temp folder shows it as untracked and
+`git worktree remove` refuses.
 
 Suggest next steps: `/workflow` to see all commands; commit the workflow files so the team shares them; note that **re-running `/install` adds any skipped module later**.
 

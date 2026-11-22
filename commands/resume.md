@@ -38,7 +38,8 @@ Run /begin to start new work.
 ```
 
 If an old-style `.claude/temp/<slug>/plan.md` exists outside `work/`, add: "Found an old-style folder
-at `<path>`; move it to `.claude/temp/work/<slug>/` to resume it."
+at `<path>`; move it to `.claude/temp/work/<slug>/` (or run `/clean-up`, which moves it) to resume
+it."
 
 If plans found, display numbered list with status.md info where available:
 

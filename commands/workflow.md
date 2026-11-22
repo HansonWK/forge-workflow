@@ -56,6 +56,7 @@ Present the following workflow guide to the user:
 | `/security`     | Run a security audit (`/signoff` runs it on security hotspots) |
 | `/slice`        | Decide whether/where to split into mergeable PRs     |
 | `/performance`  | Deep performance audit of a service or app           |
+| `/clean-up`     | Record finished work, then remove its worktree, work folder and spent reviews (`--dry-run` to preview) |
 
 ### Standalone commands
 
@@ -87,7 +88,7 @@ set up appear; run `/install` (or `/install <module>`) to add a skipped one late
 - The loop: `/begin` → `/present` (approve the plan) → `/next` … `/next` (each stop shows the proof; approving commits each subtask) → `/signoff` → `/pr`. You rarely call `/dev` or `/present` directly.
 - With a work page, everything is on one live page beside the terminal: rename subtasks, change a tier, answer questions and press Approve or Next there, then type `/next` or "done".
 - Every subtask has a tier (Easy / Medium / Hard) and a proof. Claude may raise a tier; only you lower one.
-- Each piece of work lives in its work folder, `.claude/temp/work/<slug>/` — clean up after your PR is merged
+- Each piece of work lives in its work folder, `.claude/temp/work/<slug>/`. Run `/clean-up` each release (or sprint): it keeps one record per finished piece of work in `.claude/temp/complete/` and removes the rest
 - Optional modules are opt-in. Re-running `/install` re-offers any module you skipped, so you can grow the workflow as the project needs it.
 - Skills (`.claude/skills/`) hold the review/security/testing/verification rubrics; commands call them for you — you don't invoke skills directly. `/dev` self-verifies (build/lint/test) and runs the subtask's proof before the stop.
 - The workflow evolves with you: run `/customize` to add/update a skill/command/agent — and Claude will suggest it when it notices you repeating the same request.

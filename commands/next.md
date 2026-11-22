@@ -14,7 +14,8 @@ command.
    `.claude/temp/work/PROJ-1234-*/plan.md`), else check every work folder's `plan.md`.
 2. Take the one with Status `IN_PROGRESS` or `READY`; if several, ask which.
 3. None, but an old-style `.claude/temp/<slug>/plan.md` exists: say "Found an old-style folder at
-   `<path>`; move it to `.claude/temp/work/<slug>/` to carry on." and stop.
+   `<path>`; move it to `.claude/temp/work/<slug>/` (or run `/clean-up`, which moves it) to carry
+   on." and stop.
 4. Nothing at all: "No active plan found. Run /begin to start new work or /resume to resume existing."
 
 ## Step 2: Is a stop open?
