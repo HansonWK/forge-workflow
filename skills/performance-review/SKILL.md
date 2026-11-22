@@ -77,8 +77,9 @@ structural front-end issues, reading the code is often enough. Never invent a nu
   as it is, and writes `perf-baseline.json` to the proof folder:
   `{"command": "<exact command>", "results": [{"page", "form", "score", "lcp", "cls", "tbt"}]}`.
 - **After:** `/signoff` runs the same command on the branch into `perf-after.json`. With no
-  baseline, measure the merge-base in a worktree first (`git worktree add <tmp> $(git merge-base
-  HEAD <default branch>)`), then remove the worktree.
+  baseline, measure the merge-base first in a read-only worktree (the `worktree` skill: `--detach`
+  at `$(git merge-base HEAD <default branch>)`), write `perf-baseline.json`, and remove the worktree
+  before measuring the branch.
 - **Judge the change** against what was added: a video may justify some loss. Add a one-line `note`
   to `perf-after.json`. A large drop gets concrete suggestions (no autoplay, an image first on
   mobile, lazy loading…). Run each measurement more than once and report the median.

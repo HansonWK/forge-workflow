@@ -46,6 +46,7 @@ so the rubric for "how we review code" or "how we verify a change" lives in exac
 | `presentation` | a deck or a page as a live Artifact, in the house style (`house-style.css`); export on request | `/presentation` |
 | `recalibrate` | turn session corrections and the tier ledger into proposed workflow-file edits | `/recalibrate`; Claude on pushback |
 | `work-page` | the live claude.ai page for one piece of work (plan, progress, sign-off, test on dev), its data scripts and the local fallback | `/begin`, `/present`, `/next`, `/signoff`, `/pr`, `/status`, `/resume` |
+| `worktree` | the only route that opens a worktree: where, one branch per worktree, the exits that remove it, kept checkouts, agent worktrees, builds and indexes | `/cr`, `performance-review`, `clean-up`, `authoring` |
 
 **Verification skills (close the loop)**
 
