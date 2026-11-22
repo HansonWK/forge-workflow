@@ -37,6 +37,16 @@
 - **Dev:** dev (https://dev.example.com)
 - **Deployed version:** `curl -s https://dev.example.com/version`
 
+## Clean-up
+- **Releases:** yes
+- **Cadence:** each release, once it reaches production
+- **Release check:** the ticket's fix version is released in Jira and the ticket is Done
+- **Worktree folder:** .claude/worktrees
+- **Kept checkouts:** none
+- **Build output:** node_modules/, .next/, coverage/
+- **Per-checkout indexes:** none
+- **Never touch:** user/, ledger/
+
 ## House style
 - **Stylesheet:** .claude/skills/presentation/house-style.css (forge neutral)
 
@@ -44,6 +54,9 @@
 - **Work folder:** .claude/temp/work/<slug>/ (research.md, plan.md, status.md for one piece of work)
 - **Proof folder:** <work folder>/proof/ (proof scripts, captured logs, screenshots; not committed)
 - **Tier ledger:** .claude/temp/ledger/tier-overrides.tsv
+- **Worktrees:** .claude/worktrees/<name>/ (the `worktree` skill; gitignored)
+- **Records:** .claude/temp/complete/<slug>.md (one per finished piece of work, written by `/clean-up`)
+- **Clean-up ledger:** .claude/temp/ledger/clean-up.tsv (`<date>\t<newest release or ->` per run)
 - **AI temp files:** .claude/temp/
 - **AI docs:** .claude/docs/
 

@@ -118,6 +118,7 @@ terminal instead.
 | `/slice` | Decide whether/where to split into mergeable PRs |
 | `/performance` | Deep performance audit of a service or app |
 | `/ticket` | Create ticket from investigation |
+| `/clean-up` | Keep one record per finished piece of work, then remove its worktree and work folder (`--dry-run` to preview) |
 
 **Reference**
 | Command | What it does |
@@ -155,6 +156,7 @@ generations.
 - **Rubrics/methods:** `code-review`, `security-review`, `testing`, `writing-plans`, `logging-compliance`, `architecture` (keep code within your pattern), `clarify` (interview to pin down missing decisions)
 - **More:** `slicing` (split into independently mergeable PRs), `performance-review` (including the frontend baseline), `explain` (describe, never review), `run-local` (who-runs-what), `presentation` (decks and pages as live Artifacts, in a neutral house style), `recalibrate` (make corrections stick, tune tier signals from the ledger)
 - **The work page:** `work-page` (the live page for one piece of work — plan, progress, sign-off, test on dev)
+- **Housekeeping:** `worktree` (the only route that opens a worktree, and the exits that remove it), `clean-up` (one record per finished piece of work, then remove the rest; find old work)
 - **Verification:** `verify` (build/lint/test, self-fix to green), `verify-acceptance` (does it
   satisfy the goal + acceptance criteria), `verify-plan` (critique the plan before building),
   `double-check` (independent second opinion from a *different* AI CLI, e.g. Codex)
@@ -265,7 +267,8 @@ branch, letting it push only through the push script (`examples/scripts/push-bra
 before every other push (even in auto mode), and asking before Claude changes its own hooks, scripts
 or settings (`ask` beats `allow`). `/install` offers to merge the hardening block for you
 (`examples/settings/hardening.md`); without the broad `.claude/**` allow, that block pre-approves the
-work folder (`.claude/temp/work/**`) and the tier ledger (`.claude/temp/ledger/**`).
+work folder (`.claude/temp/work/**`), the `/clean-up` records (`.claude/temp/complete/**`) and the
+ledgers (`.claude/temp/ledger/**`).
 
 - `.env.*` isn't denied wholesale: that would also lock out committed `.env.example` files.
 - File rules are `Edit(...)` only: they cover every file-editing tool, `Write` included.
@@ -299,10 +302,19 @@ If you use a formatter, add a hook to auto-format on file writes:
 ## What to .gitignore
 
 ```
-.claude/.forge/               # Regenerable template cache (re-staged by the installer)
-.claude/temp/                 # Ephemeral work files
-.claude/settings.local.json   # Personal settings
+# Regenerable template cache (re-staged by the installer)
+.claude/.forge/
+# Ephemeral work files
+.claude/temp
+# Worktrees (the worktree skill)
+.claude/worktrees/
+# Personal settings
+.claude/settings.local.json
 ```
+
+Comments go on their own line: git reads a trailing `# …` as part of the pattern. Write
+`.claude/temp` without a trailing slash: `.claude/temp/` doesn't ignore a symlink, so a worktree that
+links the main checkout's temp folder shows it as untracked and `git worktree remove` refuses.
 
 The **generated** workflow files (`commands/`, `agents/`, `skills/`, `docs/`, `examples/`) should be committed so your team shares them. The `.claude/.forge/` template cache is regenerable, so it's gitignored.
 

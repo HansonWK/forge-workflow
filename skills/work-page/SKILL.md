@@ -146,8 +146,9 @@ No Artifact tool, or a publish or database write fails and one retry doesn't fix
 ## After the merge
 
 Once the Test-on-dev tab is complete (every step Pass, Fail or Skipped with a reason), ask once:
-"Delete the work page and the proof evidence for <ticket>?" On yes: `Artifact` `delete` with
-`url: <work_page>`, delete the proof folder, and set `work_page: deleted`. On no, leave both.
+"Delete the work page for <ticket>?" On yes: `Artifact` `delete` with `url: <work_page>` and set
+`work_page: deleted`. On no, leave it. The proof folder stays either way: `/clean-up` removes it
+after writing the work's record.
 
 ## Known limits
 

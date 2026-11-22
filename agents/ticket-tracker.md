@@ -187,6 +187,8 @@ Once the ticket is fetched, provide:
 2. **Description**: Full ticket description
 3. **Acceptance Criteria**: Extract and list any acceptance criteria
 4. **Subtasks**: List all subtasks with their status (if applicable)
+5. **Fix versions**: each with whether it's released and its release date (for `/clean-up`'s
+   release check)
 
 Then inform the user if there is enough information to start working, or prompt for more context. Suggest running `/begin` to start the workflow.
 
