@@ -15,6 +15,7 @@ to Claude):
 
 - `git commit` on the default branch, a detached HEAD, or a branch outside `OWNED_BRANCH`;
 - `git commit --amend`, `git commit -a`;
+- a commit message holding an apostrophe (straight `'` or curly `’`), in the title or the body;
 - `git add -A`, `--all`, `.`;
 - a `git push` that targets the default branch, including a bare `git push` while on it;
 - anything it can't check: hook input that isn't JSON, no `node` on PATH, a commit without
@@ -63,6 +64,12 @@ fine. Quoted paths keep their spaces, and `$CLAUDE_PROJECT_DIR` and `$HOME` (or 
   `bash` and `perl`; the hook runs through it for PowerShell commands too.
 - For PowerShell it also reads `;` chains, `{ }` blocks, backtick escapes and line continuations,
   `& git` / `git.exe`, and `Set-Location` / `sl` / `Push-Location`, case-insensitively.
+- **Apostrophes** are read in the message as git gets it: `-m` / `--message` values with the shell
+  quoting removed (so `-m 'A title'` is fine), `-F` / `--file` files, and a heredoc or here-string
+  opened on the commit line (`-F - <<'EOF'`, `-m "$(cat <<'EOF' … EOF)"`, `@'…'@ | git commit -F -`).
+  PowerShell `''` inside single quotes counts as one. A message it can't read is allowed and left to
+  the written rule in the Working agreements: one built from a variable or a pipe, a file the same
+  command writes, a quoted `-m` running over several lines, an editor commit.
 - The settings-hardening block (`examples/settings/hardening.md`) also denies pushing the default
   branch and force-pushing; the hook catches the forms a permission pattern can't, such as a bare
   `git push` on the default branch.

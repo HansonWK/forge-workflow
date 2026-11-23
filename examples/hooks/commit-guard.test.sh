@@ -117,6 +117,7 @@ check_ps blocked 'Git commit --amend'
 check_ps blocked '& "C:\Program Files\Git\cmd\git.exe" commit --amend'
 check_ps blocked 'if ($true) { git add -A }'
 check_ps blocked 'Get-ChildItem | ForEach-Object { git add -A }'
+check_ps blocked "$(printf "@'\nnotes\n'@ | git commit --amend -F -")"
 check_ps blocked 'git push origin main'
 check_ps blocked 'git push origin HEAD:main'
 check_ps blocked "git -C $other commit -m \"Fix\""
@@ -165,6 +166,38 @@ git -C "$repo" checkout -q --detach
 check blocked 'git commit -m "Fix"'
 check blocked 'git push'
 check blocked 'git push origin HEAD'
+
+# No apostrophe (straight or curly) in a commit message, title or body. Quoting never counts.
+on PROJ-1-x
+curly=$'\xe2\x80\x99'
+printf 'Add the list\n\nThe agent%ss worktree\n' "'" > "$tmp/msg-apostrophe.txt"
+printf 'Add the list\n\nThe agent worktree\n' > "$tmp/msg-clean.txt"
+check blocked "git commit -m \"the agent's worktree\""
+check blocked "git commit -m 'it${curly}s done'"
+check blocked "git commit -m \"A clean title\" -m \"The agent's body\""
+check blocked "git commit --message=\"it's done\""
+check blocked "git commit -qm \"it's done\""
+check blocked "git commit -F $tmp/msg-apostrophe.txt"
+check blocked "git commit --file \"$tmp/msg-apostrophe.txt\""
+check blocked "$(printf 'git commit -F - <<%sEOF%s\nAdd the list\n\nThe agent%ss worktree\nEOF' "'" "'" "'")"
+check blocked "$(printf 'git commit -m "$(cat <<%sEOF%s\nAdd the list\n\nThe agent%ss worktree\nEOF\n)"' "'" "'" "'")"
+check allowed "git commit -m 'A clean title'"
+check allowed 'git commit -m "A clean title" -m "A clean body"'
+check allowed "git commit -F $tmp/msg-clean.txt"
+check allowed "$(printf 'git commit -F - <<%sEOF%s\nAdd the list\n\nThe agent worktree\nEOF' "'" "'")"
+check allowed "$(printf 'git commit -m "$(cat <<%sEOF%s\nAdd the list\n\nThe agent worktree\nEOF\n)"' "'" "'")"
+check allowed "echo \"it's\" && git commit -m \"Add the list\""
+check allowed "$(printf 'cat > notes.md <<%sEOF%s\nit%ss a note\nEOF\ngit add notes.md && git commit -m "Add notes"' "'" "'" "'")"
+# Messages the guard can't read are left to the written rule.
+check allowed 'git commit -m "$msg"'
+check allowed "git commit -F $tmp/no-such-file.txt"
+check_ps blocked "git commit -m \"the agent's worktree\""
+check_ps blocked "git commit -m 'it''s done'"
+check_ps blocked "git commit -m \"A clean title\" -m \"it${curly}s done\""
+check_ps blocked "$(printf "@'\nAdd the list\n\nThe agent's worktree\n'@ | git commit -F -")"
+check_ps allowed "git commit -m 'A clean title'"
+check_ps allowed 'git commit -m "A clean title" -m "A clean body"'
+check_ps allowed "$(printf "@'\nAdd the list\n\nThe agent worktree\n'@ | git commit -F -")"
 
 if [ "$failures" -gt 0 ]; then
   echo "$failures commit-guard check(s) failed"

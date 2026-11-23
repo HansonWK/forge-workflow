@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # PreToolUse hook (Bash and PowerShell): Claude commits only on a branch the workflow owns, files staged by name, never amending.
 # Refuses `git commit` on the default branch, a detached HEAD or a branch outside OWNED_BRANCH,
-# `git commit --amend` / `-a`, `git add -A` / `--all` / `.`, and a `git push` that targets the default branch.
+# `git commit --amend` / `-a`, a commit message holding an apostrophe, `git add -A` / `--all` / `.`,
+# and a `git push` that targets the default branch.
 # Exit code 2 blocks the call and shows stderr to Claude.
 
 # OWNED_BRANCH and OWNED_HINT: the branches the workflow owns, shared with push-branch.sh.
@@ -36,16 +37,28 @@ case "$tool" in Bash | PowerShell) ;; *) exit 0 ;; esac
 [ -n "$cmd" ] || exit 0
 start_dir=${start_dir:-${CLAUDE_PROJECT_DIR:-$PWD}}
 
-# Heredoc and here-string bodies are data. In PowerShell a backtick escapes the next character or
-# continues the line, and a { } block holds commands. Quoted text stays one word: its spaces and
-# separators are swapped for control bytes (decoded again for paths), so a commit message never splits
-# the command, `echo "git commit"` is not a commit, and `cd "/a b"` still finds "/a b".
+# Heredoc and here-string bodies are data; code after a here-string's closing '@ is read. In PowerShell
+# a backtick escapes the next character or continues the line, and a { } block holds commands. Quoted
+# text stays one word: its spaces and separators are swapped for control bytes (decoded again for paths
+# and messages), so a commit message never splits the command, `echo "git commit"` is not a commit, and
+# `cd "/a b"` still finds "/a b".
+# A heredoc or here-string opened (or, in PowerShell, closed) on a line with a git commit is that
+# commit's message (`-F - <<EOF`, `-m "$(cat <<EOF`, `@'…'@ | git commit -F -`): keep its text.
+commit_line='git.*[[:space:]]commit([[:space:]]|$)'
 if [ "$tool" = PowerShell ]; then
+  commit_heredocs=$(printf '%s\n' "${cmd//$'\r'/}" | awk -v re="$commit_line" '
+    inside { if ($0 ~ /^["\047]@/) { inside = 0; if (keep || $0 ~ re) printf "%s", text } else text = text $0 "\n"; next }
+    /@["\047][[:space:]]*$/ { inside = 1; keep = ($0 ~ re); text = "" }')
   body=$(printf '%s\n' "${cmd//$'\r'/}" | awk '
-    inside { if ($0 ~ /^["\047]@/) inside = 0; next }
+    inside { if ($0 ~ /^["\047]@/) { inside = 0; sub(/^["\047]@/, "_"); print } next }
     /@["\047][[:space:]]*$/ { sub(/@["\047][[:space:]]*$/, "_"); print; inside = 1; next }
     { print }' | perl -0pe 's/`\n/ /g; s/`["\x27]/_/g; s/`(.)/$1/g; s/[{}]/;/g')
 else
+  commit_heredocs=$(printf '%s\n' "${cmd//$'\\\n'/ }" | awk -v re="$commit_line" '
+    marker != "" { if ($0 == marker) marker = ""; else if (keep) print; next }
+    match($0, /<<-?[[:space:]]*["\047]?[A-Za-z_][A-Za-z0-9_]*/) {
+      marker = substr($0, RSTART, RLENGTH); sub(/^<<-?[[:space:]]*["\047]?/, "", marker); keep = ($0 ~ re)
+    }')
   body=$(printf '%s\n' "${cmd//$'\\\n'/ }" | awk '
     marker != "" { if ($0 == marker) marker = ""; next }
     match($0, /<<-?[[:space:]]*["\047]?[A-Za-z_][A-Za-z0-9_]*/) {
@@ -53,13 +66,18 @@ else
     }
     { print }')
 fi
-words=$(printf '%s\n' "$body" | perl -pe 's/"([^"]*)"|\x27([^\x27]*)\x27/my $q = defined $1 ? $1 : $2; $q =~ tr{ \t;&|()\n}{\x10-\x17}; length $q ? $q : "\x18"/ge')
+# In PowerShell, '' inside a single-quoted string is one literal '.
+words=$(printf '%s\n' "$body" | PS=$([ "$tool" = PowerShell ] && echo 1) perl -pe '
+  my $sq = $ENV{PS} ? qr/\x27((?:[^\x27]|\x27\x27)*)\x27/ : qr/\x27([^\x27]*)\x27/;
+  s/"([^"]*)"|$sq/my $q = defined $1 ? $1 : $2; $q =~ s{\x27\x27}{\x27}g if $ENV{PS}; $q =~ tr{ \t;&|()\n}{\x10-\x17}; length $q ? $q : "\x18"/ge')
+
+decode() { printf '%s' "$1" | tr '\020\021\022\023\024\025\026\027' ' \t;&|()\n' | tr -d '\030'; }
 
 # A path the guard can't work out (another variable, cd -) resolves to a folder that doesn't exist,
 # and a commit there is refused.
 resolve() {
   local p v f
-  p=$(printf '%s' "$1" | tr '\020\021\022\023\024\025\026\027' ' \t;&|()\n' | tr -d '\030')
+  p=$(decode "$1")
   for v in CLAUDE_PROJECT_DIR HOME; do
     for f in "\${$v}" "\$env:$v" "\$$v"; do
       case "$p" in "$f" | "$f"/* | "$f"\\*) p=${!v}${p#"$f"}; break 2 ;; esac
@@ -95,6 +113,45 @@ check_branch() {
     block "'$branch' is the default branch, which Claude doesn't commit on: create a workflow branch ($OWNED_HINT) with git switch -c first."
   printf '%s' "$branch" | grep -Eq "$OWNED_BRANCH" ||
     block "'$branch' is not a branch the workflow owns ($OWNED_HINT). Claude commits only on those: suggest a correctly named branch to the developer instead."
+}
+
+# No apostrophe (straight ' or curly U+2019) anywhere in a commit message. The message is read as git
+# gets it: -m / --message values shell-unquoted (quoting characters never count), -F / --file files,
+# and the commit-line heredoc above. A message the guard can't read is allowed, and the written rule
+# in CLAUDE.md covers it: one built from a variable or a pipe, a file the same command writes, a
+# quoted -m that runs over several lines, an editor commit with no -m or -F.
+curly=$'\xe2\x80\x99'
+check_message() {
+  local dir=$1 a f p kind v
+  shift
+  while [ $# -gt 0 ]; do
+    a=$1 kind= v=
+    shift
+    case "$a" in
+      --message=*) kind=m v=${a#*=} ;;
+      --file=*) kind=F v=${a#*=} ;;
+      --message) kind=m v=$1; shift ;;
+      --file) kind=F v=$1; shift ;;
+      --*) ;;
+      -?*)
+        # Short flags: -m, -F, -qm, -mText. A c, C, t, S or u before the m or F takes its own value.
+        f=${a#-} p=${f%%[mF]*}
+        if [ "$p" != "$f" ] && [[ $p != *[cCtSu]* ]]; then
+          kind=${f:${#p}:1} v=${f:$((${#p} + 1))}
+          [ -n "$v" ] || { v=$1; shift; }
+        fi
+        ;;
+    esac
+    case "$kind" in
+      m) v=$(decode "$v" | perl -0pe 's/\$\([^)]*\)?|\$\{[^}]*\}?|\$[A-Za-z_][A-Za-z0-9_:]*|`[^`]*`?//g') ;;
+      F) [ "$(decode "$v")" = - ] && v= || { f=$(resolve "$v" "$dir"); v=$([ -f "$f" ] && cat "$f"); } ;;
+    esac
+    case "$v" in *"'"* | *"$curly"*) kind=refuse ;; esac
+    [ "$kind" = refuse ] && break
+  done
+  case "$kind$commit_heredocs" in refuse* | *"'"* | *"$curly"*)
+    block "Commit messages may not contain apostrophes. Reword without them, for example 'agent's worktree' → 'agent worktree', 'don't' → 'do not'." ;;
+  esac
 }
 
 check_push() {
@@ -150,6 +207,7 @@ check_git() {
         fi
       done
       check_branch "$dir"
+      check_message "$dir" "$@"
       ;;
     push) check_push "$dir" "$@" ;;
   esac
