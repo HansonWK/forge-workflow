@@ -27,5 +27,5 @@ you've looped without progress. Report what's green, what's not, and why.
 ## Rules
 
 - Never disable, skip, or delete a failing test to make the suite pass.
-- Never commit or push — verification produces green working changes; the user commits.
-- Report the final state (checks run, pass/fail) as input to `verify-acceptance` and `/present`.
+- Don't commit — verification produces green working changes; `/next` commits on approval.
+- Report the final state (checks run, pass/fail) as input to `verify-acceptance` and the `/next` stop.

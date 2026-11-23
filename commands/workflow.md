@@ -23,20 +23,19 @@ Present the following workflow guide to the user:
 
 | Command              | Description                                            |
 | -------------------- | ------------------------------------------------------ |
-| `/begin <task>`      | Start new work — runs research, plan, and signoff automatically |
+| `/begin <task>`      | Start new work — research, agree the ACs, plan, then `/present`. `/begin -s <task>` keeps it in the terminal (no work page) |
 | `/branch <TICKET>`   | Create a feature branch from a ticket                  |
 | `/research <topic>`  | Run the research phase only                            |
 | `/plan`              | Run the planning phase only                            |
-| `/signoff`           | Present research and plan for approval                 |
+| `/present`           | Present the plan for approval (on the work page, or in the terminal) |
 
 ### Executing work
 
 | Command    | Description                                                    |
 | ---------- | -------------------------------------------------------------- |
-| `/next`    | Execute the next subtask cycle (dev, review, present)          |
-| `/dev`     | Implement the current subtask                                  |
-| `/review`  | Run code review for current changes                            |
-| `/present` | Present changes for user approval                              |
+| `/next`    | Run subtasks until a stop, show how they were proved; approve to commit each one |
+| `/dev`     | Implement, verify and prove the current subtask                |
+| `/review`  | On-demand code review (the full review runs at `/signoff`)     |
 | `/run`     | Run the app or a service locally (Claude-bg vs your terminal)  |
 
 ### Resuming work
@@ -50,12 +49,14 @@ Present the following workflow guide to the user:
 
 | Command     | Description                                              |
 | ----------- | -------------------------------------------------------- |
+| `/signoff`      | Final checks in parallel (review, logs, performance, security, SEO, docs, ACs), the completion report, then `/pr` |
+| `/pr`           | Push and open the pull request once sign-off covers every commit |
 | `/cr`           | Code review (local or worktree-isolated)             |
 | `/double-check` | Independent second opinion from a different AI CLI   |
-| `/security`     | Run a security audit                                 |
-| `/pr`           | Prepare and create a pull request                   |
+| `/security`     | Run a security audit (`/signoff` runs it on security hotspots) |
 | `/slice`        | Decide whether/where to split into mergeable PRs     |
 | `/performance`  | Deep performance audit of a service or app           |
+| `/clean-up`     | Record finished work, then remove its worktree, work folder and spent reviews (`--dry-run` to preview) |
 
 ### Standalone commands
 
@@ -63,7 +64,7 @@ Present the following workflow guide to the user:
 | -------------------- | ------------------------------------------------------ |
 | `/ticket`            | Create a ticket from an investigation                  |
 | `/explain <target>`  | Explain how existing code works (not a review)         |
-| `/deck`              | Build a self-contained HTML slide deck                 |
+| `/presentation`      | Build a deck or a page as a live Artifact (`--slides` / `--page`) |
 | `/workflow`          | Show this command reference                            |
 
 ### Optional modules
@@ -84,10 +85,12 @@ set up appear; run `/install` (or `/install <module>`) to add a skipped one late
 
 ### Tips
 
-- You don't need to call `/dev`, `/present`, or `/signoff` directly — `/next` and `/begin` orchestrate these for you. `/signoff` runs automatically after planning and presents clickable file links for you to review.
-- All plan and research files live in `.claude/temp/` — clean up after your PR is merged
+- The loop: `/begin` → `/present` (approve the plan) → `/next` … `/next` (each stop shows the proof; approving commits each subtask) → `/signoff` → `/pr`. You rarely call `/dev` or `/present` directly.
+- With a work page, everything is on one live page beside the terminal: rename subtasks, change a tier, answer questions and press Approve or Next there, then type `/next` or "done".
+- Every subtask has a tier (Easy / Medium / Hard) and a proof. Claude may raise a tier; only you lower one.
+- Each piece of work lives in its work folder, `.claude/temp/work/<slug>/`. Run `/clean-up` each release (or sprint): it keeps one record per finished piece of work in `.claude/temp/complete/` and removes the rest
 - Optional modules are opt-in. Re-running `/install` re-offers any module you skipped, so you can grow the workflow as the project needs it.
-- Skills (`.claude/skills/`) hold the review/security/testing/verification rubrics; commands call them for you — you don't invoke skills directly. `/dev` self-verifies (build/lint/test + acceptance criteria) before the approval gate.
+- Skills (`.claude/skills/`) hold the review/security/testing/verification rubrics; commands call them for you — you don't invoke skills directly. `/dev` self-verifies (build/lint/test) and runs the subtask's proof before the stop.
 - The workflow evolves with you: run `/customize` to add/update a skill/command/agent — and Claude will suggest it when it notices you repeating the same request.
 ```
 

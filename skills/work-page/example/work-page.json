@@ -1,0 +1,345 @@
+{
+  "example": true,
+  "ticket": "PROJ-1234",
+  "ticketUrl": "https://mycompany.atlassian.net/browse/PROJ-1234",
+  "name": "Newsletter sign-up with double opt-in",
+  "shortName": "Newsletter sign-up",
+  "branch": "PROJ-1234-newsletter-double-opt-in",
+  "problem": "Visitors can join the newsletter from the footer, but nothing confirms the address, so typos and other people's addresses end up on the list.",
+  "summary": "The footer form sends a confirmation email. The address joins the list only when its link is opened within 48 hours.",
+  "acs": [
+    {
+      "id": "AC1",
+      "text": "Submitting the footer form sends one confirmation email and shows `Check your inbox`.",
+      "provedBy": [
+        "P1"
+      ]
+    },
+    {
+      "id": "AC2",
+      "text": "Opening the link within 48 hours adds the address to the list; after 48 hours it shows `This link has expired`.",
+      "provedBy": [
+        "3"
+      ]
+    },
+    {
+      "id": "AC3",
+      "text": "An address already on the list gets no second email and sees the same message.",
+      "provedBy": [
+        "P1"
+      ]
+    }
+  ],
+  "subtasks": [
+    {
+      "n": 1,
+      "title": "Add the pending sign-ups table",
+      "tier": "low",
+      "tierWhy": "A migration that copies the existing tables' pattern.",
+      "size": "2 files, about 40 lines",
+      "approach": "A `pending_signups` table holding the address, a token hash and the expiry.",
+      "files": [
+        "db/migrations/0042_pending_signups.sql",
+        "db/schema.ts"
+      ],
+      "proves": [],
+      "proof": {
+        "group": "P1"
+      }
+    },
+    {
+      "n": 2,
+      "title": "Send the confirmation email on sign-up",
+      "tier": "medium",
+      "tierWhy": "A business rule with three branches: new, pending and already subscribed.",
+      "size": "4 files, about 180 lines",
+      "approach": "The form handler creates or refreshes the pending row and sends the email through the existing mailer; a known address gets the same reply and no email.",
+      "files": [
+        "src/newsletter/signup.ts",
+        "src/newsletter/signup.test.ts",
+        "src/mail/templates/confirm.html",
+        "src/components/FooterSignup.tsx"
+      ],
+      "proves": [
+        "AC1",
+        "AC3"
+      ],
+      "proof": {
+        "group": "P1"
+      },
+      "questions": [
+        {
+          "id": "Q1",
+          "question": "Resend the email when a pending address signs up again?",
+          "mode": "choose",
+          "recommend": "Resend, at most once an hour",
+          "options": [
+            {
+              "name": "Resend, at most once an hour",
+              "pros": [
+                "Recovers a lost email"
+              ],
+              "cons": [
+                "One more rate limit to test"
+              ]
+            },
+            {
+              "name": "Never resend",
+              "pros": [
+                "Simplest"
+              ],
+              "cons": [
+                "A lost email leaves the visitor stuck for 48 hours"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "n": 3,
+      "title": "Confirm the address from the email link",
+      "tier": "high",
+      "tierWhy": "Raised from Medium: the first token approach could not be revoked.",
+      "size": "3 files, about 150 lines",
+      "approach": "A confirmation route that checks the token, moves the address onto the list and deletes the pending row.",
+      "files": [
+        "src/newsletter/confirm.ts",
+        "src/newsletter/confirm.test.ts",
+        "src/routes/newsletter/confirm.tsx"
+      ],
+      "proves": [
+        "AC2"
+      ],
+      "proof": {
+        "kind": "script + log",
+        "what": "Sign up, open the link, then replay it after moving the clock past 48 hours; the log shows `newsletter.confirmed` once and `newsletter.link_expired` once.",
+        "keep": "e2e: new `newsletter-signup.spec.ts`"
+      },
+      "questions": [
+        {
+          "id": "Q1",
+          "question": "Signed token in the link, or a random token stored hashed?",
+          "mode": "discuss",
+          "recommend": "Random token, stored hashed",
+          "options": [
+            {
+              "name": "Signed token",
+              "summary": "The link carries the address and expiry, signed.",
+              "pros": [
+                "No lookup"
+              ],
+              "cons": [
+                "Can't be revoked",
+                "Puts the address in the URL"
+              ]
+            },
+            {
+              "name": "Random token, stored hashed",
+              "summary": "The link carries only a random value.",
+              "pros": [
+                "Revocable",
+                "Nothing personal in the URL"
+              ],
+              "cons": [
+                "One lookup per click"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "Q2",
+          "question": "Where does an expired link send the visitor?",
+          "mode": "confirm",
+          "recommend": "Back to the sign-up form, prefilled",
+          "options": [
+            {
+              "name": "Back to the sign-up form, prefilled",
+              "pros": [
+                "One click to retry"
+              ],
+              "cons": [
+                "Prefill needs the address"
+              ]
+            },
+            {
+              "name": "A plain expiry page",
+              "pros": [
+                "No personal data on the page"
+              ],
+              "cons": [
+                "The visitor has to find the form"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "n": 4,
+      "title": "Document the sign-up flow",
+      "tier": "low",
+      "tierWhy": "Docs only.",
+      "size": "1 file",
+      "approach": "Describe the flow and the expiry in the newsletter docs page.",
+      "files": [
+        "docs/newsletter.md"
+      ],
+      "proves": [],
+      "proof": {
+        "none": "Changes no behaviour."
+      }
+    }
+  ],
+  "proofGroups": [
+    {
+      "id": "P1",
+      "subtasks": [
+        1,
+        2
+      ],
+      "proof": {
+        "kind": "script + log",
+        "what": "Sign up a new, a pending and a known address against the local stack; the mail log shows two emails and the replies are identical.",
+        "keep": "unit"
+      }
+    }
+  ],
+  "complete": {
+    "summary": "Only addresses whose owner opened the link within 48 hours are on the list.",
+    "outcome": [
+      "A pending sign-ups table",
+      "The confirmation email and route",
+      "A Playwright spec for the happy path and the expired link"
+    ],
+    "proving": "P1 proves the sign-up branches locally; subtask 3 replays the confirmation and the expiry."
+  },
+  "devTests": [
+    {
+      "id": "D1",
+      "step": "Sign up with a new address on dev and open the link.",
+      "expect": "`newsletter.confirmed` logged once, with `result=added`"
+    },
+    {
+      "id": "D2",
+      "step": "Sign up again with the same address.",
+      "expect": "No email sent; `newsletter.signup` logged with `result=known`"
+    }
+  ],
+  "seedProgress": {
+    "stage": "Testing on dev",
+    "batch": [],
+    "updated": "2026-01-15T10:42:00.000Z",
+    "subtasks": {
+      "1": {
+        "status": "done",
+        "commit": "3f1c2aa"
+      },
+      "2": {
+        "status": "done",
+        "commit": "9b04e71"
+      },
+      "3": {
+        "status": "done",
+        "commit": "c51d0e9",
+        "escalated": {
+          "from": "medium",
+          "to": "high",
+          "reason": "Signed tokens could not be revoked; the developer agreed a stored token before the approach changed."
+        },
+        "proof": {
+          "result": "pass",
+          "summary": "Confirmed once, expired once.",
+          "evidence": [
+            {
+              "kind": "log",
+              "label": "3-confirm.log",
+              "text": "{\"msg\":\"newsletter.confirmed\",\"result\":\"added\"}\n{\"msg\":\"newsletter.link_expired\",\"ageHours\":49}"
+            }
+          ]
+        }
+      },
+      "4": {
+        "status": "done",
+        "commit": "e2a7f40"
+      }
+    },
+    "groups": {
+      "P1": {
+        "result": "pass",
+        "summary": "Two emails for three sign-ups; replies identical.",
+        "evidence": [
+          {
+            "kind": "log",
+            "label": "P1-signup.log",
+            "text": "mail.sent to=new@example.test\nmail.sent to=pending@example.test\nsignup result=known (no mail)"
+          }
+        ]
+      }
+    },
+    "acs": {
+      "AC1": {
+        "status": "pass",
+        "proof": "P1"
+      },
+      "AC2": {
+        "status": "pass",
+        "proof": "3"
+      },
+      "AC3": {
+        "status": "pass",
+        "proof": "P1"
+      }
+    },
+    "signoff": {
+      "checks": {
+        "code-review": {
+          "result": "pass",
+          "note": "1 High fixed · 2 dropped by the second pass"
+        },
+        "security": {
+          "result": "pass",
+          "note": "Token stored hashed; no address in logs"
+        },
+        "logs": {
+          "result": "pass",
+          "note": "Both events logged, 0 violations"
+        },
+        "performance": {
+          "result": "pass",
+          "note": "Within range for the added form"
+        },
+        "docs": {
+          "result": "pass",
+          "note": "`docs/newsletter.md` updated"
+        },
+        "acceptance": {
+          "result": "pass",
+          "note": "AC1–AC3 proven"
+        },
+        "seo": {
+          "result": "skipped",
+          "note": "skipped — no page metadata changed"
+        }
+      },
+      "perf": {
+        "rows": [
+          {
+            "page": "/ · mobile",
+            "metric": "score",
+            "before": 0.92,
+            "after": 0.91
+          },
+          {
+            "page": "/ · mobile",
+            "metric": "lcp",
+            "before": 2100,
+            "after": 2150
+          }
+        ],
+        "note": "LCP up 50 ms from the form script; within range."
+      }
+    },
+    "pr": "https://github.com/your-org/your-repo/pull/42"
+  }
+}

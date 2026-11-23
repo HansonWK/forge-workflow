@@ -1,144 +1,121 @@
 ---
-description: Execute next subtask cycle in current plan
+description: Run the plan's subtasks until the next stop, then commit them on approval
 ---
 
-# Execute Next Subtask
+# Next
 
-## Step 1: Find Current Plan
+Runs subtasks until a stop, shows what was done and how it was proved, and commits each subtask on
+approval. Approving a stop (`/next`, "approved", "go", or **Next** on the work page) is the same
+command.
 
-Look for an active plan:
+## Step 1: Find the plan
 
-1. First try to match by ticket ID from the current branch name (e.g., branch `PROJ-1234-feature` → look for `.claude/temp/PROJ-1234-*/plan.md`)
-2. Fall back to checking all `.claude/temp/*/plan.md` files
-3. Find one with Status: `IN_PROGRESS` or `READY`
-4. If multiple, show list and ask user to select
-5. If none, error: "No active plan found. Run /begin to start new work or /resume to resume existing."
+1. Match the ticket ID in the branch name to a work folder (branch `PROJ-1234-feature` →
+   `.claude/temp/work/PROJ-1234-*/plan.md`), else check every work folder's `plan.md`.
+2. Take the one with Status `IN_PROGRESS` or `READY`; if several, ask which.
+3. None, but an old-style `.claude/temp/<slug>/plan.md` exists: say "Found an old-style folder at
+   `<path>`; move it to `.claude/temp/work/<slug>/` (or run `/clean-up`, which moves it) to carry
+   on." and stop.
+4. Nothing at all: "No active plan found. Run /begin to start new work or /resume to resume existing."
 
-## Step 2: Find Next Subtask
+## Step 2: Is a stop open?
 
-Parse the plan.md to find the next incomplete subtask:
+If `status.md` has `batch_status: waiting`, this message answers that stop. In page mode, read the
+page's input first (`work-page` → Reading the developer's input).
 
-- Look for first subtask where `- [ ] Dev` is unchecked
-- Update plan.md Status to `IN_PROGRESS` if it was `READY`
+- **Approved** → Step 6 (commit), then carry on.
+- **The developer committed themselves** → record each subtask's SHA from `git log`, then carry on.
+- **Feedback or a change** → make it, re-run the proof, and stop again.
 
-Display:
+## Step 3: Choose the batch
 
-```
-Executing: Subtask <N> of <total>
-Title: <subtask title>
-Goal: <subtask goal>
-```
+Start from the first subtask without a `**SHA:**`. (An older plan's `- [x] Present` counts as
+`Proved`.)
 
-## Step 3: Dev Phase
+- **Lows run on** without a stop. "Some Lows and a Medium" can run together, and so can a couple of
+  related Mediums proven together. A proof group stays in one batch. Suggest combining when it fits
+  and say so in one line; it's case by case.
+- **A High** starts with a discussion: put its open questions to the developer (on the page, or in
+  the terminal), set `batch_status: discussing`, and write no code until they're answered.
+- **Performance baseline:** before the first subtask marked `**Frontend:** yes`, if the proof folder
+  has no `perf-baseline.*`, run the `performance-review` skill's Baseline mode.
 
-Create native tasks for the subtask phases using `TaskCreate` with dependencies:
+Write `batch: [<n>, …]` and `batch_status: doing` to `status.md`; in page mode, update progress
+(`work-page` → Keeping it live).
 
-1. **Dev** — "Implement subtask N: \<title\>" (activeForm: "Implementing \<title\>")
-2. **Review** — "Review subtask N" (activeForm: "Reviewing changes", blockedBy: Dev)
-3. **Present** — "Present subtask N for approval" (activeForm: "Presenting changes", blockedBy: Review)
-4. **Commit** — "Commit subtask N" (activeForm: "Awaiting commit approval", blockedBy: Present)
+## Step 4: Build and prove each subtask
 
-Mark the Dev task as `in_progress` and run `/dev` — which now self-verifies (the `verify` and
-`verify-acceptance` skills) before finishing. Mark it `completed` when dev finishes.
+For each subtask in the batch, run `/dev`: it implements, verifies, and runs the subtask's proof (or,
+at the end of a group, the group's) through `verify-acceptance`, with the evidence in the proof
+folder. Record the files each subtask touched under `## Subtask files` in `status.md`
+(`- 3: src/a.ts, src/a.test.ts`), so the commits stay per subtask across sessions. Tick `- [x] Dev`
+and, once its proof passes, `- [x] Proved` (a subtask with `none — <reason>` is Proved when Dev is).
 
-**Auto-proceed to the Review phase.**
+**Escalate** as `writing-plans` says: an issue with the approach → raise the subtask to Medium; the
+approach must change → High; a file outside the subtask's list or a diff well past its size → a
+signal. Each change of tier is a ledger row. An escalation is a stop.
 
-## Step 3b: Review Phase
+## Step 5: Stop
 
-Mark the Review task as `in_progress`. Run `/review` on the subtask's changes (the `pr-sanity-check` agent). Fix any Critical/High issues and re-review until clean, per `/review`. Update plan.md: check `- [x] Review`. Mark the Review task `completed`.
+Stop at a Medium or High that isn't combined, at the end of a proof group, at an escalation, when a
+decision the plan didn't make is needed, or when the batch is done. No code review at stops: the full
+review runs once, at `/signoff`.
 
-**Auto-proceed to the Present phase.**
-
-## Step 4: Present Phase
-
-Mark the Present task as `in_progress`.
-
-Present to user:
+Set `batch_status: waiting`, write each proof's result under `## Proofs` and the "Proved by" line as
+`stop_summary`, then update the page. Show:
 
 ```markdown
-## Subtask <N>: <title>
+Subtasks 1–3 done: <title 1>, <title 2>, <title 3>. Proved by <how>.
 
-### Summary
+<the proof itself: a log excerpt, script output, or the screenshot path>
 
-<what was implemented>
+Files to read:
+<path>   (subtask 1)
+<path>   (subtask 2, 3)
 
-### Files Changed
+<any escalation, open question or outstanding item>
 
-| File | Change           | Lines |
-| ---- | ---------------- | ----- |
-| ...  | created/modified | +X/-Y |
+Work page: <url>      (page mode)
 
-### Tests
-
-- Added: <N> tests
-- Passing: Yes/No
-
-### Outstanding Items
-
-<any issues noted for user attention>
-
----
-
-**Approve?** (y/go, or provide feedback)
+Approve to commit each subtask under its title (/next, "approved", "go", or Next on the page),
+commit yourself, or give feedback.
 ```
 
-**STOP and wait for user approval.**
+**STOP and wait.**
 
-If user provides feedback:
+## Step 6: Commit on approval
 
-- Implement changes
-- Present again
+Only on a branch the workflow owns (the Working agreements in `CLAUDE.md`); otherwise stop and
+suggest a correctly named branch. For each subtask in the batch, in order:
 
-Mark the Present task as `completed`. Update plan.md: check `- [x] Present`
-
-## Step 5: Commit Phase
-
-Mark the Commit task as `in_progress`.
-
-**NEVER commit automatically.** Always prompt the user to commit work when complete.
-
-Suggest a commit message:
-
-```
-Suggested commit message: <concise description of subtask>
-
-Please commit when ready, then say "done" to continue.
+```bash
+git add <that subtask's files, by name>
+git commit -m "<subtask title, in the project's commit message format>"
 ```
 
-Wait for user confirmation before proceeding.
+Never `git add -A` or `.`, never amend, and no apostrophes anywhere in the message (the Working
+agreements; the commit guard refuses them). Subtasks proven together may share one commit only if
+you suggest it and the developer agrees. Fill each subtask's `**SHA:**` in `plan.md`, and update the page.
+If a hook or permission refuses a commit, show its message, hand the commit to the developer, and
+don't retry another way.
 
-Mark the Commit task as `completed`.
+## Step 7: Carry on
 
-## Step 6: Next Steps
-
-After user confirms commit:
-
-```
-Subtask <N> complete.
-
-<remaining> subtasks remaining in plan.
-Run /next to continue.
-```
-
-If this was the last subtask:
+More subtasks → back to Step 3. All committed:
 
 ```
-All subtasks complete!
-
-Next steps:
-- /review - Run code review on all branch changes (recommended)
-- /security - Run security audit on all changes (recommended)
-- /pr - Open pull request
+All subtasks committed. Next: /signoff — the final checks, then the PR.
 ```
 
 ## Rules
 
-- NEVER commit without user approval at Present phase
-- NEVER commit on behalf of the user - only suggest commit messages
-- Update plan.md checkboxes as you complete each phase
-- Review runs automatically per subtask (Step 3b, via the pr-sanity-check agent); the comprehensive /security audit runs once before PR
+- Commit only once the developer approves the stop, and don't push (`/pr` pushes).
+- Never lower a tier; only the developer does.
+- Read the page's input only at a stop, never mid-batch.
+- Keep `plan.md` canonical: a rename, tier change or answer goes there first, then the page.
 
 ## Tracking
 
-- **plan.md checkboxes**: Track cross-session progress (persistent)
-- **Native tasks** (`TaskCreate`/`TaskUpdate`): Track in-session progress with real-time status visibility (ephemeral). Use these for phase-level tracking in `/next` and step-level tracking in `/dev`
+- **plan.md** (`Dev`, `Proved`, `SHA`) and **status.md** (`batch`, `## Proofs`, `## Subtask files`):
+  cross-session progress
+- **Native tasks** (`TaskCreate`/`TaskUpdate`): in-session progress through the batch

@@ -145,6 +145,17 @@ traces
 
 If the user hasn't provided enough context to know what KQL they used, ask them — understanding the query helps interpret the results correctly.
 
+### KQL traps (the query rules in `/logs` apply too)
+
+- **Reserved words can't be bare names.** `first`, `last` and `missing`, among other keywords, fail
+  as column or `extend` names; rename them (`FirstSeen`) or bracket them (`['first']`).
+- **A syntax error can look like an empty table** in some clients. Run the query once over the last
+  hour and check it returns rows (or a clear zero from `| count`) before trusting "no results".
+- **`customDimensions` values are dynamic**: wrap each in `tostring()` before comparing, or the
+  `where` matches nothing.
+- **Ingestion lags** by a minute or more: a query run straight after the action can miss it. Bound
+  any wait and say what it's waiting for.
+
 ## Rules
 
 - Always deduplicate logs before analysis if the exporter is known to duplicate

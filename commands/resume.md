@@ -6,14 +6,13 @@ description: Resume an existing plan
 
 ## Step 1: Scan for Plans
 
-First, try to match by ticket ID from the current branch name (e.g., branch `PROJ-1234-some-feature` → look for `.claude/temp/PROJ-1234-*/plan.md`). If no branch match, use the provided slug argument.
+First, try to match by ticket ID from the current branch name (e.g., branch `PROJ-1234-some-feature` → look for `.claude/temp/work/PROJ-1234-*/plan.md`). If no branch match, use the provided slug argument.
 
 ```bash
 # Try ticket ID from branch first
 git branch --show-current
 # Then search for matching plan directories
-ls -d .claude/temp/*/ 2>/dev/null
-find .claude/temp/ -name "plan.md" 2>/dev/null
+ls -d .claude/temp/work/*/ 2>/dev/null
 ```
 
 For each plan.md found, extract:
@@ -34,9 +33,13 @@ Also read `status.md` from the same directory (if it exists) to get:
 If no plans found:
 
 ```
-No plans found in .claude/temp/<slug> or no <slug> folder found.
+No plans found in .claude/temp/work/.
 Run /begin to start new work.
 ```
+
+If an old-style `.claude/temp/<slug>/plan.md` exists outside `work/`, add: "Found an old-style folder
+at `<path>`; move it to `.claude/temp/work/<slug>/` (or run `/clean-up`, which moves it) to resume
+it."
 
 If plans found, display numbered list with status.md info where available:
 
@@ -72,14 +75,13 @@ Cancelled.
 
 For selected plan:
 
-1. Read `.claude/temp/<name>/research.md` - understand the research
-2. Read `.claude/temp/<name>/plan.md` - understand the plan and progress
+1. Read the work folder's `research.md` - understand the research
+2. Read its `plan.md` - understand the plan and progress
 
-Determine current position:
+3. Read its `status.md` - mode, stage, batch, open stop, proofs
 
-- Find first subtask with unchecked `- [ ] Dev`
-- Or if all Dev checked, find first with unchecked `- [ ] Review`
-- Etc.
+Determine current position: the first subtask without a `**SHA:**`, and whether a stop is open
+(`batch_status: waiting`). An older plan's `- [x] Present` counts as `Proved`.
 
 ## Step 5: Switch Branch (if needed)
 
@@ -101,18 +103,23 @@ Check if we are on a branch with an appropriate name. It will normally start wit
 
 ### Status
 
+**Complexity:** <Easy / Medium / Hard> — <reason>
 - [x] Dev (if complete)
-- [ ] Review (if pending)
-- [ ] Present
+- [ ] Proved
+**Stop open:** <yes — waiting for your approval of subtasks N–M | no>
 
 ### Key Context
 
 <brief summary from research.md - relevant patterns, constraints>
 
+Work page: <url>      (page mode; in simple mode, leave this out)
+
 ---
 
 Run /next to continue execution.
 ```
+
+In page mode, republish the page from `plan.md` if this is a new session (`work-page` → Republish).
 
 ## Rules
 

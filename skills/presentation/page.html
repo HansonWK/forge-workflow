@@ -1,0 +1,143 @@
+<title>{{TITLE}}</title>
+<meta name="claude:viewport-fit-sides" content="cover" />
+<style>
+  /* @house-style */
+
+  .wrap {
+    max-width: 920px;
+    margin: 0 auto;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+  }
+  .masthead {
+    background: var(--inverse-bg);
+  }
+  .masthead .wrap {
+    padding-block: var(--s-4xl) var(--s-2xl);
+    display: grid;
+    gap: var(--s-m);
+  }
+  .masthead h1 {
+    color: var(--inverse-ink);
+    font-size: var(--size-h-xxl);
+    max-width: 22ch;
+  }
+  .masthead .lede {
+    color: var(--inverse-muted);
+  }
+  .masthead .rule {
+    width: 72px;
+    height: 5px;
+    background: var(--accent-bright);
+  }
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-xxs) var(--s-m);
+    font-size: var(--size-body-s);
+    color: var(--inverse-muted);
+  }
+
+  .toc {
+    border-bottom: 1px solid var(--line);
+    background: var(--surface-2);
+  }
+  .toc .wrap {
+    padding-block: var(--s-s);
+  }
+  .toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-xxs) var(--s-m);
+    font-size: var(--size-body-s);
+  }
+  .toc a {
+    color: var(--muted);
+    text-decoration: none;
+  }
+  .toc a:hover {
+    color: var(--accent);
+    text-decoration: underline;
+  }
+
+  main.wrap {
+    padding-block: var(--s-2xl) var(--s-4xl);
+    display: grid;
+    gap: var(--s-4xl);
+  }
+  main section {
+    display: grid;
+    gap: var(--s-m);
+    scroll-margin-top: var(--s-m);
+  }
+  main section > p {
+    max-width: 68ch;
+  }
+  .summary {
+    border-top: 6px solid var(--accent-bright);
+    background: var(--accent-soft);
+    padding: var(--s-m);
+  }
+  footer.wrap {
+    padding-block: var(--s-l);
+    border-top: 1px solid var(--line);
+    font-size: var(--size-body-s);
+    color: var(--muted);
+  }
+</style>
+
+<header class="masthead inverse">
+  <div class="wrap">
+    <p class="eyebrow">{{EYEBROW}}</p>
+    <h1>
+      {{HEADLINE}}
+      <span class="accent">{{ACCENT}}</span>
+    </h1>
+    <div class="rule"></div>
+    <p class="lede">{{ONE-SENTENCE ANSWER}}</p>
+    <div class="meta">
+      <span>{{AUTHOR}}</span>
+      <span>{{DATE}}</span>
+      <span>{{TICKET}}</span>
+    </div>
+  </div>
+</header>
+
+<nav class="toc" aria-label="Contents">
+  <div class="wrap">
+    <ol>
+      <li><a href="#summary">Summary</a></li>
+      <li><a href="#next">What's next</a></li>
+    </ol>
+  </div>
+</nav>
+
+<main class="wrap">
+  <section id="summary" class="summary">
+    <h2>{{SUMMARY HEADLINE}}</h2>
+    <ul class="clean">
+      <li>
+        <b>{{POINT}}</b>
+        — {{DETAIL}}
+      </li>
+    </ul>
+  </section>
+
+  <!-- sections go here -->
+
+  <section id="next">
+    <p class="eyebrow">What's next</p>
+    <h2>{{CLOSING HEADLINE}}</h2>
+    <ul class="clean">
+      <li>
+        <b>{{FOLLOW-UP}}</b>
+        — {{DETAIL}}
+      </li>
+    </ul>
+  </section>
+</main>
+
+<footer class="wrap">{{SOURCES OR CONTACT}}</footer>

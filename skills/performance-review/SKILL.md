@@ -1,17 +1,18 @@
 ---
 name: performance-review
-description: Find performance problems — two modes: a fast pattern scan over a diff (for /review) and a deep audit of a whole service or app (for the performance agent). Apply the full performance analysis; the specifics here are what commonly gets missed.
+description: Find performance problems — three modes: a fast pattern scan over a diff (for /review and /signoff), a deep audit of a whole service or app (for the performance agent), and a frontend baseline measured before and after the work (for /next and /signoff). Apply the full performance analysis; the specifics here are what commonly gets missed.
 allowed-tools: Read, Grep, Glob, Bash
 ---
 
 # Performance Review
 
-Two modes. Pick by scope:
+Three modes. Pick by scope:
 
 | Mode | Scope | Used by |
 | --- | --- | --- |
-| **Scan** | the current diff, fast, no measurement | `/review` |
+| **Scan** | the current diff, fast, no measurement | `/review`, `/signoff` (backend) |
 | **Audit** | a whole service or app | the `performance` agent |
+| **Baseline** | the affected frontend app(s), measured before and after | `/next` (before), `/signoff` (after) |
 
 ## Scope — both modes
 
@@ -66,6 +67,22 @@ inferred.**
 
 Use the project's real telemetry (APM / logs / metrics), bounded by a time range and a limit. For
 structural front-end issues, reading the code is often enough. Never invent a number.
+
+## Mode 3 — Baseline (frontend before / after)
+
+**Command** (`/install` fills it, e.g. a Lighthouse run against the local app on the affected pages):
+`<perf command>`
+
+- **Before:** `/next` runs it before the first subtask marked `**Frontend:** yes`, against the app
+  as it is, and writes `perf-baseline.json` to the proof folder:
+  `{"command": "<exact command>", "results": [{"page", "form", "score", "lcp", "cls", "tbt"}]}`.
+- **After:** `/signoff` runs the same command on the branch into `perf-after.json`. With no
+  baseline, measure the merge-base first in a read-only worktree (the `worktree` skill: `--detach`
+  at `$(git merge-base HEAD <default branch>)`), write `perf-baseline.json`, and remove the worktree
+  before measuring the branch.
+- **Judge the change** against what was added: a video may justify some loss. Add a one-line `note`
+  to `perf-after.json`. A large drop gets concrete suggestions (no autoplay, an image first on
+  mobile, lazy loading…). Run each measurement more than once and report the median.
 
 ## Reporting
 

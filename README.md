@@ -69,29 +69,39 @@ That's it. Claude generates the rest from the staged templates.
 ### The Workflow
 
 ```
-/begin → /research → /plan → /signoff → /next (dev → review → present) → /security → /pr
+/begin → /present → /next (build → prove → stop → commit) … → /signoff → /pr
 ```
 
-Start work with `/begin`. Claude researches the codebase, creates a plan broken into reviewable subtasks (with acceptance criteria), and asks for your approval. Then `/next` cycles through each subtask: implement, **self-verify**, review, present for approval. When done, `/security` runs an audit and `/pr` creates the pull request.
+Start work with `/begin`. Claude researches the codebase, agrees the acceptance criteria with you,
+and plans the work as subtasks — each with a complexity tier (Easy / Medium / Hard) and a proof.
+`/present` shows the plan and waits for your approval. `/next` then runs subtasks until a stop:
+small ones run on together, and each stop shows what was done and **how it was proved** (logs, script
+output, screenshots). Approving a stop commits each subtask under its own title. `/signoff` runs the
+final checks in parallel — code review with a second pass, logs, performance, security, SEO, docs and
+every AC — shows a completion report, and carries on into `/pr`.
+
+By default each piece of work gets a **work page**: a private live claude.ai artifact beside your
+terminal with the plan, progress, the sign-off report and the test on dev, where you can rename
+subtasks, change tiers, answer questions and approve. `/begin -s <task>` keeps the whole flow in the
+terminal instead.
 
 ### Commands
 
 **Starting Work**
 | Command | What it does |
 |---------|-------------|
-| `/begin` | Start new work — research, plan, get approval |
+| `/begin` | Start new work — research, agree ACs, plan (`-s` for terminal only) |
 | `/branch` | Create feature branch from ticket |
 | `/research` | Run research phase only |
 | `/plan` | Run planning phase only |
-| `/signoff` | Present research/plan for approval |
+| `/present` | Present the plan for approval |
 
 **Doing Work**
 | Command | What it does |
 |---------|-------------|
-| `/next` | Execute next subtask (dev → review → present) |
-| `/dev` | Implement current subtask |
-| `/review` | Run code review |
-| `/present` | Present changes for approval |
+| `/next` | Run subtasks until a stop; approve to commit each |
+| `/dev` | Implement, verify and prove the current subtask |
+| `/review` | On-demand code review |
 | `/resume` | Resume existing plan |
 | `/status` | Show progress dashboard |
 | `/explain` | Explain how existing code works (not a review) |
@@ -100,13 +110,15 @@ Start work with `/begin`. Claude researches the codebase, creates a plan broken 
 **Finishing Work**
 | Command | What it does |
 |---------|-------------|
+| `/signoff` | Final checks in parallel, completion report, then `/pr` |
+| `/pr` | Push and open the pull request |
 | `/cr` | Code review (local or worktree-isolated) |
 | `/double-check` | Independent second opinion from a different AI CLI |
 | `/security` | Run security audit |
-| `/pr` | Prepare and create pull request |
 | `/slice` | Decide whether/where to split into mergeable PRs |
 | `/performance` | Deep performance audit of a service or app |
 | `/ticket` | Create ticket from investigation |
+| `/clean-up` | Keep one record per finished piece of work, then remove its worktree and work folder (`--dry-run` to preview) |
 
 **Reference**
 | Command | What it does |
@@ -117,7 +129,7 @@ Start work with `/begin`. Claude researches the codebase, creates a plan broken 
 | `/attribution` | Record credits/resources in ATTRIBUTION.md |
 | `/clarify` | Interview me to pin down missing info/decisions |
 | `/recalibrate` | Turn session corrections into workflow-file updates |
-| `/deck` | Build a self-contained HTML slide deck |
+| `/presentation` | Build a deck or a page as a live Artifact (`--slides` / `--page`) |
 
 ### Agents
 
@@ -142,15 +154,18 @@ when needed (progressive disclosure). Forge invokes skills explicitly, so they w
 generations.
 
 - **Rubrics/methods:** `code-review`, `security-review`, `testing`, `writing-plans`, `logging-compliance`, `architecture` (keep code within your pattern), `clarify` (interview to pin down missing decisions)
-- **More:** `slicing` (split into independently mergeable PRs), `performance-review`, `explain` (describe, never review), `run-local` (who-runs-what), `presentation` (Claude-style HTML decks), `recalibrate` (make corrections stick)
+- **More:** `slicing` (split into independently mergeable PRs), `performance-review` (including the frontend baseline), `explain` (describe, never review), `run-local` (who-runs-what), `presentation` (decks and pages as live Artifacts, in a neutral house style), `recalibrate` (make corrections stick, tune tier signals from the ledger)
+- **The work page:** `work-page` (the live page for one piece of work — plan, progress, sign-off, test on dev)
+- **Housekeeping:** `worktree` (the only route that opens a worktree, and the exits that remove it), `clean-up` (one record per finished piece of work, then remove the rest; find old work)
 - **Verification:** `verify` (build/lint/test, self-fix to green), `verify-acceptance` (does it
   satisfy the goal + acceptance criteria), `verify-plan` (critique the plan before building),
   `double-check` (independent second opinion from a *different* AI CLI, e.g. Codex)
 
 This gives the workflow a real **verification loop**: `/dev` self-verifies — deterministic checks
-*and* acceptance criteria — and fixes its own failures **before** the human approval gate, instead of
-leaving all verification to review. If a task starts with no acceptance criteria, forge drafts some
-and asks whether to add them to the ticket (so testers can verify later) or keep them local to the plan.
+*and* the subtask's proof — and fixes its own failures **before** the stop, instead of leaving all
+verification to review. If a ticket has no acceptance criteria (or none that can be proved), forge
+proposes some, agrees them with you, and asks whether to add them to the ticket or keep them local to
+the plan.
 
 ### Optional Modules
 
@@ -208,13 +223,61 @@ Add to your `.claude/settings.json` for the best experience:
     "allow": [
       "Read",
       "Edit(.claude/**)",
-      "Write(.claude/**)"
+      "Bash(bash .claude/scripts/push-branch.sh)",
+      "Bash(bash .claude/scripts/push-branch.sh --dry-run)"
+    ],
+    "deny": [
+      "Read(**/.env)",
+      "Read(**/.env.local)",
+      "Bash(cat *.env*)",
+      "Bash(printenv:*)",
+      "Bash(env)",
+      "Bash(git push --force*)",
+      "Bash(git push * --force*)",
+      "Bash(git push -f*)",
+      "Bash(git push * -f*)",
+      "Bash(git push * main)",
+      "Bash(git push * main *)",
+      "Bash(git push *:main)",
+      "Bash(git push *:main *)",
+      "Bash(git -C * push --force*)",
+      "Bash(git -C * push * --force*)",
+      "Bash(git -C * push -f*)",
+      "Bash(git -C * push * -f*)",
+      "Bash(git -C * push * main)",
+      "Bash(git -C * push * main *)",
+      "Bash(git -C * push *:main)",
+      "Bash(git -C * push *:main *)"
+    ],
+    "ask": [
+      "Bash(git push:*)",
+      "Bash(git -C * push*)",
+      "Edit(**/.claude/hooks/**)",
+      "Edit(**/.claude/scripts/**)",
+      "Edit(**/.claude/settings.json)",
+      "Edit(**/.claude/settings.local.json)"
     ]
   }
 }
 ```
 
-This lets Claude read your codebase freely and manage its own workspace files without prompting.
+This lets Claude read your codebase freely and manage its own workspace files without prompting,
+while keeping secrets out of the conversation, blocking force-pushes and pushes to the default
+branch, letting it push only through the push script (`examples/scripts/push-branch.md`) and asking
+before every other push (even in auto mode), and asking before Claude changes its own hooks, scripts
+or settings (`ask` beats `allow`). `/install` offers to merge the hardening block for you
+(`examples/settings/hardening.md`); without the broad `.claude/**` allow, that block pre-approves the
+work folder (`.claude/temp/work/**`), the `/clean-up` records (`.claude/temp/complete/**`) and the
+ledgers (`.claude/temp/ledger/**`).
+
+- `.env.*` isn't denied wholesale: that would also lock out committed `.env.example` files.
+- File rules are `Edit(...)` only: they cover every file-editing tool, `Write` included.
+- A `git push` rule doesn't match `git -C <dir> push`, so the push ask and denies each have a `-C`
+  form.
+- The `ask` rules start with `**/` so they also cover worktrees kept under the project, which a
+  plain `.claude/hooks/**` misses.
+- A `Read` deny also blocks `Edit` and `Write` on the path, so any step that must write a denied
+  file does it through the shell, never the Write tool.
 
 If you use a formatter, add a hook to auto-format on file writes:
 
@@ -239,10 +302,19 @@ If you use a formatter, add a hook to auto-format on file writes:
 ## What to .gitignore
 
 ```
-.claude/.forge/               # Regenerable template cache (re-staged by the installer)
-.claude/temp/                 # Ephemeral work files
-.claude/settings.local.json   # Personal settings
+# Regenerable template cache (re-staged by the installer)
+.claude/.forge/
+# Ephemeral work files
+.claude/temp
+# Worktrees (the worktree skill)
+.claude/worktrees/
+# Personal settings
+.claude/settings.local.json
 ```
+
+Comments go on their own line: git reads a trailing `# …` as part of the pattern. Write
+`.claude/temp` without a trailing slash: `.claude/temp/` doesn't ignore a symlink, so a worktree that
+links the main checkout's temp folder shows it as untracked and `git worktree remove` refuses.
 
 The **generated** workflow files (`commands/`, `agents/`, `skills/`, `docs/`, `examples/`) should be committed so your team shares them. The `.claude/.forge/` template cache is regenerable, so it's gitignored.
 

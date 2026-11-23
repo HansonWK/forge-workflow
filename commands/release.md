@@ -31,11 +31,19 @@ Run the package manager's install to sync the lockfile, then the project's forma
 
 ## Step 5: Report
 
-List every file updated and give the next steps (commit with the project's release-commit message convention, push, open a PR to the default branch).
+List every file updated and **STOP** for approval. On approval, stage those files by name and commit
+them with the project's release-commit message, on a workflow branch (never the default branch).
+Then ask once: `Release $VERSION is not pushed. Approve to push and open the PR?` On a yes, push with
+`bash .claude/scripts/push-branch.sh` and open the PR to the default branch as `/pr` Step 6 does. A
+release branch outside the branch convention is one the script refuses: push it with
+`git push -u origin <branch>`, which goes through the permission prompt.
+
+End by suggesting `/clean-up` once $VERSION reaches production: it records and removes the work this
+release shipped.
 
 ## Rules
 
-- Never commit or push — the user handles all git operations
+- Commit only on approval, and push only after the developer's yes to the push question (the Working agreements in `CLAUDE.md`)
 - Do not proceed past Step 2 without explicit changelog approval
 - Only bump version fields — never dependency version references
 - Keep the versioned-file list in `docs/workflow-config.md` in sync with the real layout

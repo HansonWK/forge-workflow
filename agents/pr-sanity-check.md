@@ -28,7 +28,8 @@ lets it run isolated/in the background; the skill keeps the rubric in one place.
 
 - **Report first.** Do not edit files unless the caller explicitly asks you to fix.
 - **Read-only when reviewing another branch / in a worktree (`/cr`):** produce a report only — never
-  edit, format, or run anything that modifies files; remove the worktree when done.
+  edit, format, or run anything that modifies files. Leave the worktree as you found it and end the
+  report with its `git status --short`; the command that opened it removes it.
 - **When authorized to fix:** resolve Critical/High, run the project's format + lint + tests,
   re-review until clean, and report exactly what changed.
 
@@ -36,4 +37,4 @@ lets it run isolated/in the background; the skill keeps the rubric in one place.
 
 - Only flag issues in the changed code, not pre-existing ones.
 - Keep the report actionable — specific files, lines, fixes.
-- Never commit or push.
+- Report; the main loop commits on approval.

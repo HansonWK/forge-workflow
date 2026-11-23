@@ -128,6 +128,6 @@ Then present the index path as a clickable link and a one-paragraph summary.
 - The orchestrator writes NO code and fixes NOTHING — it only audits and reports. Fixing is `/audit-fix`.
 - Every issue must cite `file:line` and be independently actionable. No vague findings.
 - Prefer fewer, real issues over a long padded list. An empty dimension file is a good outcome.
-- Never commit, push, or branch — this command only writes to `.claude/audit/`.
+- Don't commit, push, or branch — this command only writes to `.claude/audit/`.
 - Keep each dimension in its own file; do not merge dimensions.
 - Present all created paths as clickable absolute paths at the end.

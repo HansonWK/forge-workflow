@@ -173,20 +173,104 @@ Whenever there isn't enough information here, use the **`clarify` skill** to dra
 guessing. These docs are read by the `testing`, `code-review`, and `architecture` skills, and pointed
 to from `CLAUDE.md`.
 
+### Work page, proofs and sign-off
+
+These tailor the core loop. Infer first, then confirm in one round:
+
+- **Work page default** — `page` (each piece of work gets a live claude.ai artifact; the `work-page`
+  skill) or `simple` (the plan in the terminal). Recommend `page` when this account has Claude
+  artifacts; `/begin -s` picks simple per task either way.
+- **House style** — keep forge's neutral palette, or give the project's colours and fonts. Rewrite
+  `.claude/skills/presentation/house-style.css` (keep every token name, light and dark); the decks,
+  pages and work page all read it.
+- **Kinds of proof this project can run** — e.g. `npm run test`, starting a service with test data
+  and reading its logs, a Playwright screenshot. Write them into `writing-plans` → Proof.
+- **Tier signals** — what makes a subtask Medium or High here (a migration, a shared schema, auth, a
+  public API, work across two apps), from the architecture and the scan. Write them into
+  `writing-plans` → "Tier signals in this project".
+- **Sign-off defaults** — start from `code-review, logs, performance, security, seo, docs,
+  acceptance`. Drop `seo` and the frontend performance check with no frontend, `logs` without the
+  observability module. Record them under `## Sign-off`.
+- **Performance baseline** (frontend only) — the command that measures the affected pages (e.g. a
+  Lighthouse run against the local app). Write it into `performance-review` → Baseline.
+- **Environments** — whether PRs get their own environment (a preview), the dev environment, and how
+  to read what's deployed there (the CLI or URL that shows the running SHA; names only, never secret
+  values). Record them under `## Environments`; the Test-on-dev tab and the proofs use them.
+- **The proof folder** — `proof/` in the work folder unless the project already keeps proofs
+  elsewhere; if so, set it in the config, the CLAUDE.md agreement and `PROOF_DIR` in
+  `work-page/progress.mjs`.
+
+### Worktrees and clean-up
+
+Infer first, then confirm in one round. Record the answers under `## Clean-up` in the config and fill
+the placeholders in the `worktree` and `clean-up` skills:
+
+- **Releases** — yes when Phase 1 found release signals or the release module is set up; otherwise
+  ask. It sets the cadence: `/clean-up` after each release reaches production, or each sprint.
+- **Release check** (releases only) — how to tell a piece of work reached production, e.g. the
+  ticket's fix version is released in the tracker and the ticket is Done.
+- **Worktree folder** — `.claude/worktrees` unless the project keeps worktrees elsewhere; **kept
+  checkouts** — any kept on purpose (e.g. a `gh-pages` publishing checkout), each with its reason.
+- **Build output** and **per-checkout indexes** — from the scan (`dist/`, `.next/`, a code-graph
+  index folder).
+- **`post-checkout` hook** — `git worktree add` runs it. Check husky, lefthook and
+  `.git/hooks/post-checkout`; if it installs or builds an index, write how a worktree skips it into
+  the `worktree` skill.
+- **Never touch** — `user/` and `ledger/`, plus any `.claude/temp/` paths the project adds.
+
 ### Commit-guard hook (optional, recommended)
 
-The never-commit guardrail is stated once in `CLAUDE.md`, but on long contexts / older models Claude
-can still commit without asking. Offer a deterministic enforcement hook:
+The commit policy is stated once in `CLAUDE.md` (approval means commit, only on a workflow branch,
+push only through the push script after a yes), but on long contexts Claude can still drift. Offer the enforcement hook:
 
 ```
-I can add a commit-guard hook that blocks Claude from running `git commit` / `git push` (you commit
-yourself). It adds `.claude/hooks/commit-guard.sh` and a PreToolUse entry to `.claude/settings.json`.
-Add it? (recommended)
+I can add a commit-guard hook that lets me commit only on your workflow branches (<branch convention>),
+never on the default branch, never amending or staging everything, never with an apostrophe in the
+message, and never pushing the default branch. It adds `.claude/hooks/commit-guard.sh` (+ its
+test), `.claude/scripts/owned-branch.sh` (the branch convention) and a PreToolUse entry to
+`.claude/settings.json`. Add it? (recommended)
 ```
 
-Only with **explicit consent**, install it from `.claude/examples/hooks/commit-guard.md` (the script
-+ the `settings.json` entry; merge into any existing `hooks`). If they decline, leave settings
-untouched and record `commit-guard: declined` in the config Modules-adjacent notes.
+Only with **explicit consent**, install it as `.claude/examples/hooks/commit-guard.md` says: copy the
+script, its test and `owned-branch.sh`, fill `OWNED_BRANCH` / `OWNED_HINT` from the branch
+convention, run the test, and merge the `settings.json` entry into any existing `hooks`. On a
+re-run, a project with the 1.x hook (it refused every commit) gets this one offered as its
+replacement. If they decline, leave settings untouched and record `commit-guard: declined` in the
+config Modules-adjacent notes.
+
+### Push script (optional, recommended)
+
+Offer it with the commit guard:
+
+```
+I can add a push script, `.claude/scripts/push-branch.sh` (+ its test), that pushes the current
+workflow branch to origin and nothing else. I'd run it without a permission prompt, only after you
+say yes to a step that pushes (`/pr` asks once); any other push asks. Add it? (recommended)
+```
+
+Only with **explicit consent**, install it as `.claude/examples/scripts/push-branch.md` says: copy
+the script, its test and `owned-branch.sh` (shared with the commit guard), fill `OWNED_BRANCH` /
+`OWNED_HINT`, run the test, and merge its two `allow` rules. If they decline, write
+`git push -u origin <branch>` (which asks) wherever the commands and the Working agreements run
+`bash .claude/scripts/push-branch.sh`, drop its `allow` rules from the hardening block, and record
+`push-script: declined` alongside the commit-guard note.
+
+### Settings hardening (optional, recommended)
+
+Show the block from `$FORGE/examples/settings/hardening.md`, then offer it:
+
+```
+I can merge a permissions block into `.claude/settings.json` that denies reading `.env` files and
+printing the environment, denies force-push and pushing the default branch, lets me run the push
+script and makes me ask before any other push (even in auto mode), pre-approves edits in the work
+folder, the clean-up records and the ledgers, and makes me ask before editing `.claude/hooks/**`, `.claude/scripts/**`
+or the settings files. Merge it? (recommended)
+```
+
+Only with **explicit consent**, merge it as the example says (replace `main` in the push denies with
+the default branch; add missing entries to the existing `permissions` arrays; touch nothing else).
+If they decline, leave settings untouched and record `settings-hardening: declined` alongside the
+commit-guard note.
 
 ---
 
@@ -263,11 +347,13 @@ Each module's setup is: **read the reference example → ask the provider/config
    | `npm audit`, `npm run test:coverage` | The package manager's equivalents |
    | `https://mycompany.atlassian.net` | Real Jira URL (if Jira) |
    | `~/AI/config/jira.env` | Real credentials path (if changed) |
-   | `main` (PR base / diff base) | The detected default branch |
+   | `main` (PR base / diff base, the hardening push denies) | The detected default branch |
+   | `OWNED_BRANCH` / `OWNED_HINT` in `examples/scripts/owned-branch.sh` | The branch convention (only when the hook or the push script is installed) |
    | `gh pr create` | The hosting flow (GitHub `gh`, GitLab `glab`, Bitbucket web) |
+   | `<cadence>`, `<release check>`, `<worktree folder>`, `<kept checkouts>`, `<build output>`, `<per-checkout indexes>`, `<post-checkout note>`, `<never-touch list>` in the `worktree` and `clean-up` skills | The "Worktrees and clean-up" answers (Phase 3) |
 
    **Adapt the skills and agents to the stack** (not just string swaps) — keep the rubric/structure, rewrite stack-specific specifics to match the detected project:
-   - Skills: `code-review`, `security-review`, `testing` (test framework), `logging-compliance` (only if the observability module is installed).
+   - Skills: `code-review`, `security-review`, `testing` (test framework), `writing-plans` (proof kinds, tier signals), `performance-review` (the baseline command), `logging-compliance` (only if the observability module is installed).
    - Agents: `test-writer` (framework mechanics), `doc-writer`, `pr-description`, `explainer`.
 
    (`pr-sanity-check` and `security-auditor` are thin runners that apply the skills — adapt the skills, not those agents.)
@@ -283,6 +369,13 @@ When `docs/workflow-config.md` already exists:
 1. Read it — get the installed version and the `## Modules` state. Read `$FORGE/VERSION` (the version now staged); a higher value means an **upgrade** (if `$FORGE` looks stale, re-stage first with `npx forge-workflow install`).
 2. For each file: compare your committed `.claude/<file>` against the newly-staged `$FORGE/<file>`. Re-apply shipped improvements while **preserving your customizations**. Because `$FORGE` holds the exact new template, this is a real diff — not a guess; where a difference is genuinely ambiguous, show it and ask.
 3. For modules: only act on ones the user chose to add/reconfigure this run (Phase 4). Don't touch `installed` modules unless asked.
+   **Upgrading from 1.x:** `/deck` is now `/presentation` — offer to remove `.claude/commands/deck.md`.
+   Work now lives in `.claude/temp/work/<slug>/`; `/clean-up`'s Phase 0 moves old-style
+   `.claude/temp/<slug>/` folders there, and `/next` and `/resume` point at them until it runs. Ask
+   the "Worktrees and clean-up" questions; a merged hardening block gains
+   `Edit(.claude/temp/complete/**)`, offered like any missing entry. `/signoff` is now the final checks and
+   `/present` the plan approval, and Claude commits on approval: ask the Phase 3 "Work page, proofs and
+   sign-off" questions and offer the new commit-guard, push script and hardening blocks.
 4. **Present a summary of all changes before writing**, then **STOP and wait for confirmation.** Then write and update the version + `## Modules` state.
 
 ### `CLAUDE.md`
@@ -294,9 +387,23 @@ discover from the file system, and not depth that now lives in skills.
   - A one-paragraph **repo purpose** and any **gotchas** (non-obvious constraints, footguns).
   - A **Working agreements** block — the guardrails, stated **once and authoritatively** (this is the
     single source of truth; commands reference it rather than restating it):
-    - Never commit or push without explicit user approval — suggest a commit message; the user commits.
+    - **Approval means commit.** When the developer approves a stop (`/next`, "approved", "go"),
+      commit each subtask's files, staged by name (never `git add -A`), under its title in the
+      project's commit message format. Never amend or force-push.
+    - **No apostrophes anywhere in a commit message** (title or body): write "agent worktree", "do
+      not", "the skill placeholders". The commit guard refuses them.
+    - **Commit only on a branch the workflow owns** — one `/begin` or `/branch` created, or one
+      matching `<branch convention>`. Never on the default branch, a release or hotfix branch you
+      didn't create, or a branch the developer named outside the pattern: stop and suggest a
+      correctly named branch instead.
+    - **Push only through `.claude/scripts/push-branch.sh`**, and only after the developer says yes
+      to a workflow step that pushes (`/pr` asks once: "The current work is not pushed. Approve to
+      push and open the PR?"). Any other push goes through the permission prompt.
     - Never fetch/read **production** secret values (dev/test only); adding secrets to any environment is fine.
-    - Plans/research and other ephemeral files live in `.claude/temp/`.
+    - The **work folder** is `.claude/temp/work/<slug>/` (research, plan, status for one piece of
+      work); **the proof folder** is its `proof/`. Other ephemeral files live in `.claude/temp/`.
+      `/clean-up` keeps one record per finished piece of work in `.claude/temp/complete/<slug>.md`:
+      to find past work, search there first (the `clean-up` skill's Finding old work).
     - If the user keeps asking for the same step, or keeps adding the same acceptance criterion, suggest `/customize` to encode it as a new or updated skill.
     - When the user shares a resource you build from (a blog, doc, or someone's file), apply the `attribution` skill — offer to list it as attribution, a resource, or neither, and offer to trace it to its origin.
   - **Pointers, not depth:** note that the skills in `.claude/skills/` hold the
@@ -335,7 +442,37 @@ discover from the file system, and not depth that now lives in skills.
 - Default branch: [detected]
 - Branch convention: [convention]
 
+## Workflow
+- Work page: [page / simple]
+
+## Sign-off
+- Default checks: [code-review, logs, performance, security, seo, docs, acceptance — minus those this project can't run]
+
+## Environments
+- PR environment: [e.g. a preview per PR, or none]
+- Dev: [name / URL]
+- Deployed version: [how to read the running SHA, names only]
+
+## Clean-up
+- Releases: [yes / no]
+- Cadence: [each release, once in production / each sprint]
+- Release check: [e.g. fix version released in the tracker + ticket Done; n/a without releases]
+- Worktree folder: [.claude/worktrees]
+- Kept checkouts: [none, or path — branch — why]
+- Build output: [e.g. dist/, .next/]
+- Per-checkout indexes: [none, or path — how worktrees skip it]
+- Never touch: [user/, ledger/, project additions]
+
+## House style
+- Stylesheet: .claude/skills/presentation/house-style.css ([forge neutral / project palette])
+
 ## Working Directories
+- Work folder: .claude/temp/work/<slug>/
+- Proof folder: <work folder>/proof/
+- Tier ledger: .claude/temp/ledger/tier-overrides.tsv
+- Worktrees: [worktree folder]/<name>/
+- Records: .claude/temp/complete/<slug>.md
+- Clean-up ledger: .claude/temp/ledger/clean-up.tsv
 - AI temp files: .claude/temp/
 - AI docs: .claude/docs/
 
@@ -367,7 +504,7 @@ discover from the file system, and not depth that now lives in skills.
 - Scopes/services: [list]
 
 ## Forge Workflow
-- Version: 1.2.0
+- Version: 2.0.0
 ```
 
 ---
@@ -388,13 +525,23 @@ Modules:
 [Created / Updated] CLAUDE.md
 ```
 
-Recommend `.gitignore` additions if missing:
+Recommend `.gitignore` additions if missing (comments on their own line: git reads a trailing `#` as
+part of the pattern):
 
 ```
-.claude/.forge/                # Regenerable template cache (re-staged by the installer)
-.claude/temp/                  # Ephemeral work files
-.claude/settings.local.json    # Personal settings
+# Regenerable template cache (re-staged by the installer)
+.claude/.forge/
+# Ephemeral work files
+.claude/temp
+# Worktrees (the worktree skill)
+.claude/worktrees/
+# Personal settings
+.claude/settings.local.json
 ```
+
+Offer to replace a `.claude/temp/` line with `.claude/temp`: the trailing slash doesn't ignore a
+symlink, so a worktree that links the main checkout's temp folder shows it as untracked and
+`git worktree remove` refuses.
 
 Suggest next steps: `/workflow` to see all commands; commit the workflow files so the team shares them; note that **re-running `/install` adds any skipped module later**.
 
@@ -402,7 +549,7 @@ Suggest next steps: `/workflow` to see all commands; commit the workflow files s
 
 ## Explicit Exclusions
 
-- Do **NOT** modify `.claude/settings.json` / `.claude/settings.local.json` **except** the optional commit-guard hook above, and only with the user's explicit consent. Never change other settings.
+- Do **NOT** modify `.claude/settings.json` / `.claude/settings.local.json` **except** the optional commit-guard hook and settings-hardening block above, and only with the user's explicit consent. Never change other settings.
 - Do **NOT** set up MCP servers — some agents reference optional MCP tools, but those are configured independently.
 - Do **NOT** delete existing files the user has in `.claude/` (other than removing a module's own generic command files when the user marks it n/a and confirms).
 - Do **NOT** write real secret values into the repo or the config.

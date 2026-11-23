@@ -1,0 +1,423 @@
+<title>{{TITLE}}</title>
+<meta name="claude:viewport-fit-sides" content="cover" />
+<style>
+  /* @house-style */
+
+  html,
+  body {
+    height: 100%;
+    overflow: hidden;
+  }
+  .stage {
+    position: relative;
+    height: 100%;
+  }
+  .slide {
+    position: absolute;
+    inset: 0;
+    overflow-y: auto;
+    visibility: hidden;
+    opacity: 0;
+    background: var(--bg);
+  }
+  .slide.active,
+  .slide.anim-out-fwd,
+  .slide.anim-out-back {
+    visibility: visible;
+    opacity: 1;
+  }
+  .slide-inner {
+    min-height: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-block: var(--s-2xl) calc(88px + env(safe-area-inset-bottom, 0px));
+    padding-left: max(16px, 5vw, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, 5vw, env(safe-area-inset-right, 0px));
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: var(--s-m);
+  }
+  .slide h2 {
+    font-size: var(--size-h-xxl);
+    max-width: 22ch;
+  }
+  .slide .notes {
+    display: none;
+  }
+
+  .slide.inverse {
+    background: var(--inverse-bg);
+  }
+  .inverse h1,
+  .inverse h2 {
+    color: var(--inverse-ink);
+  }
+  .inverse .lede {
+    color: var(--inverse-muted);
+  }
+  .slide.title h1 {
+    max-width: 16ch;
+  }
+  .slide.title .rule {
+    width: 96px;
+    height: 6px;
+    background: var(--accent-bright);
+  }
+
+  .nav {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-s);
+    padding-block: var(--s-xs) calc(var(--s-xs) + env(safe-area-inset-bottom, 0px));
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    background: var(--bg);
+    border-top: 1px solid var(--line);
+    font-size: var(--size-body-s);
+  }
+  .nav.on-inverse {
+    background: var(--inverse-bg);
+    border-top-color: var(--inverse-line);
+    color: var(--inverse-muted);
+  }
+  .count {
+    font-variant-numeric: tabular-nums;
+    min-width: 4.5em;
+  }
+  .dots {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+    min-width: 0;
+  }
+  .dots button {
+    width: 8px;
+    height: 8px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: var(--line-strong);
+    cursor: pointer;
+  }
+  .dots button[aria-current='step'] {
+    width: 22px;
+    border-radius: var(--r-pill);
+    background: var(--ink);
+  }
+  .on-inverse .dots button[aria-current='step'] {
+    background: var(--accent-bright);
+  }
+  .controls {
+    display: flex;
+    gap: var(--s-xxs);
+  }
+  .controls button {
+    font: inherit;
+    font-weight: 500;
+    color: var(--ink);
+    background: var(--surface);
+    border: 1px solid var(--ink);
+    border-radius: var(--r-pill);
+    padding: 0.45em 1.1em;
+    cursor: pointer;
+  }
+  .controls button[data-nav='next'] {
+    background: var(--accent);
+    color: var(--accent-ink);
+    border-color: var(--accent);
+  }
+  .on-inverse .controls button {
+    background: var(--inverse-bg);
+    color: var(--inverse-ink);
+    border-color: var(--inverse-ink);
+  }
+  .on-inverse .controls button[data-nav='next'] {
+    background: var(--accent-bright);
+    color: var(--inverse-bg);
+    border-color: var(--accent-bright);
+  }
+  .controls button:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+  .controls .aux {
+    padding-inline: 0.8em;
+  }
+
+  .notes-panel {
+    position: fixed;
+    z-index: 6;
+    right: max(16px, env(safe-area-inset-right, 0px));
+    bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+    width: min(420px, calc(100% - 32px));
+    max-height: 45%;
+    overflow-y: auto;
+    background: var(--surface-2);
+    color: var(--ink);
+    border: 1px solid var(--line-strong);
+    padding: var(--s-s) var(--s-m);
+    font-size: var(--size-body-m);
+  }
+  .notes-panel ul {
+    margin: var(--s-xxs) 0 0;
+    padding-left: 1.1em;
+    display: grid;
+    gap: var(--s-xxs);
+  }
+
+  @keyframes sOutFwd {
+    to {
+      opacity: 0;
+      transform: translateX(-4%);
+    }
+  }
+  @keyframes sOutBack {
+    to {
+      opacity: 0;
+      transform: translateX(4%);
+    }
+  }
+  @keyframes sInFwd {
+    from {
+      opacity: 0;
+      transform: translateX(4%);
+    }
+  }
+  @keyframes sInBack {
+    from {
+      opacity: 0;
+      transform: translateX(-4%);
+    }
+  }
+  @keyframes heroPop {
+    from {
+      opacity: 0;
+      transform: scale(0.96);
+    }
+  }
+  @keyframes fade {
+    from {
+      opacity: 0;
+    }
+  }
+  .anim-out-fwd {
+    animation: sOutFwd 0.54s ease forwards;
+  }
+  .anim-out-back {
+    animation: sOutBack 0.54s ease forwards;
+  }
+  .anim-in-fwd {
+    animation: sInFwd 0.54s ease both;
+  }
+  .anim-in-back {
+    animation: sInBack 0.54s ease both;
+  }
+  :is(.anim-in-fwd, .anim-in-back) :is(.term, .table-wrap, .flow, .panels, .callout) {
+    animation: heroPop 0.42s 0.14s ease both;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .anim-out-fwd,
+    .anim-out-back {
+      animation: fade 0.2s ease reverse forwards;
+    }
+    .anim-in-fwd,
+    .anim-in-back {
+      animation: fade 0.2s ease both;
+    }
+    :is(.anim-in-fwd, .anim-in-back) :is(.term, .table-wrap, .flow, .panels, .callout) {
+      animation: none;
+    }
+  }
+  @media (max-width: 600px) {
+    .dots {
+      display: none;
+    }
+    .controls .aux {
+      display: none;
+    }
+  }
+</style>
+
+<main class="stage">
+  <section class="slide title inverse active">
+    <div class="slide-inner">
+      <p class="eyebrow">{{EYEBROW}}</p>
+      <h1>
+        {{HEADLINE}}
+        <span class="accent">{{ACCENT}}</span>
+      </h1>
+      <div class="rule"></div>
+      <p class="lede">{{PRESENTER}} · {{DATE}}</p>
+    </div>
+    <aside class="notes">
+      <ul>
+        <li>{{NOTE}}</li>
+      </ul>
+    </aside>
+  </section>
+
+  <!-- body slides go here -->
+
+  <section class="slide" id="hinge">
+    <div class="slide-inner">
+      <p class="eyebrow">How it was built</p>
+      <h2>{{METHOD HEADLINE}}</h2>
+    </div>
+    <aside class="notes">
+      <ul>
+        <li>{{NOTE}}</li>
+      </ul>
+    </aside>
+  </section>
+
+  <!-- new slides go between #hinge and the closing slide -->
+
+  <section class="slide closing inverse">
+    <div class="slide-inner">
+      <p class="eyebrow">What's next</p>
+      <h2>{{CLOSING HEADLINE}}</h2>
+      <ul class="clean">
+        <li>
+          <b>{{FOLLOW-UP}}</b>
+          — {{DETAIL}}
+        </li>
+      </ul>
+      <p class="lede">Thanks — questions?</p>
+    </div>
+    <aside class="notes">
+      <ul>
+        <li>Cut first if short on time: {{SLIDES}}</li>
+        <li>Never cut: {{SLIDES}}</li>
+      </ul>
+    </aside>
+  </section>
+</main>
+
+<aside class="notes-panel" id="notes-panel" hidden aria-live="polite"></aside>
+
+<nav class="nav" aria-label="Slides">
+  <span class="count" id="count"></span>
+  <div class="dots" id="dots"></div>
+  <div class="controls">
+    <button type="button" class="aux" id="notes-toggle" aria-pressed="false" title="Speaker notes (N)">Notes</button>
+    <button type="button" class="aux" id="fullscreen" title="Full screen (F)">Full screen</button>
+    <button type="button" data-nav="prev">← Back</button>
+    <button type="button" data-nav="next">Next →</button>
+  </div>
+</nav>
+
+<script>
+  (() => {
+    const DUR = 540;
+    const ANIM = ['anim-out-fwd', 'anim-out-back', 'anim-in-fwd', 'anim-in-back'];
+    const slides = [...document.querySelectorAll('.slide')];
+    const nav = document.querySelector('.nav');
+    const dots = document.getElementById('dots');
+    const count = document.getElementById('count');
+    const prev = document.querySelector('[data-nav="prev"]');
+    const next = document.querySelector('[data-nav="next"]');
+    const notesPanel = document.getElementById('notes-panel');
+    const notesToggle = document.getElementById('notes-toggle');
+    let index = 0;
+    let timer;
+
+    dots.append(
+      ...slides.map((_, i) => {
+        const dot = document.createElement('button');
+        dot.type = 'button';
+        dot.setAttribute('aria-label', `Slide ${i + 1}`);
+        dot.addEventListener('click', () => go(i));
+        return dot;
+      }),
+    );
+
+    const settle = () => slides.forEach((s) => s.classList.remove(...ANIM));
+
+    const render = () => {
+      slides.forEach((s, i) => {
+        s.classList.toggle('active', i === index);
+        s.inert = i !== index;
+      });
+      [...dots.children].forEach((d, i) => d.setAttribute('aria-current', i === index ? 'step' : 'false'));
+      count.textContent = `${index + 1} / ${slides.length}`;
+      prev.disabled = index === 0;
+      next.disabled = index === slides.length - 1;
+      nav.classList.toggle('on-inverse', slides[index].classList.contains('inverse'));
+      notesPanel.innerHTML = slides[index].querySelector('.notes')?.innerHTML ?? '<p>No notes for this slide.</p>';
+    };
+
+    const go = (to) => {
+      const target = Math.max(0, Math.min(slides.length - 1, to));
+      if (target === index) return;
+      const dir = target > index ? 'fwd' : 'back';
+      clearTimeout(timer);
+      settle();
+      slides[index].classList.add(`anim-out-${dir}`);
+      slides[target].classList.add(`anim-in-${dir}`);
+      slides[target].scrollTop = 0;
+      index = target;
+      render();
+      timer = setTimeout(settle, DUR);
+    };
+
+    const toggleNotes = () => {
+      notesPanel.hidden = !notesPanel.hidden;
+      notesToggle.setAttribute('aria-pressed', String(!notesPanel.hidden));
+    };
+
+    const toggleFullscreen = () => {
+      const request = document.fullscreenElement
+        ? document.exitFullscreen?.()
+        : document.documentElement.requestFullscreen?.();
+      request?.catch?.(() => {});
+    };
+
+    const KEYS = {
+      ArrowRight: () => go(index + 1),
+      PageDown: () => go(index + 1),
+      ' ': () => go(index + 1),
+      ArrowLeft: () => go(index - 1),
+      PageUp: () => go(index - 1),
+      Home: () => go(0),
+      End: () => go(slides.length - 1),
+      n: toggleNotes,
+      N: toggleNotes,
+      f: toggleFullscreen,
+      F: toggleFullscreen,
+    };
+
+    document.addEventListener('keydown', (e) => {
+      if (e.metaKey || e.ctrlKey || e.altKey || e.target.closest?.('input, textarea, [contenteditable]')) return;
+      const action = KEYS[e.key];
+      if (!action) return;
+      e.preventDefault();
+      action();
+    });
+
+    let touchX = null;
+    document.addEventListener('touchstart', (e) => (touchX = e.touches[0].clientX), { passive: true });
+    document.addEventListener('touchend', (e) => {
+      if (touchX === null) return;
+      const dx = e.changedTouches[0].clientX - touchX;
+      touchX = null;
+      if (Math.abs(dx) > 60) go(index + (dx < 0 ? 1 : -1));
+    });
+
+    prev.addEventListener('click', () => go(index - 1));
+    next.addEventListener('click', () => go(index + 1));
+    notesToggle.addEventListener('click', toggleNotes);
+    document.getElementById('fullscreen').addEventListener('click', toggleFullscreen);
+
+    const start = Number(/^#s(\d+)$/.exec(location.hash)?.[1]);
+    index = Number.isInteger(start) && start >= 1 && start <= slides.length ? start - 1 : 0;
+    render();
+  })();
+</script>

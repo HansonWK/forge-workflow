@@ -4,8 +4,8 @@ description: Run dev phase for current subtask
 
 # Dev Phase
 
-Implement the current subtask, then **self-verify before handing to review** — the human gate at
-`/present` should be approving already-verified work.
+Implement the current subtask, then **self-verify and prove it** — the developer at the `/next` stop
+should be approving proven work.
 
 ## Prerequisites
 
@@ -18,8 +18,8 @@ dependencies; skip any that don't apply).
 
 ### 1. Understand
 
-Read the subtask's Goal and Files in plan.md, plus the relevant patterns from research.md and the
-project's `CLAUDE.md`.
+Read the subtask's Goal, Files, Complexity, Proves and Proof in plan.md, plus the relevant patterns
+from research.md and the project's `CLAUDE.md`.
 
 ### 2. Predict test impact
 
@@ -48,24 +48,30 @@ you're not blocked, and surface only issues found.
 - Apply the **`verify` skill**: build / typecheck / lint / test, self-fixing until green. Compare
   against your step-2 predictions — an unpredicted break is likely a real side effect, so fix the
   code, not the test.
-- Then apply the **`verify-acceptance` skill**: confirm the change satisfies the subtask Goal and
-  the plan/ticket acceptance criteria; self-correct genuine misses, and flag anything that needs a
-  human decision.
+- Then apply the **`verify-acceptance` skill**: run the subtask's proof (or its group's, once the
+  group's last subtask is built), keep the evidence in the proof folder, and check the ACs it proves;
+  self-correct genuine misses, and flag anything that needs a human decision.
 
 ### 7. Update plan & status
 
-Check `- [x] Dev` in plan.md; set `work_status: in-progress` in status.md.
+Check `- [x] Dev` in plan.md, and `- [x] Proved` once its proof passed (or it has none); set
+`work_status: in-progress` in status.md.
+
+## Work page
+
+`/dev` writes nothing to the page: its proof result and evidence go in `status.md` and the proof
+folder, and `/next` updates the page at the stop (`work-page` → Keeping it live).
 
 ## After dev
 
-Report: files changed, checks green (via `verify`), the acceptance result (via `verify-acceptance`),
-and a suggested commit message. Then continue to `/review`.
+Report to `/next`: the files changed, checks green (via `verify`), the proof's result and evidence
+(via `verify-acceptance`), and any escalation signal — an issue with the approach, a file outside the
+subtask's list, a diff well past its expected size.
 
 ## Rules
 
 - Stay within the current subtask's scope; don't implement future subtasks.
 - Checks must pass (via the `verify` skill) before completing — never disable/skip/delete a test to
   go green.
-- **Never commit or push** — suggest a commit message; the user commits (see the Working agreements
-  in `CLAUDE.md`).
+- Don't commit here: `/next` commits each subtask once the developer approves the stop.
 - If work here will affect later subtasks, tell the user and ask before changing the plan.

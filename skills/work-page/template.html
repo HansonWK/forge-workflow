@@ -1,0 +1,709 @@
+<title>{{TITLE}}</title>
+<meta name="claude:viewport-fit-sides" content="cover" />
+<style>
+  /* One reading column (360–900px) under a sticky header and tab bar, so the page sits beside a terminal at half a screen. */
+  /* @house-style */
+
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 14px/1.55 var(--f-body);
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0 0 auto;
+    height: env(safe-area-inset-top, 0px);
+    z-index: 10;
+    background: var(--surface);
+  }
+  a {
+    color: var(--accent);
+  }
+  code,
+  pre,
+  .mono {
+    font-family: var(--f-mono);
+    font-size: 0.88em;
+  }
+  code {
+    background: var(--code-bg);
+    padding: 0 0.3em;
+    border-radius: 3px;
+  }
+  pre {
+    background: var(--code-bg);
+    padding: 8px 10px;
+    border-radius: var(--r);
+    overflow-x: auto;
+    white-space: pre;
+    margin: 6px 0 0;
+  }
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  .wrap {
+    max-width: 900px;
+    margin: 0 auto;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+  }
+  .hdr {
+    position: sticky;
+    top: env(safe-area-inset-top, 0px);
+    z-index: 5;
+    background: var(--surface);
+    border-bottom: 1px solid var(--line);
+  }
+  .hdr .wrap {
+    padding-block: 10px 0;
+  }
+  .hdr-top {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 10px;
+    align-items: baseline;
+  }
+  .tkt {
+    font-weight: 700;
+    text-decoration: none;
+  }
+  .hdr-title {
+    font-weight: 600;
+    min-width: 0;
+    flex: 1 1 240px;
+    text-wrap: balance;
+  }
+  .hdr-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 12px;
+    color: var(--muted);
+    font-size: 12px;
+    margin-top: 4px;
+  }
+  .tabs {
+    display: flex;
+    gap: 2px;
+    overflow-x: auto;
+    margin-top: 8px;
+  }
+  .tab {
+    border: 0;
+    background: none;
+    color: var(--muted);
+    font: inherit;
+    font-weight: 600;
+    padding: 8px 12px;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .tab[aria-selected='true'] {
+    color: var(--ink);
+    border-bottom-color: var(--accent);
+  }
+  main {
+    padding-block: 16px 48px;
+    display: grid;
+    gap: 16px;
+  }
+  section[hidden] {
+    display: none;
+  }
+  .panel {
+    display: grid;
+    gap: 14px;
+  }
+  h2 {
+    font-size: 15px;
+    margin: 0;
+    text-wrap: balance;
+  }
+  h3 {
+    font-size: 14px;
+    margin: 0;
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--r);
+    padding: 12px 14px;
+    display: grid;
+    gap: 8px;
+    min-width: 0;
+  }
+  .card.current {
+    border-color: var(--accent);
+    box-shadow: inset 3px 0 0 var(--accent);
+  }
+  .muted {
+    color: var(--muted);
+  }
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 10px;
+    align-items: center;
+    min-width: 0;
+  }
+  .chip {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    padding: 1px 8px;
+    border-radius: 999px;
+    background: var(--code-bg);
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .chip.ok {
+    background: var(--ok-soft);
+    color: var(--ok);
+  }
+  .chip.warn {
+    background: var(--warn-soft);
+    color: var(--warn);
+  }
+  .chip.bad {
+    background: var(--bad-soft);
+    color: var(--bad);
+  }
+  .chip.accent {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+  .label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+  }
+  ul.plain {
+    margin: 0;
+    padding-left: 18px;
+  }
+  .acs li {
+    margin-bottom: 4px;
+  }
+  .sub-head {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 8px;
+    align-items: center;
+  }
+  .num {
+    font-weight: 700;
+    color: var(--muted);
+  }
+  input[type='text'],
+  select {
+    font: inherit;
+    color: var(--ink);
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 4px 8px;
+    min-width: 0;
+    width: 100%;
+  }
+  select {
+    width: auto;
+  }
+  .ctl {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 10px;
+    align-items: center;
+  }
+  .btn {
+    font: inherit;
+    font-weight: 600;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--ink);
+    border-radius: 4px;
+    padding: 5px 12px;
+    cursor: pointer;
+  }
+  .btn.go {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--accent-ink);
+  }
+  .btn:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+  .note {
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .opts {
+    display: grid;
+    gap: 8px;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  }
+  .opt {
+    border: 1px solid var(--line);
+    border-radius: var(--r);
+    padding: 8px 10px;
+    display: grid;
+    gap: 4px;
+    min-width: 0;
+  }
+  .opt.rec {
+    border-color: var(--accent);
+  }
+  .opt.picked {
+    background: var(--accent-soft);
+  }
+  .pro::marker {
+    content: '+ ';
+    color: var(--ok);
+  }
+  .con::marker {
+    content: '− ';
+    color: var(--bad);
+  }
+  details > summary {
+    cursor: pointer;
+    color: var(--accent);
+    font-size: 12px;
+  }
+  .tbl-wrap {
+    overflow-x: auto;
+  }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 13px;
+  }
+  th,
+  td {
+    text-align: left;
+    vertical-align: top;
+    padding: 6px 8px;
+    border-bottom: 1px solid var(--line);
+  }
+  th {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+  }
+  td.num-col {
+    font-variant-numeric: tabular-nums;
+  }
+  .esc {
+    border-left: 3px solid var(--warn);
+    padding-left: 8px;
+  }
+  .ev img {
+    max-width: 100%;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+  }
+  .example {
+    background: var(--warn-soft);
+    color: var(--warn);
+    padding: 6px 10px;
+    border-radius: var(--r);
+    font-size: 12px;
+  }
+</style>
+
+<script type="application/json" id="page-data">
+  {{PAGE_JSON}}
+</script>
+
+<header class="hdr">
+  <div class="wrap">
+    <div class="hdr-top">
+      <a class="tkt" id="h-ticket" target="_blank" rel="noopener"></a>
+      <div class="hdr-title" id="h-title"></div>
+    </div>
+    <div class="hdr-meta" id="h-meta"></div>
+    <nav class="tabs" role="tablist" aria-label="Work page" id="tabs"></nav>
+  </div>
+</header>
+
+<main class="wrap" id="main">
+  <section id="tab-plan" class="panel" role="tabpanel" aria-label="Plan"></section>
+  <section id="tab-progress" class="panel" role="tabpanel" aria-label="Progress" hidden></section>
+  <section id="tab-signoff" class="panel" role="tabpanel" aria-label="Sign-off" hidden></section>
+  <section id="tab-dev" class="panel" role="tabpanel" aria-label="Test on dev" hidden>{{DEV_TAB_HTML}}</section>
+</main>
+
+<script>
+  (() => {
+    const PAGE = JSON.parse(document.getElementById('page-data').textContent);
+    const TIERS = ['low', 'medium', 'high'];
+    const TIER_LABEL = { low: 'Easy', medium: 'Medium', high: 'Hard' };
+    const TIER_KIND = { low: 'ok', medium: 'warn', high: 'bad' };
+    const STATUS = {
+      todo: ['To do', ''],
+      discussing: ['Discussing', 'accent'],
+      doing: ['In progress', 'accent'],
+      proving: ['Proving', 'accent'],
+      waiting: ['Waiting for you', 'warn'],
+      done: ['Committed', 'ok'],
+      blocked: ['Blocked', 'bad'],
+    };
+    const RESULT = {
+      pass: ['Pass', 'ok'],
+      fail: ['Fail', 'bad'],
+      blocked: ['Blocked', 'warn'],
+      skipped: ['Skipped', ''],
+      stub: ['Stub', 'warn'],
+      skip: ['Skipped', ''],
+      pending: ['Not run', ''],
+      todo: ['Not started', ''],
+      'in progress': ['In progress', 'accent'],
+      'not started': ['Not started', ''],
+    };
+    const STAGES_SIGNOFF = ['Sign-off', 'PR', 'Testing on the PR environment', 'Merged', 'Testing on dev', 'Done'];
+    const STAGES_DEV = ['PR', 'Testing on the PR environment', 'Merged', 'Testing on dev', 'Done'];
+    const BANNED = /['"`$!\\]/g;
+    const state = { liveNote: '', progress: PAGE.seedProgress || {}, overrides: {}, answers: {}, approvals: {}, checks: {}, evidence: {}, db: null };
+    let tab = null;
+
+    const el = (tag, props = {}, ...kids) => {
+      const n = document.createElement(tag);
+      Object.entries(props).forEach(([k, v]) => {
+        if (v == null || v === false) return;
+        if (k === 'class') n.className = v;
+        else if (k === 'text') n.textContent = v;
+        else if (k.startsWith('on')) n.addEventListener(k.slice(2), v);
+        else n.setAttribute(k, v === true ? '' : v);
+      });
+      kids.flat().forEach((c) => c != null && c !== false && n.append(c instanceof Node ? c : document.createTextNode(String(c))));
+      return n;
+    };
+    const rich = (tag, text, props = {}) => {
+      const n = el(tag, props);
+      String(text ?? '')
+        .split('`')
+        .forEach((part, i) => n.append(i % 2 ? el('code', { text: part }) : document.createTextNode(part)));
+      return n;
+    };
+    const fill = (node, ...kids) => node.replaceChildren(...kids.flat().filter((c) => c != null && c !== false));
+    const chip = (text, kind = '') => el('span', { class: `chip ${kind}`, text });
+    const result = (r) => chip(...(RESULT[String(r ?? '').toLowerCase()] || [r || 'Not run', '']));
+    const progressFor = (n) => (state.progress.subtasks || {})[n] || {};
+    const effective = (s) => {
+      const o = state.overrides[s.n] || {};
+      return { ...s, title: o.title || s.title, tier: TIERS.includes(o.tier) ? o.tier : s.tier, overridden: o };
+    };
+    const batch = () => state.progress.batch || [];
+    const groupOf = (n) => (PAGE.proofGroups || []).find((g) => (g.subtasks || []).includes(n));
+
+    async function write(path, data) {
+      if (!state.db) return false;
+      try {
+        await state.db.doc(path).set({ ...data, at: Date.now() });
+        return true;
+      } catch (e) {
+        console.warn('write failed', path, e);
+        return false;
+      }
+    }
+    async function copy(text, noteEl) {
+      try {
+        await navigator.clipboard.writeText(text);
+        noteEl.textContent = 'Copied. Paste it into the terminal.';
+      } catch {
+        noteEl.textContent = 'Copy is blocked here. Select the text and copy it.';
+      }
+    }
+    const savedNote = (ok) => (ok ? 'Saved. Type /next or done in the terminal.' : 'Could not save. Say it in the terminal instead.');
+
+    function proofText(p) {
+      if (!p) return 'No proof given';
+      if (p.group) return `Proven with group ${p.group}`;
+      if (p.none) return `No proof — ${p.none}`;
+      return [p.kind, p.what].filter(Boolean).join(': ');
+    }
+
+    function evidenceList(evs = []) {
+      return evs.map((ev) => {
+        if (ev.kind === 'image')
+          return el('figure', { class: 'ev', style: 'margin:0' }, el('img', { src: ev.url, alt: ev.label || 'Proof screenshot', loading: 'lazy' }), el('figcaption', { class: 'note', text: ev.label || '' }));
+        if (ev.kind === 'url') return el('div', { class: 'ev' }, el('span', { class: 'note', text: `${ev.label || 'Open'} ` }), el('a', { href: ev.url, target: '_blank', rel: 'noopener', class: 'mono', text: ev.url }));
+        return el('div', { class: 'ev' }, el('span', { class: 'note', text: ev.label || 'Output' }), el('pre', { text: ev.text || '' }));
+      });
+    }
+
+    function header() {
+      const t = document.getElementById('h-ticket');
+      t.textContent = PAGE.ticket || 'No ticket';
+      if (PAGE.ticketUrl) t.href = PAGE.ticketUrl;
+      document.getElementById('h-title').textContent = PAGE.name;
+      const p = state.progress;
+      const done = PAGE.subtasks.filter((s) => progressFor(s.n).status === 'done').length;
+      const updated = p.updated ? new Date(p.updated) : null;
+      fill(document.getElementById('h-meta'),
+        p.stage ? chip(p.stage, 'accent') : chip('Plan review', 'accent'),
+        el('span', { text: `${done} of ${PAGE.subtasks.length} subtasks committed` }),
+        PAGE.branch ? el('span', { class: 'mono', text: PAGE.branch }) : null,
+        p.pr ? el('a', { href: p.pr, target: '_blank', rel: 'noopener', text: 'PR' }) : null,
+        el('span', { id: 'live', text: state.liveNote || (updated && !isNaN(updated) ? `Live · updated ${updated.toTimeString().slice(0, 5)}` : 'Live') }),
+      );
+    }
+
+    function visibleTabs() {
+      const stage = state.progress.stage || 'Plan review';
+      const hasSignoff = !!(state.progress.signoff || PAGE.signoff) || STAGES_SIGNOFF.includes(stage);
+      const hasDev = !!PAGE.testPlanTab || STAGES_DEV.includes(stage);
+      return [
+        ['plan', 'Plan', true],
+        ['progress', 'Progress', stage !== 'Plan review'],
+        ['signoff', 'Sign-off', hasSignoff],
+        ['dev', 'Test on dev', hasDev],
+      ].filter((t) => t[2]);
+    }
+
+    function renderTabs() {
+      const tabs = visibleTabs();
+      const ids = tabs.map((t) => t[0]);
+      const wanted = location.hash.slice(1);
+      if (!tab || !ids.includes(tab)) tab = ids.includes(wanted) ? wanted : ids[ids.length - 1];
+      fill(document.getElementById('tabs'),
+        ...tabs.map(([id, label]) =>
+          el('button', { class: 'tab', role: 'tab', type: 'button', id: `t-${id}`, 'aria-selected': String(id === tab), onclick: () => { tab = id; history.replaceState(null, '', `#${id}`); renderTabs(); } }, label),
+        ),
+      );
+      ['plan', 'progress', 'signoff', 'dev'].forEach((id) => (document.getElementById(`tab-${id}`).hidden = id !== tab));
+    }
+
+    // Plan tab
+    function questionCard(s, q) {
+      const mode = ['choose', 'confirm', 'discuss'].includes(q.mode) ? q.mode : 'discuss';
+      const key = `${s.n}-${q.id}`;
+      const note = el('span', { class: 'note' });
+      const picked = state.answers[key]?.option;
+      const prompt = `Discuss ${q.id} on subtask ${s.n}: ${q.question}`;
+      const choose = async (o, btn) => {
+        if (state.answers[key]?.option === o.name) return;
+        btn.disabled = true;
+        const ok = await write(`answers/${key}`, { subtask: s.n, question: q.id, option: o.name, mode });
+        btn.disabled = false;
+        note.textContent = savedNote(ok);
+      };
+      return el(
+        'div',
+        { class: 'card' },
+        el('div', { class: 'row' }, chip(q.id), chip(mode === 'discuss' ? 'Discuss in the terminal' : mode === 'confirm' ? 'Choose, then confirm' : 'Choose', mode === 'discuss' ? 'bad' : 'accent'), rich('b', q.question)),
+        el(
+          'div',
+          { class: 'opts' },
+          (q.options || []).map((o) =>
+            el(
+              'div',
+              { class: `opt${o.name === q.recommend ? ' rec' : ''}${o.name === picked ? ' picked' : ''}` },
+              el('div', { class: 'row' }, el('b', { text: o.name }), o.name === q.recommend ? chip('Recommended', 'accent') : null, o.name === picked ? chip('Your answer', 'ok') : null),
+              o.summary ? rich('div', o.summary, { class: 'note' }) : null,
+              el('ul', { class: 'plain' }, (o.pros || []).map((p) => rich('li', p, { class: 'pro' })), (o.cons || []).map((c) => rich('li', c, { class: 'con' }))),
+              mode === 'discuss' ? null : el('div', {}, el('button', { class: 'btn', type: 'button', disabled: o.name === picked, onclick: (e) => choose(o, e.currentTarget) }, o.name === picked ? 'Chosen' : 'Choose')),
+            ),
+          ),
+        ),
+        el('div', { class: 'row' }, mode === 'discuss' ? el('button', { class: 'btn', type: 'button', onclick: () => copy(prompt, note) }, 'Copy a prompt to discuss it') : null, note),
+      );
+    }
+
+    function subtaskCard(s) {
+      const e = effective(s);
+      const note = el('span', { class: 'note' });
+      const title = el('input', { type: 'text', id: `title-${s.n}`, value: e.title, maxlength: '100', 'aria-label': `Subtask ${s.n} title, used as its commit message` });
+      title.addEventListener('change', async () => {
+        const clean = title.value.replace(BANNED, '').replace(/\s+/g, ' ').trim();
+        title.value = clean;
+        if (!clean || clean === effective(s).title) return;
+        note.textContent = savedNote(await write(`overrides/${s.n}`, { ...state.overrides[s.n], title: clean }));
+      });
+      const tier = el('select', { id: `tier-${s.n}`, 'aria-label': `Subtask ${s.n} complexity` }, TIERS.map((t) => el('option', { value: t, text: TIER_LABEL[t], selected: t === e.tier })));
+      tier.addEventListener('change', async () => {
+        note.textContent = savedNote(await write(`overrides/${s.n}`, { ...state.overrides[s.n], tier: tier.value }));
+      });
+      const g = groupOf(s.n);
+      return el(
+        'article',
+        { class: `card${batch().includes(s.n) ? ' current' : ''}`, id: `sub-${s.n}` },
+        el('div', { class: 'sub-head' }, el('span', { class: 'num', text: s.n }), title),
+        el('div', { class: 'ctl' }, tier, rich('span', s.tierWhy, { class: 'note' }), e.overridden.tier && e.overridden.tier !== s.tier ? chip(`Changed from ${TIER_LABEL[s.tier]}`, 'warn') : null),
+        rich('p', s.approach, { style: 'margin:0' }),
+        s.size ? el('div', { class: 'note', text: `Expected size: ${s.size}` }) : null,
+        (s.files || []).length ? el('details', {}, el('summary', { text: `Files (${s.files.length})` }), el('ul', { class: 'plain mono' }, s.files.map((f) => rich('li', f)))) : null,
+        el('div', { class: 'row' }, el('span', { class: 'label', text: 'Proves' }), ...((s.proves || []).length ? s.proves.map((a) => chip(a)) : [el('span', { class: 'note', text: 'no AC of its own' })])),
+        el('div', { class: 'row' }, el('span', { class: 'label', text: 'Proof' }), rich('span', g && !s.proof?.what ? `Group ${g.id}: ${proofText(g.proof)}` : proofText(s.proof)), s.proof?.keep ? chip(`keep: ${s.proof.keep}`) : null),
+        (s.questions || []).length ? el('div', { class: 'panel' }, el('span', { class: 'label', text: `Open questions (${s.questions.length})` }), s.questions.map((q) => questionCard(s, q))) : null,
+        note,
+      );
+    }
+
+    function renderPlan() {
+      const p = state.progress;
+      const approveNote = el('span', { class: 'note' });
+      const approved = state.approvals.plan;
+      const approve =
+        (p.stage || 'Plan review') !== 'Plan review'
+          ? null
+          : el(
+              'div',
+              { class: 'card' },
+              el('div', { class: 'row' },
+                approved
+                  ? chip('Plan approved', 'ok')
+                  : el('button', { class: 'btn go', type: 'button', onclick: async (e) => { e.currentTarget.disabled = true; approveNote.textContent = savedNote(await write('approvals/plan', { approved: true })); } }, 'Approve plan'),
+                approved ? el('span', { class: 'note', text: 'Type /next or done in the terminal to start.' }) : approveNote,
+              ),
+              el('span', { class: 'note', text: 'Rename a subtask (its name is the commit message), change a tier or answer a question here, then type /next or done in the terminal. Feedback goes in the terminal.' }),
+            );
+      fill(document.getElementById('tab-plan'),
+        PAGE.example ? el('div', { class: 'example', text: 'Example data, for checking the layout.' }) : null,
+        approve,
+        el('div', { class: 'card' }, el('h2', { text: 'Problem' }), rich('p', PAGE.problem, { style: 'margin:0' }), PAGE.summary ? rich('p', PAGE.summary, { class: 'muted', style: 'margin:0' }) : null, PAGE.reproduction ? el('div', {}, el('span', { class: 'label', text: 'Reproduction' }), rich('p', PAGE.reproduction, { style: 'margin:0' })) : null),
+        el('div', { class: 'card' }, el('h2', { text: `Acceptance criteria (${PAGE.acs.length})` }), el('ul', { class: 'plain acs' }, PAGE.acs.map((a) => el('li', {}, el('b', { text: `${a.id} ` }), rich('span', a.text), ' ', ...(a.provedBy || []).map((x) => chip(x)))))),
+        el('h2', { text: `Subtasks (${PAGE.subtasks.length})` }),
+        ...PAGE.subtasks.map(subtaskCard),
+        (PAGE.proofGroups || []).length ? el('div', { class: 'card' }, el('h2', { text: 'Proof groups' }), el('ul', { class: 'plain' }, PAGE.proofGroups.map((g) => el('li', {}, el('b', { text: `${g.id} ` }), `subtasks ${(g.subtasks || []).join(', ')}: `, rich('span', proofText(g.proof)))))) : null,
+        PAGE.complete ? el('div', { class: 'card' }, el('h2', { text: 'What complete looks like' }), rich('p', PAGE.complete.summary, { style: 'margin:0' }), (PAGE.complete.outcome || []).length ? el('ul', { class: 'plain' }, PAGE.complete.outcome.map((o) => rich('li', o))) : null, PAGE.complete.proving ? el('div', {}, el('span', { class: 'label', text: 'How we prove it' }), rich('p', PAGE.complete.proving, { style: 'margin:0' })) : null) : null,
+      );
+    }
+
+    // Progress tab
+    function renderProgress() {
+      const p = state.progress;
+      const waiting = batch().length && batch().every((n) => progressFor(n).status === 'waiting');
+      const nextNote = el('span', { class: 'note' });
+      const approvedBatch = (state.approvals.next?.batch || []).join(',') === batch().join(',') && waiting;
+      const stop = waiting
+        ? el(
+            'div',
+            { class: 'card current' },
+            el('h2', { text: `Waiting for you: subtasks ${batch().join(', ')}` }),
+            p.stopSummary ? rich('p', p.stopSummary, { style: 'margin:0' }) : null,
+            el('div', { class: 'row' },
+              approvedBatch
+                ? chip('Approved', 'ok')
+                : el('button', { class: 'btn go', type: 'button', onclick: async (e) => { e.currentTarget.disabled = true; nextNote.textContent = savedNote(await write('approvals/next', { batch: batch() })); } }, 'Next — commit these and carry on'),
+              approvedBatch ? el('span', { class: 'note', text: 'Type /next or done in the terminal.' }) : nextNote,
+            ),
+            el('span', { class: 'note', text: 'Read the files in your editor first. Commit them yourself, or press Next and Claude commits each subtask on its own.' }),
+          )
+        : null;
+      const groups = p.groups || {};
+      fill(document.getElementById('tab-progress'),
+        stop,
+        ...PAGE.subtasks.map((s) => {
+          const e = effective(s);
+          const pr = progressFor(s.n);
+          const [label, kind] = STATUS[pr.status] || STATUS.todo;
+          const g = groupOf(s.n);
+          const proof = pr.proof || (g ? groups[g.id] : null);
+          return el(
+            'div',
+            { class: `card${batch().includes(s.n) ? ' current' : ''}` },
+            el('div', { class: 'row' }, el('span', { class: 'num', text: s.n }), el('b', { text: e.title }), chip(TIER_LABEL[e.tier], TIER_KIND[e.tier]), chip(label, kind), pr.commit ? chip(pr.commit, 'mono') : null),
+            pr.escalated ? el('div', { class: 'esc note' }, el('b', { text: `Raised from ${TIER_LABEL[pr.escalated.from] || pr.escalated.from} to ${TIER_LABEL[pr.escalated.to] || pr.escalated.to}. ` }), rich('span', pr.escalated.reason)) : null,
+            proof ? el('div', { class: 'row' }, el('span', { class: 'label', text: g && !pr.proof ? `Proof · ${g.id}` : 'Proof' }), result(proof.result), rich('span', proof.summary || '')) : null,
+            proof?.evidence?.length ? el('details', {}, el('summary', { text: `Evidence (${proof.evidence.length})` }), ...evidenceList(proof.evidence)) : null,
+          );
+        }),
+      );
+    }
+
+    // Sign-off tab
+    function renderSignoff() {
+      const so = { ...(PAGE.signoff || {}), ...(state.progress.signoff || {}) };
+      const checks = Object.entries(so.checks || {});
+      const acs = state.progress.acs || {};
+      const perf = so.perf;
+      fill(document.getElementById('tab-signoff'),
+        el('div', { class: 'card' }, el('h2', { text: 'Sign-off checks' }),
+          checks.length ? el('div', { class: 'tbl-wrap' }, el('table', {}, el('tr', {}, el('th', { text: 'Check' }), el('th', { text: 'Result' }), el('th', { text: 'Note' })), checks.map(([name, c]) => el('tr', {}, el('td', { class: 'mono', text: name }), el('td', {}, result(c.result)), rich('td', c.note || ''))))) : el('p', { class: 'note', text: 'The checks start at /signoff.' }),
+        ),
+        el('div', { class: 'card' }, el('h2', { text: 'Acceptance criteria' }), el('div', { class: 'tbl-wrap' }, el('table', {}, el('tr', {}, el('th', { text: 'AC' }), el('th', { text: 'Status' }), el('th', { text: 'Proved by' })), PAGE.acs.map((a) => { const r = typeof acs[a.id] === 'string' ? { status: acs[a.id] } : acs[a.id] || {}; return el('tr', {}, el('td', {}, el('b', { text: a.id }), ' ', rich('span', a.text)), el('td', {}, result(r.status || 'pending')), rich('td', r.proof || (a.provedBy || []).join(', '))); })))),
+        el('div', { class: 'card' }, el('h2', { text: 'Subtasks' }), el('div', { class: 'tbl-wrap' }, el('table', {}, el('tr', {}, el('th', { text: '#' }), el('th', { text: 'Subtask' }), el('th', { text: 'Tier' }), el('th', { text: 'Commit' }), el('th', { text: 'Proved' })), PAGE.subtasks.map((s) => { const pr = progressFor(s.n); const g = groupOf(s.n); const proof = pr.proof || (g ? (state.progress.groups || {})[g.id] : null); return el('tr', {}, el('td', { class: 'num-col', text: s.n }), el('td', { text: effective(s).title }), el('td', { text: TIER_LABEL[effective(s).tier] }), el('td', { class: 'mono', text: pr.commit || '—' }), el('td', {}, proof ? result(proof.result) : chip('—'), ' ', rich('span', proof?.summary || ''))); })))),
+        perf ? el('div', { class: 'card' }, el('h2', { text: 'Performance, before and after' }), el('div', { class: 'tbl-wrap' }, el('table', {}, el('tr', {}, el('th', { text: 'Page' }), el('th', { text: 'Metric' }), el('th', { text: 'Before' }), el('th', { text: 'After' })), (perf.rows || []).map((r) => el('tr', {}, el('td', { class: 'mono', text: r.page }), el('td', { text: r.metric }), el('td', { class: 'num-col', text: r.before ?? '—' }), el('td', { class: 'num-col', text: r.after ?? '—' }))))), perf.note ? rich('p', perf.note, { class: 'note', style: 'margin:0' }) : null) : null,
+        state.progress.pr ? el('div', { class: 'card' }, el('h2', { text: 'Pull request' }), el('a', { href: state.progress.pr, target: '_blank', rel: 'noopener', text: state.progress.pr })) : null,
+      );
+    }
+
+    // Test on dev tab, when no test-plan plug-in rendered it
+    function renderDevFallback() {
+      if (PAGE.testPlanTab) return;
+      const tests = PAGE.devTests || [];
+      fill(document.getElementById('tab-dev'),
+        el('div', { class: 'card' }, el('h2', { text: 'Test on dev' }), el('p', { class: 'note', style: 'margin:0', text: 'Each step updates as you tell Claude what you did or saw, or as Claude reads the dev logs.' })),
+        ...(tests.length ? tests : [{ id: '—', step: 'The steps are written at /signoff.' }]).map((t) => {
+          const c = state.checks[t.id] || {};
+          const ev = state.evidence[t.id];
+          return el('div', { class: 'card' },
+            el('div', { class: 'row' }, el('b', { text: t.id }), result(c.state || 'pending'), rich('span', t.step)),
+            t.expect ? el('div', {}, el('span', { class: 'label', text: 'Expect ' }), rich('span', t.expect)) : null,
+            c.note ? rich('div', c.note, { class: 'note' }) : null,
+            ev?.rows?.length ? el('div', { class: 'tbl-wrap' }, el('table', {}, el('tr', {}, el('th', { text: 'Check' }), el('th', { text: 'Expected' }), el('th', { text: 'Actual' })), ev.rows.map((r) => el('tr', {}, rich('td', r.check), rich('td', r.expected), el('td', {}, r.ok ? chip(String(r.actual ?? ''), 'ok') : chip(String(r.actual ?? ''), 'bad')))))) : null,
+            ev?.text ? el('pre', { text: ev.text }) : null,
+          );
+        }),
+      );
+    }
+
+    function renderAll() {
+      header();
+      renderTabs();
+      if (document.activeElement?.closest?.('#tab-plan') == null) renderPlan();
+      renderProgress();
+      renderSignoff();
+      renderDevFallback();
+    }
+
+    async function connect() {
+      const note = (text) => {
+        state.liveNote = text;
+        header();
+      };
+      const timer = setTimeout(() => note('Live progress cannot be reached yet; this may be out of date.'), 10000);
+      const db = await window.claude?.use?.('db');
+      if (!db) {
+        clearTimeout(timer);
+        note('Not live: progress as of the last render. Approve with /next in the terminal.');
+        return;
+      }
+      state.db = db;
+      db.doc('state/progress').onSnapshot(
+        (snap) => {
+          if (!snap.metadata?.fromCache) {
+            clearTimeout(timer);
+            state.liveNote = '';
+          }
+          if (snap.exists) state.progress = snap.data();
+          renderAll();
+        },
+        () => {
+          clearTimeout(timer);
+          note('Live progress stopped. Reload the page.');
+        },
+      );
+      ['overrides', 'answers', 'approvals', 'checks', 'evidence'].forEach((name) =>
+        db.collection(name).onSnapshot((q) => {
+          state[name] = Object.fromEntries(q.docs.map((d) => [d.id, d.data()]));
+          renderAll();
+        }),
+      );
+    }
+
+    renderPlan();
+    renderAll();
+    connect();
+  })();
+</script>
+{{DEV_TAB_SCRIPT}}

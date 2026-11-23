@@ -2,7 +2,7 @@
 name: ticket-tracker
 description: >
   Fetch, read, and analyse tickets from the configured tracker (Jira, GitHub Issues, or other).
-  Assess current work against tickets and acceptance criteria.
+  Assess current work against tickets and acceptance criteria, and post an approved comment.
 tools: Read, Edit, Grep, Bash
 model: sonnet
 color: blue
@@ -101,6 +101,22 @@ source ~/AI/config/jira.env && curl -s \
   "$JIRA_BASE_URL/rest/api/3/issue/PROJ-1234?expand=subtasks"
 ```
 
+### Commenting on a ticket
+
+Only after the developer has seen the draft and said yes. Write the comment as Atlassian Document
+Format to a file in the work folder (one paragraph per line of the draft), then post it:
+
+```bash
+node -e 'const fs=require("fs");const lines=fs.readFileSync(process.argv[1],"utf8").trim().split("\n");fs.writeFileSync(process.argv[2],JSON.stringify({body:{type:"doc",version:1,content:lines.map(t=>({type:"paragraph",content:t?[{type:"text",text:t}]:[]}))}}))' comment.md comment.json
+source ~/AI/config/jira.env && curl -s -X POST \
+  -H "Authorization: Basic $(echo -n "$JIRA_EMAIL:$JIRA_API_TOKEN" | base64)" \
+  -H "Content-Type: application/json" --data @comment.json \
+  "$JIRA_BASE_URL/rest/api/3/issue/PROJ-1234/comment"
+```
+
+Screenshots go up as attachments first (`POST /rest/api/3/issue/PROJ-1234/attachments` with
+`-H "X-Atlassian-Token: no-check" -F "file=@<png>"`), named in the comment.
+
 ### Error Handling
 
 - **401 Unauthorized**: Token is invalid or expired. Offer to help regenerate:
@@ -134,6 +150,16 @@ gh issue view <number> --json title,body,state,labels,assignees,milestone
 gh issue list --assignee @me --state open
 ```
 
+### Commenting on an Issue
+
+Only after the developer has seen the draft and said yes:
+
+```bash
+gh issue comment <number> --body-file comment.md
+```
+
+Screenshots: link them from the PR (drag them into its description) rather than uploading here.
+
 ### Error Handling
 
 - If `gh` is not installed or not authenticated, prompt: "Run `gh auth login` to authenticate with GitHub"
@@ -161,9 +187,13 @@ Once the ticket is fetched, provide:
 2. **Description**: Full ticket description
 3. **Acceptance Criteria**: Extract and list any acceptance criteria
 4. **Subtasks**: List all subtasks with their status (if applicable)
+5. **Fix versions**: each with whether it's released and its release date (for `/clean-up`'s
+   release check)
 
 Then inform the user if there is enough information to start working, or prompt for more context. Suggest running `/begin` to start the workflow.
 
 ## Arguments
 
-$ARGUMENTS - Optional: Ticket ID to fetch directly (e.g., `PROJ-1234`) or action (`plan`, `assess`, `summary`)
+$ARGUMENTS - Optional: Ticket ID to fetch directly (e.g., `PROJ-1234`) or action (`plan`, `assess`, `summary`, `comment <file>`)
+
+Never put secrets, personal data or private record content in a comment.

@@ -64,9 +64,22 @@ should have answered.
 ## Propose, never apply
 
 - **Show the diff and let the developer pick.** Prompt before changing any workflow file.
-- **Never commit** — leave edits in the working tree.
+- **Leave edits in the working tree** — they're committed only when the developer approves (the
+  Working agreements in `CLAUDE.md`).
 - **Ambiguity → ask** (the `clarify` skill). A single incident is not a convention; encoding it as one is how workfiles fill with noise.
 - Cap at ~7 suggestions per run.
+
+## Tune the tier signals from the ledger
+
+`.claude/temp/ledger/tier-overrides.tsv` holds every tier, title and proof change, by the developer
+or by escalation. Read it, group the tier rows by reason, and propose edits to the "Tier signals in
+this project" list in the `writing-plans` skill:
+
+- the developer lowering the same kind of subtask more than once → a Low signal;
+- Claude escalating the same kind more than once → a Medium or High signal;
+- repeated title or proof edits of one kind → a rule for the `planner` template.
+
+One row is an incident, not a signal.
 
 ## Subtract as well as add
 

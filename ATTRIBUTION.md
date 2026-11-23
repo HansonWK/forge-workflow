@@ -30,6 +30,10 @@ The core workflow (the `/begin → … → /pr` loop and its agents) generalizes
 workflow written by the author; forge de-brands and packages it for reuse. That's origin, not a
 third-party dependency, so it isn't in the table above.
 
+The work page, the proof-driven loop (tiers, proofs, stops that commit on approval, sign-off), the
+branch-aware commit guard and the artifact-first presentation generalize the author's own downstream
+workflow in the same way.
+
 ## Notes
 
 - **Concept vs. article.** We credit the source of an idea, not a re-packaging of it. Example: a blog

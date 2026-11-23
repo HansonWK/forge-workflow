@@ -4,8 +4,9 @@ description: Run security audit on all branch changes before PR
 
 # Security Audit
 
-Comprehensive security audit of all changes on the current branch before opening a PR — one pass
-over the cumulative change set.
+Comprehensive security audit of all changes on the current branch — one pass over the cumulative
+change set. `/signoff`'s `security` check runs it when the diff touches a security hotspot; run it
+directly any time.
 
 ## Prerequisites
 

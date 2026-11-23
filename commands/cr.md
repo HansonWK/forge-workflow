@@ -14,7 +14,7 @@ $ARGUMENTS — Optional branch name to review. If omitted, reviews the current b
 ## Mode Selection
 
 - **`$ARGUMENTS` is empty or matches the current branch** → Mode 2 (foreground, no worktree, live feedback)
-- **`$ARGUMENTS` is a different branch** → Mode 1 (background, isolated worktree)
+- **`$ARGUMENTS` is a different branch** → Mode 1 (background, in a detached worktree)
 
 ## Context Gathering
 
@@ -44,7 +44,7 @@ Include the gathered `REVIEW_CONTEXT` in the agent prompt so it can validate the
 
 ## Mode 1: Review another branch (branch name provided)
 
-When a branch name is provided, spin up an **isolated background agent** so the developer can keep working.
+When a branch name is provided, review it in its own worktree with a background agent, so the developer can keep working.
 
 ### Steps
 
@@ -64,16 +64,19 @@ If not found, try matching partially (the user may have omitted a prefix). If st
 
 3. **Gather context** using the Context Gathering steps above.
 
-4. **Launch an isolated background agent** using the Agent tool with:
+4. **Open a read-only worktree** through the `worktree` skill: `git worktree add --detach
+   <worktree folder>/cr-<branch-slug> origin/$BRANCH_NAME`. A review needs no branch. Call its absolute
+   path `$WT`.
 
-   - `isolation: "worktree"` — works on a separate copy of the repo
+5. **Launch a background agent** using the Agent tool with:
+
    - `run_in_background: true` — doesn't block the developer
    - `subagent_type: "pr-sanity-check"` — the code review agent
 
    The agent prompt should instruct it to:
 
-   - Check out the target branch in the worktree
-   - Run `git diff main...HEAD --name-only` to identify changed files
+   - Work only in `$WT`: absolute file paths and `git -C $WT`
+   - Run `git -C $WT diff origin/main...HEAD --name-only` to identify changed files
    - **Use the provided `REVIEW_CONTEXT`** to understand the intent behind the changes and validate that the implementation matches
    - Apply the `code-review` skill: implementation quality, design, tests, bugs, and security concerns
    - If acceptance criteria were provided from the ticket, explicitly check whether each criterion is met
@@ -81,9 +84,9 @@ If not found, try matching partially (the user may have omitted a prefix). If st
    - If any service-level code was changed, check for security concerns (input validation, auth, secrets, injection)
    - Produce a structured report
    - **⛔ READ-ONLY: The agent MUST NOT edit, create, or modify any files. This is a review of a remote branch — the purpose is to produce a report, not to make fixes. Do not use the Edit, Write, or NotebookEdit tools. Do not run `npm run format` or any command that modifies files. Only read files, run searches, and run read-only commands (e.g. tests, git diff).**
-   - **Clean up**: when finished, remove the worktree by running `git worktree remove <worktree-path> --force`
+   - **Finish**: leave the worktree as it found it, never remove it, and end the report with `git -C $WT status --short`
 
-5. **Inform the user** that the review is running in the background and they'll be notified when it completes. Include the branch name being reviewed.
+   Then **inform the user** that the review is running in the background and they'll be notified when it completes. Include the branch name being reviewed.
 
 6. **When the agent completes**, save the full structured review report to `.claude/temp/cr/<branch-name>.md` (create the `cr/` directory if needed). Use the branch name as the filename, replacing `/` with `-`.
 
@@ -125,7 +128,11 @@ If not found, try matching partially (the user may have omitted a prefix). If st
 [2-3 sentence overview of the changes and overall quality]
 ```
 
-7. **Present a brief overview to the user** — not the full report. Include:
+7. **Remove the worktree** (`worktree` skill, Remove): `git worktree remove $WT`, never `--force`.
+   If git refuses, show the agent's `git status --short` and ask. `git worktree list` no longer shows
+   `$WT`.
+
+8. **Present a brief overview to the user** — not the full report. Include:
 
    - Verdict (PASS / NEEDS ATTENTION / FAIL)
    - Count of issues by severity
@@ -168,7 +175,7 @@ When no branch name is provided, run the review on the current branch directly (
 
 - **Never switch the developer's current branch** — that's the whole point of this command
 - **Mode 1 is strictly read-only** — when reviewing a remote branch, the agent must NEVER modify any files. No edits, no formatting, no fixes. The output is a report only. Changes to a remote branch cannot help the developer and would pollute the worktree or current branch.
-- Background agents in worktrees are fully isolated — no risk to current work
+- Mode 1 reviews in its own detached worktree and removes it after saving the report, so the developer's checkout never moves
 - The review should consider the full changeset against main, not individual commits
 - Only flag issues in changed code, not pre-existing problems
 - If the branch has changes in security-sensitive directories, include security observations

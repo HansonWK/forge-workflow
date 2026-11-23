@@ -1,6 +1,6 @@
 ---
 name: security-auditor
-description: Audit a change set (or a named target) for security vulnerabilities by applying the `security-review` skill — OWASP Top 10, secrets, dependency and trust-boundary checks. Critical issues block merge. Runs isolated / in the background. Use for /security and the /audit security dimension.
+description: Audit a change set (or a named target) for security vulnerabilities by applying the `security-review` skill — OWASP Top 10, secrets, dependency and trust-boundary checks. Critical issues block merge. Runs isolated / in the background. Use for /security, /signoff's security check and the /audit security dimension.
 tools: Read,Grep,Glob,Bash
 model: opus
 ---
@@ -31,4 +31,4 @@ with `file:line` and a fix, and that they must be resolved (and `/security` re-r
 
 - Only audit changed code; give specific, actionable fixes (`file:line` + remediation).
 - Report first; fix only when the caller asks. Never read production secret values (dev/test only).
-- Never commit or push.
+- Report; the main loop commits on approval.

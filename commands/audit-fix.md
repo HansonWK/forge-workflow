@@ -38,11 +38,12 @@ For each approved group, in order:
 2. Implement the fixes for that group exactly as described. If a fix is wrong or unsafe on inspection, stop and flag it rather than guessing.
 3. Add/adjust tests per the project's testing guidelines — behaviour, not implementation detail.
 4. Run the project's test, lint, and format-check commands (see `docs/workflow-config.md`) and fix failures.
-5. Present the group's changes (files, tests, what each issue ID resolved). **Do not commit or push.**
+5. Present the group's changes (files, tests, what each issue ID resolved) and **STOP** for approval.
+   On approval, stage them by name and commit on the group's branch.
 
 ## Step 4: Hand off
 
-After each group is implemented and green, report which issue IDs were resolved and the branch name, then tell the user to commit and run `/pr`. Continue to the next group only after the user confirms.
+After each group is committed, report which issue IDs were resolved and the branch name, and suggest `/pr`. Continue to the next group only after the user confirms.
 
 ## Step 5: Mark progress in the audit file
 
@@ -50,7 +51,7 @@ As issues are resolved, prefix the resolved issue heading with `[FIXED]` (e.g. `
 
 ## Rules
 
-- Follow the project's commit/push policy (by default, do not commit or push — the user does).
+- Follow the commit rules in the Working agreements (`CLAUDE.md`): commit on approval; `/pr` asks before it pushes.
 - Implement only what's in the audit file (plus the tests those fixes need). No drive-by changes.
 - If a fix turns out to be wrong or needs a product decision, skip it and report — don't force it.
 - Keep each PR group independently reviewable and green before moving on.

@@ -48,6 +48,12 @@ logging step" → extend `logging-compliance`; a repeated review nit → add it 
 create a **new** skill for a genuinely new recurring process — e.g. "always send an event to our GA
 property when the frontend app changes" → a new `analytics` skill holding your GA specifics.
 
+## Worktrees
+
+A piece that needs a second checkout opens it through the `worktree` skill and ends it through one of
+that skill's exits. One that launches an `isolation: "worktree"` agent follows that skill's Agent
+worktrees section, in the brief and in the launcher.
+
 ## After authoring
 
 Wire it up (commands invoke skills explicitly; keep the always-loaded part short). Keep a piece
