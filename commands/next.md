@@ -93,8 +93,9 @@ git add <that subtask's files, by name>
 git commit -m "<subtask title, in the project's commit message format>"
 ```
 
-Never `git add -A` or `.`, never amend. Subtasks proven together may share one commit only if you
-suggest it and the developer agrees. Fill each subtask's `**SHA:**` in `plan.md`, and update the page.
+Never `git add -A` or `.`, never amend, and no apostrophes anywhere in the message (the Working
+agreements; the commit guard refuses them). Subtasks proven together may share one commit only if
+you suggest it and the developer agrees. Fill each subtask's `**SHA:**` in `plan.md`, and update the page.
 If a hook or permission refuses a commit, show its message, hand the commit to the developer, and
 don't retry another way.
 

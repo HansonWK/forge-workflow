@@ -225,9 +225,10 @@ push only through the push script after a yes), but on long contexts Claude can 
 
 ```
 I can add a commit-guard hook that lets me commit only on your workflow branches (<branch convention>),
-never on the default branch, never amending or staging everything, and never pushing the default
-branch. It adds `.claude/hooks/commit-guard.sh` (+ its test), `.claude/scripts/owned-branch.sh`
-(the branch convention) and a PreToolUse entry to `.claude/settings.json`. Add it? (recommended)
+never on the default branch, never amending or staging everything, never with an apostrophe in the
+message, and never pushing the default branch. It adds `.claude/hooks/commit-guard.sh` (+ its
+test), `.claude/scripts/owned-branch.sh` (the branch convention) and a PreToolUse entry to
+`.claude/settings.json`. Add it? (recommended)
 ```
 
 Only with **explicit consent**, install it as `.claude/examples/hooks/commit-guard.md` says: copy the
@@ -389,6 +390,8 @@ discover from the file system, and not depth that now lives in skills.
     - **Approval means commit.** When the developer approves a stop (`/next`, "approved", "go"),
       commit each subtask's files, staged by name (never `git add -A`), under its title in the
       project's commit message format. Never amend or force-push.
+    - **No apostrophes anywhere in a commit message** (title or body): write "agent worktree", "do
+      not", "the skill placeholders". The commit guard refuses them.
     - **Commit only on a branch the workflow owns** — one `/begin` or `/branch` created, or one
       matching `<branch convention>`. Never on the default branch, a release or hotfix branch you
       didn't create, or a branch the developer named outside the pattern: stop and suggest a
